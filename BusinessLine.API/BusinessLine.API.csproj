@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Messages\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Profiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BusinessLine.Common\BusinessLine.Common.csproj" />
+    <ProjectReference Include="..\BusinessLine.Core.Application\BusinessLine.Core.Application.csproj" />
+    <ProjectReference Include="..\BusinessLine.DataAccess\BusinessLine.DataAccess.csproj" />
+    <ProjectReference Include="..\BusinessLine.Infrastructure\BusinessLine.Infrastructure.csproj" />
+    <ProjectReference Include="..\BusinessLine.Persistance\BusinessLine.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>
