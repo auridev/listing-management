@@ -1,9 +1,10 @@
-﻿using BusinessLine.Core.Application.Listings.Commands;
-using BusinessLine.Core.Application.Listings.Commands.ReceiveOffer;
-using BusinessLine.Core.Application.Listings.Commands.ReceiveOffer.Factory;
+﻿using Core.Application.Listings.Commands;
+using Core.Application.Listings.Commands.ReceiveOffer;
+using Core.Application.Listings.Commands.ReceiveOffer.Factory;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+using Core.Domain.Common;
+using Core.Domain.Listings;
+using Core.Domain.Offers;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -18,7 +19,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReceiveOffer
         private readonly ReceiveOfferModel _model;
         private readonly AutoMocker _mocker;
         private readonly ActiveListing _activeListing;
-        private readonly Offer _offer;
+        private readonly ReceivedOffer _offer;
         private readonly Guid _listingId = Guid.NewGuid();
         private readonly Guid _userId = Guid.NewGuid();
 

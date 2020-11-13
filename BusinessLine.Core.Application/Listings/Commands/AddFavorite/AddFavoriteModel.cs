@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.AddFavorite
+namespace Core.Application.Listings.Commands.AddFavorite
 {
     public class AddFavoriteModel
     {

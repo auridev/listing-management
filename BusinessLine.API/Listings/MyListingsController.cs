@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BusinessLine.API.Listings
+namespace Listings.API
 {
     [ApiController]
     [Route("api/mylistings")]

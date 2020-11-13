@@ -1,13 +1,16 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using System;
 using System.Collections.Generic;
 
-namespace BusinessLine.Core.Domain.Listings
+namespace Core.Domain.Listings
 {
     public sealed class SuspiciousListing : Listing
     {
         public DateTimeOffset MarkedAsSuspiciousAt { get; }
         public TrimmedString Reason { get; }
+
+        private SuspiciousListing() { }
+
         public SuspiciousListing(Guid id,
             Owner owner,
             ListingDetails listingDetails,

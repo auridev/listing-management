@@ -1,13 +1,13 @@
-﻿using BusinessLine.Core.Application.Profiles.Commands.CreateProfile;
-using BusinessLine.Core.Application.Profiles.Commands.MarkProfileAsIntroduced;
-using BusinessLine.Core.Application.Profiles.Queries.GetProfileDetails;
+﻿using Core.Application.Profiles.Commands.CreateProfile;
+using Core.Application.Profiles.Commands.MarkProfileAsIntroduced;
+using Core.Application.Profiles.Queries.GetProfileDetails;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BusinessLine.API
+namespace API
 {
     [ApiController]
     public class TestController : ControllerBase
@@ -32,10 +32,10 @@ namespace BusinessLine.API
                 Email = "one@two.com",
                 FirstName = "rose",
                 LastName = "mary",
-                Company = null,
+                Company = "aaaa",
                 Phone = "+333 111 22222",
                 CountryCode = "dd",
-                State = null,
+                State = "asdasd",
                 City = "utena",
                 PostCode = "pcode",
                 Address = "my place 1",
@@ -56,7 +56,7 @@ namespace BusinessLine.API
         {
             var parameters = new MarkProfileAsIntroducedModel()
             {
-                ProfileId = new Guid("45F0C71B-0202-442C-84BD-812AFCC466E7")
+                ProfileId = new Guid("70950BB0-3B5F-4567-98D2-DCF8564E2D1A")
             };
 
             _markProfileAsIntroducedCommand.Execute(parameters);

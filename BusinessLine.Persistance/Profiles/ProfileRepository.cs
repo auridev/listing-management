@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Application.Profiles.Commands;
-using BusinessLine.Core.Domain.Profiles;
+﻿using Core.Application.Profiles.Commands;
+using Core.Domain.Profiles;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Persistence.Profiles
+namespace Persistence.Profiles
 {
     public class ProfileRepository : IProfileRepository
     {
@@ -34,8 +34,8 @@ namespace BusinessLine.Persistence.Profiles
         {
             var activeProfile = _context.ActiveProfiles.Find(id);
 
-            return activeProfile != null 
-                ? Option<ActiveProfile>.Some(activeProfile) 
+            return activeProfile != null
+                ? Option<ActiveProfile>.Some(activeProfile)
                 : Option<ActiveProfile>.None;
         }
 

@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Messages.Queries.GetMyMessageDetails
+namespace Core.Application.Messages.Queries.GetMyMessageDetails
 {
     public sealed class GetMyMessageDetailsQuery : IGetMyMessageDetailsQuery
     {

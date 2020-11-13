@@ -1,8 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Profiles;
+﻿using Core.Domain.Common;
+using Core.Domain.Profiles;
+using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Profiles.Commands.CreateProfile.Factory
+namespace Core.Application.Profiles.Commands.CreateProfile.Factory
 {
     public class ProfileFactory : IProfileFactory
     {
@@ -22,7 +23,7 @@ namespace BusinessLine.Core.Application.Profiles.Commands.CreateProfile.Factory
                 locationDetails,
                 geographicLocation,
                 userPreferences,
-                SeenDate.CreateNone());
+                Option<SeenDate>.None);
         }
     }
 }

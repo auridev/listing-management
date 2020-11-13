@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using FluentAssertions;
 using LanguageExt;
 using Xunit;
@@ -20,13 +20,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
             var state = State.Create("vvv bbb nnn mmm");
 
             state.Name.ToString().Should().Be("Vvv Bbb Nnn Mmm");
-        }
-
-        [Fact]
-        public void be_of_type_NoState_if_name_is_not_valid()
-        {
-            var state = State.Create(string.Empty);
-            state.Should().BeOfType(typeof(NoState));
         }
 
         [Fact]
@@ -60,22 +53,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
             var nonEquals = (first != second);
 
             nonEquals.Should().BeTrue();
-        }
-
-        [Fact]
-        public void have_NoState_with_default_Name_value()
-        {
-            var noState = State.Create(string.Empty);
-
-            noState.Name.Should().Be(TrimmedString.None);
-        }
-
-        [Fact]
-        public void have_CreateNone_for_explicit_NoState_creation()
-        {
-            var state = State.CreateNone();
-
-            state.Should().BeOfType(typeof(NoState));
         }
     }
 }

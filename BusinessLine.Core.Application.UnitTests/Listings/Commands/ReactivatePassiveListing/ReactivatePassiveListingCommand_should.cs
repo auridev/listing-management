@@ -1,8 +1,8 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Listings.Commands;
-using BusinessLine.Core.Application.Listings.Commands.ReactivatePassiveListing;
+﻿using Core.Application.Listings.Commands;
+using Core.Application.Listings.Commands.ReactivatePassiveListing;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Listings;
+using Core.Domain.Listings;
+using Common.Dates;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;

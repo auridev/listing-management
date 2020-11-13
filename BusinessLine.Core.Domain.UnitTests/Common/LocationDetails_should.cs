@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using FluentAssertions;
 using LanguageExt;
 using Xunit;
@@ -28,7 +28,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         [Fact]
         public void have_a_State_property()
         {
-            _sut.State.Name.Value.Should().Be("Staaaat");
+            _sut.State.Some(state => state.Name.Value.Should().Be("Staaaat"));
         }
 
         [Fact]
@@ -54,12 +54,12 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         {
             var details = LocationDetails.Create(
                 Alpha2Code.Create("al"),
-                State.CreateNone(),
+                Option<State>.None,
                 City.Create("polis"),
                 PostCode.Create("aaa1"),
                 Address.Create("some random place 12"));
 
-            details.State.Should().BeOfType(typeof(NoState));
+            details.State.IsNone.Should().BeTrue();
         }
 
         [Fact]
@@ -67,13 +67,13 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         {
             var first = LocationDetails.Create(
                Alpha2Code.Create("pl"),
-                State.CreateNone(),
+                State.Create("aw"),
                 City.Create("warshaw"),
                 PostCode.Create("12"),
                 Address.Create("ddddd"));
             var second = LocationDetails.Create(
                 Alpha2Code.Create("pl"),
-                State.CreateNone(),
+                State.Create("aw"),
                 City.Create("warshaw"),
                 PostCode.Create("12"),
                 Address.Create("ddddd")
@@ -116,7 +116,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
                 Address.Create("under a bridge"));
             var second = LocationDetails.Create(
                 Alpha2Code.Create("us"),
-                State.CreateNone(),
+                State.Create("1234"),
                 City.Create("la"),
                 PostCode.Create("la123"),
                 Address.Create("under a bridge"));

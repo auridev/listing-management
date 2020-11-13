@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Application.Profiles.Commands.CreateProfile.Factory;
-using BusinessLine.Core.Domain.Common;
+﻿using Core.Application.Profiles.Commands.CreateProfile.Factory;
+using Core.Domain.Common;
 using FluentAssertions;
 using System;
 using Xunit;

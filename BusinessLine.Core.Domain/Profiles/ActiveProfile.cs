@@ -1,11 +1,30 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
+using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Domain.Profiles
+namespace Core.Domain.Profiles
 {
     public sealed class ActiveProfile : Profile
     {
-        public SeenDate IntroductionSeenOn { get; private set; }
+        // because of ORM limitations
+        public SeenDate ___efCoreSeenDate { get; private set; }
+        public Option<SeenDate> IntroductionSeenOn
+        {
+            get
+            {
+                return ___efCoreSeenDate == null ? Option<SeenDate>.None : ___efCoreSeenDate;
+            }
+            private set
+            {
+                value
+                    .Some(v => { 
+                        ___efCoreSeenDate = v; 
+                    })
+                    .None(() => { 
+                        ___efCoreSeenDate = null; 
+                    });
+            }
+        }
 
         private ActiveProfile() { }
 
@@ -16,7 +35,7 @@ namespace BusinessLine.Core.Domain.Profiles
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
             UserPreferences userPreferences,
-            SeenDate introductionSeenOn)
+            Option<SeenDate> introductionSeenOn)
             : base(id, userId, email, contactDetails, locationDetails, geographicLocation, userPreferences)
         {
             IntroductionSeenOn = introductionSeenOn;

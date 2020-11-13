@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetPublicListingDetails
+namespace Core.Application.Listings.Queries.GetPublicListingDetails
 {
     public interface IGetPublicListingDetailsQuery
     {

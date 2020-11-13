@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
     public sealed class MaterialType : IEquatable<MaterialType>
     {

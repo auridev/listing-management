@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Listings.Queries.Common
+﻿namespace Core.Application.Listings.Queries.Common
 {
     public class OfferOwnerContactDetailsModel
     {

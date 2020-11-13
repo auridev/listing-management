@@ -1,7 +1,7 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Messages.Commands.SendMessage.Factory;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Messages;
+﻿using Core.Application.Messages.Commands.SendMessage.Factory;
+using Core.Domain.Common;
+using Core.Domain.Messages;
+using Common.Dates;
 using FluentAssertions;
 using LanguageExt;
 using Moq.AutoMock;
@@ -24,9 +24,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Commands.SendMessage.
             _mocker = new AutoMocker();
             _recipient = Recipient.Create(Guid.NewGuid());
             _subject = Subject.Create("test subject");
-            _messageBody = MessageBody.Create(
-                Template.Create("beep"),
-                new TemplateParam[] { TemplateParam.Create("{name}", "aaa") });
+            _messageBody = MessageBody.Create("beep");
             _seenDate = Option<DateTimeOffset>.None;
             _mocker
                 .GetMock<IDateTimeService>()

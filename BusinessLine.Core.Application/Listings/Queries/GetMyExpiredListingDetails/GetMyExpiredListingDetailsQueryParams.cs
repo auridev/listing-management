@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyExpiredListingDetails
+namespace Core.Application.Listings.Queries.GetMyExpiredListingDetails
 {
     public class GetMyExpiredListingDetailsQueryParams
     {

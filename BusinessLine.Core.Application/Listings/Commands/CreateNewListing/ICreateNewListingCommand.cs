@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.CreateNewListing
+namespace Core.Application.Listings.Commands.CreateNewListing
 {
     public interface ICreateNewListingCommand
     {

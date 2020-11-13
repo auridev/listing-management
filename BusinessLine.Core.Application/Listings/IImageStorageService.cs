@@ -1,8 +1,8 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using System;
 using System.Collections.Generic;
 
-namespace BusinessLine.Core.Application.Listings
+namespace Core.Application.Listings
 {
     public interface IImageStorageService
     {

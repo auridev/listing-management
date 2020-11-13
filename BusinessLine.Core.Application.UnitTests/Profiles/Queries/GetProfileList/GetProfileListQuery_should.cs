@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Application.Profiles.Queries;
-using BusinessLine.Core.Application.Profiles.Queries.GetProfileList;
+﻿using Core.Application.Profiles.Queries;
+using Core.Application.Profiles.Queries.GetProfileList;
 using FluentAssertions;
 using Moq;
 using Moq.AutoMock;

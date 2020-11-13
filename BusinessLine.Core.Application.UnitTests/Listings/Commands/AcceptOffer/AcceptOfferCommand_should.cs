@@ -1,8 +1,9 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Listings.Commands;
-using BusinessLine.Core.Application.Listings.Commands.AcceptOffer;
+﻿using Core.Application.Listings.Commands;
+using Core.Application.Listings.Commands.AcceptOffer;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Listings;
+using Core.Domain.Listings;
+using Core.Domain.Offers;
+using Common.Dates;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -17,7 +18,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AcceptOffer
         private readonly AcceptOfferModel _model;
         private readonly AutoMocker _mocker;
         private readonly ActiveListing _activeListing;
-        private readonly Offer _offer;
+        private readonly ReceivedOffer _offer;
         private readonly Guid _listingId = Guid.NewGuid();
         private readonly Guid _offerId = Guid.NewGuid();
 
@@ -43,7 +44,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AcceptOffer
             _mocker
                 .GetMock<IOfferRepository>()
                 .Setup(r => r.Find(_offerId))
-                .Returns(Option<Offer>.Some(_offer));
+                .Returns(Option<ReceivedOffer>.Some(_offer));
 
             _mocker
                 .GetMock<IDateTimeService>()
@@ -82,7 +83,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AcceptOffer
                 .GetMock<IListingRepository>()
                 .Verify(r => r.Add(It.Is<ClosedListing>(l => l.Id == _activeListing.Id)), Times.Once);
         }
-                
+
         [Fact]
         public void remove_active_listing_from_the_repo()
         {
@@ -136,7 +137,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AcceptOffer
             _mocker
                 .GetMock<IOfferRepository>()
                 .Setup(r => r.Find(_offerId))
-                .Returns(Option<Offer>.None);
+                .Returns(Option<ReceivedOffer>.None);
 
             // act
             _sut.Execute(_model);
@@ -162,7 +163,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AcceptOffer
             _mocker
                 .GetMock<IOfferRepository>()
                 .Setup(r => r.Find(_offerId))
-                .Returns(Option<Offer>.Some(ListingMocks.Offer_3)); 
+                .Returns(Option<ReceivedOffer>.Some(ListingMocks.Offer_3));
 
             // act
             _sut.Execute(_model);

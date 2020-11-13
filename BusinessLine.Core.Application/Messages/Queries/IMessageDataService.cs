@@ -1,10 +1,10 @@
-﻿using BusinessLine.Core.Application.Messages.Queries.GetMyMessageDetails;
-using BusinessLine.Core.Application.Messages.Queries.GetMyMessages;
+﻿using Core.Application.Messages.Queries.GetMyMessageDetails;
+using Core.Application.Messages.Queries.GetMyMessages;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
 
-namespace BusinessLine.Core.Application.Messages.Queries
+namespace Core.Application.Messages.Queries
 {
     public interface IMessageDataService
     {

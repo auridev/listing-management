@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Application.Profiles.Commands;
-using BusinessLine.Core.Application.Profiles.Commands.CreateProfile;
-using BusinessLine.Core.Application.Profiles.Commands.CreateProfile.Factory;
+﻿using Core.Application.Profiles.Commands;
+using Core.Application.Profiles.Commands.CreateProfile;
+using Core.Application.Profiles.Commands.CreateProfile.Factory;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Profiles;
+using Core.Domain.Common;
+using Core.Domain.Profiles;
 using Moq;
 using Moq.AutoMock;
 using System;

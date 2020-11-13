@@ -1,8 +1,8 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Messages.Commands;
-using BusinessLine.Core.Application.Messages.Commands.MarkMessageAsSeen;
+﻿using Core.Application.Messages.Commands;
+using Core.Application.Messages.Commands.MarkMessageAsSeen;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Messages;
+using Core.Domain.Messages;
+using Common.Dates;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;

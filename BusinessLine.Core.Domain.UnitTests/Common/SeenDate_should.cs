@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using FluentAssertions;
 using System;
 using Xunit;
@@ -12,23 +12,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         {
             var seenDate = SeenDate.Create(DateTimeOffset.Now.AddDays(-1));
             seenDate.Value.Should().BeCloseTo(DateTimeOffset.Now.AddDays(-1));
-        }
-
-        [Fact]
-        public void be_NotSeen_if_value_is_null()
-        {
-            var seenDate = SeenDate.Create(null);
-            seenDate.Should().BeOfType(typeof(NotSeen));
-        }
-
-        [Fact]
-        public void be_NotSeen_if_value_is_min_DateTime_available()
-        {
-            var minDateTime = new DateTimeOffset(DateTime.MinValue, TimeSpan.Zero);
-
-            var seenDate = SeenDate.Create(minDateTime);
-
-            seenDate.Should().BeOfType(typeof(NotSeen));
         }
 
         [Fact]
@@ -64,22 +47,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
             var nonEquals = (first != second);
 
             nonEquals.Should().BeTrue();
-        }
-
-        [Fact]
-        public void have_NotSeen_with_default_Value_value()
-        {
-            var notSeen = SeenDate.Create(null);
-
-            notSeen.Value.Should().Be(new DateTimeOffset(DateTime.MinValue, TimeSpan.Zero));
-        }
-
-        [Fact]
-        public void have_CreateNone_for_explicit_NotSeen_creation()
-        {
-            var seenDate = SeenDate.CreateNone();
-
-            seenDate.Should().BeOfType(typeof(NotSeen));
         }
     }
 }

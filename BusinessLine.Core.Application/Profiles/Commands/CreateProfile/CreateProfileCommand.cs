@@ -1,8 +1,8 @@
-﻿using BusinessLine.Core.Application.Profiles.Commands.CreateProfile.Factory;
-using BusinessLine.Core.Domain.Common;
+﻿using Core.Application.Profiles.Commands.CreateProfile.Factory;
+using Core.Domain.Common;
 using System;
 
-namespace BusinessLine.Core.Application.Profiles.Commands.CreateProfile
+namespace Core.Application.Profiles.Commands.CreateProfile
 {
     public sealed class CreateProfileCommand : ICreateProfileCommand
     {

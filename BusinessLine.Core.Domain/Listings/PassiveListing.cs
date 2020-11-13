@@ -1,13 +1,14 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using System;
-using System.Collections.Generic;
 
-namespace BusinessLine.Core.Domain.Listings
+namespace Core.Domain.Listings
 {
     public sealed class PassiveListing : Listing
     {
         public DateTimeOffset DeactivationDate { get; }
         public TrimmedString Reason { get; }
+
+        private PassiveListing() { }
 
         public PassiveListing(Guid id,
             Owner owner,
@@ -16,7 +17,7 @@ namespace BusinessLine.Core.Domain.Listings
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
             DateTimeOffset deactivationDate,
-            TrimmedString reason) 
+            TrimmedString reason)
             : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation)
         {
             if (deactivationDate == default)

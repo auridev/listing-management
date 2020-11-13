@@ -1,12 +1,12 @@
-﻿using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Offers;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands
+namespace Core.Application.Listings.Commands
 {
     public interface IOfferRepository
     {
-        Option<Offer> Find(Guid id);
+        Option<ReceivedOffer> Find(Guid id);
 
         void Save();
     }

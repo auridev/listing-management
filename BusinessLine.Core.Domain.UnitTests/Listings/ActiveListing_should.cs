@@ -1,5 +1,6 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Common;
+using Core.Domain.Listings;
+using Core.Domain.Offers;
 using FluentAssertions;
 using LanguageExt;
 using System;
@@ -78,7 +79,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         [Fact]
         public void be_able_to_receive_offers()
         {
-            var offer = new Offer(Guid.NewGuid(),
+            var offer = new ReceivedOffer(Guid.NewGuid(),
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(1M, 
                     CurrencyCode.Create("usd")),
@@ -88,6 +89,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             _sut.ReceiveOffer(offer);
 
             _sut.Offers.Count.Should().Be(1);
+        }
+
+        [Fact]
+        public void not_receive_null_offers()
+        {
+            Action action = () => _sut.ReceiveOffer(null);
+
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -102,7 +111,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _locationDetails,
                 _geographicLocation,
                 DateTimeOffset.UtcNow.AddDays(24));
-            var offer = new Offer(Guid.NewGuid(),
+            var offer = new ReceivedOffer(Guid.NewGuid(),
                 sameOwner,
                 MonetaryValue.Create(34.89M, CurrencyCode.Create("usd")),
                 DateTimeOffset.UtcNow,
@@ -128,17 +137,17 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _locationDetails,
                 _geographicLocation,
                 DateTimeOffset.UtcNow.AddDays(24));
-            var dymmyOffer = new Offer(Guid.NewGuid(), // just an offer from some owner to increase the count
+            var dymmyOffer = new ReceivedOffer(Guid.NewGuid(), // just an offer from some owner to increase the count
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
                 SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer1 = new Offer(Guid.NewGuid(), // two offers by the same owner
+            var offer1 = new ReceivedOffer(Guid.NewGuid(), // two offers by the same owner
                 offerOwner,
                 MonetaryValue.Create(6M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
                 SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer2 = new Offer(Guid.NewGuid(),
+            var offer2 = new ReceivedOffer(Guid.NewGuid(),
                 offerOwner,
                 MonetaryValue.Create(3M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
@@ -159,12 +168,12 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         public void accept_existing_offer()
         {
             // arrange
-            var offer1 = new Offer(Guid.NewGuid(),
+            var offer1 = new ReceivedOffer(Guid.NewGuid(),
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
                 SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer2 = new Offer(Guid.NewGuid(),
+            var offer2 = new ReceivedOffer(Guid.NewGuid(),
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
@@ -177,19 +186,58 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
 
             // assert
             optionalClosedListing.IsSome.Should().BeTrue();
-            optionalClosedListing.IfSome(l => l.AcceptedOffer.Should().Be(offer1));
+            optionalClosedListing.IfSome(l => l.AcceptedOffer.Id.Should().Be(offer1.Id));
+        }
+
+        [Fact]
+        public void not_accept_null_offers()
+        {
+            Action action = () => _sut.AcceptOffer(null, DateTimeOffset.Now);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void mark_other_offers_as_rejected()
+        {
+            // arrange
+            var offer1 = new ReceivedOffer(Guid.NewGuid(),
+                Owner.Create(Guid.NewGuid()),
+                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
+                DateTimeOffset.UtcNow,
+                SeenDate.Create(DateTimeOffset.UtcNow));
+            var offer2 = new ReceivedOffer(Guid.NewGuid(),
+                Owner.Create(Guid.NewGuid()),
+                MonetaryValue.Create(2M, CurrencyCode.Create("eur")),
+                DateTimeOffset.UtcNow,
+                SeenDate.Create(DateTimeOffset.UtcNow));
+            var offer3 = new ReceivedOffer(Guid.NewGuid(),
+                Owner.Create(Guid.NewGuid()),
+                MonetaryValue.Create(3M, CurrencyCode.Create("eur")),
+                DateTimeOffset.UtcNow,
+                SeenDate.Create(DateTimeOffset.UtcNow));
+            _sut.ReceiveOffer(offer1);
+            _sut.ReceiveOffer(offer2);
+            _sut.ReceiveOffer(offer3);
+
+            // act
+            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(offer3, DateTimeOffset.Now);
+
+            // assert
+            optionalClosedListing.IfSome(l => l.RejectedOffers[0].Id.Should().Be(offer1.Id));
+            optionalClosedListing.IfSome(l => l.RejectedOffers[1].Id.Should().Be(offer2.Id));
         }
 
         [Fact]
         public void not_create_a_closed_listing_if_offer_does_not_exist_in_the_listing()
         {
             // arrange
-            var offer1 = new Offer(Guid.NewGuid(),
+            var offer1 = new ReceivedOffer(Guid.NewGuid(),
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
                 SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer2 = new Offer(Guid.NewGuid(),
+            var offer2 = new ReceivedOffer(Guid.NewGuid(),
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
@@ -201,6 +249,129 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
 
             // assert
             optionalClosedListing.IsNone.Should().BeTrue();
+        }
+
+        [Fact]
+        public void have_a_Leads_property()
+        {
+            _sut.Leads.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void accept_leads()
+        {
+            var lead = Lead.Create(Owner.Create(Guid.NewGuid()), DateTimeOffset.Now);
+
+            _sut.AddLead(lead);
+
+            _sut.Leads.Count.Should().Be(1);
+        }
+
+        [Fact]
+        public void not_accept_null_leads()
+        {
+            Action action = () => _sut.AddLead(null);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void not_accept_leads_from_the_listing_owner()
+        {
+            var leadFromListingOwner = Lead.Create(_sut.Owner, DateTimeOffset.Now);
+
+            _sut.AddLead(leadFromListingOwner);
+
+            _sut.Leads.Count.Should().Be(0);
+        }
+
+        [Fact]
+        public void not_accept_leads_from_the_same_owner_more_than_once()
+        {
+            // Arrange
+            var owner = Owner.Create(Guid.NewGuid());
+            var firstLead = Lead.Create(owner, DateTimeOffset.Now.AddDays(-1));
+            var secondLead = Lead.Create(owner, DateTimeOffset.Now);
+
+            // Act
+            _sut.AddLead(firstLead);
+            _sut.AddLead(secondLead);
+
+            // Assert
+            _sut.Leads.Count.Should().Be(1);
+        }
+
+        [Fact]
+        public void have_Favorites_property()
+        {
+            _sut.Favorites.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void be_markable_as_favorite()
+        {
+            var favorite = FavoriteMark.Create(Owner.Create(Guid.NewGuid()), DateTimeOffset.UtcNow);
+
+            _sut.MarkAsFavorite(favorite);
+
+            _sut.Favorites.Count.Should().Be(1);
+        }
+
+        [Fact]
+        public void throw_exception_when_favorite_is_null()
+        {
+            Action action = () => _sut.MarkAsFavorite(null);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void not_be_markable_as_favorite_by_listing_owner()
+        {
+            var favoriteByListingOwner = FavoriteMark.Create(_sut.Owner, DateTimeOffset.UtcNow);
+
+            _sut.MarkAsFavorite(favoriteByListingOwner);
+
+            _sut.Favorites.Count.Should().Be(0);
+        }
+
+        [Fact]
+        public void not_be_markable_as_favorite_by_same_owner_more_than_once()
+        {
+            // Arrange
+            var owner = Owner.Create(Guid.NewGuid());
+            var first = FavoriteMark.Create(owner, DateTimeOffset.UtcNow);
+            var second = FavoriteMark.Create(owner, DateTimeOffset.UtcNow);
+
+            // Act
+            _sut.MarkAsFavorite(first);
+            _sut.MarkAsFavorite(second);
+
+            // Assert
+            _sut.Favorites.Count.Should().Be(1);
+        }
+
+        [Fact]
+        public void have_the_option_to_remove_previously_added_favorite_mark()
+        {
+            // Arrange
+            var favoredBy = Owner.Create(Guid.NewGuid());
+            var favorite = FavoriteMark.Create(favoredBy, DateTimeOffset.UtcNow);
+            _sut.MarkAsFavorite(favorite);
+
+            // Act
+            _sut.RemoveFavorite(favoredBy);
+
+            // Assert
+            _sut.Favorites.Count.Should().Be(0);
+        }
+
+        [Fact]
+        public void not_acceps_invalid_owners_for_favorite_mark_removal()
+        {
+            Action action = () => _sut.RemoveFavorite(null);
+
+            action.Should().Throw<ArgumentNullException>();
         }
     }
 }

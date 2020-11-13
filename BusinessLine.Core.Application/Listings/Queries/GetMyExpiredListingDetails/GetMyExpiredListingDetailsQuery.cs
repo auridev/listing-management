@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyExpiredListingDetails
+namespace Core.Application.Listings.Queries.GetMyExpiredListingDetails
 {
     public sealed class GetMyExpiredListingDetailsQuery : IGetMyExpiredListingDetailsQuery
     {

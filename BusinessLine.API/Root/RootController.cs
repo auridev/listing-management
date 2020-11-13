@@ -1,7 +1,6 @@
-﻿using BusinessLine.Core.Application;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace BusinessLine.API.Root
+namespace Root.API
 {
     [Route("api")]
     [ApiController]

@@ -1,10 +1,11 @@
-﻿using BusinessLine.Core.Application.Listings.Commands.ReceiveOffer.Factory;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Application.Listings.Commands.ReceiveOffer.Factory;
+using Core.Domain.Common;
+using Core.Domain.Listings;
+using Core.Domain.Offers;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.ReceiveOffer
+namespace Core.Application.Listings.Commands.ReceiveOffer
 {
     public sealed class ReceiveOfferCommand : IReceiveOfferCommand
     {
@@ -23,7 +24,7 @@ namespace BusinessLine.Core.Application.Listings.Commands.ReceiveOffer
             // Pre-requisites
             Option<ActiveListing> optionalActiveListing =
                 _listingRepository.FindActive(model.ListingId);
-            Offer offer = _offerFactory.Create(
+            ReceivedOffer offer = _offerFactory.Create(
                 Owner.Create(userId),
                 MonetaryValue.Create(
                     model.Value,

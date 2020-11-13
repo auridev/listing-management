@@ -3,19 +3,38 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
     public sealed class LocationDetails : IEquatable<LocationDetails>
     {
         public Alpha2Code CountryCode { get; }
-        public State State { get; }
         public City City { get; }
         public PostCode PostCode { get; }
         public Address Address { get; }
 
+        //// this is to overcome current ORM limitations
+        public State ___efCoreState { get; private set; }
+        public Option<State> State
+        {
+            get
+            {
+                return ___efCoreState == null ? Option<State>.None : ___efCoreState;
+            }
+            private set
+            {
+                value
+                    .Some(v => { 
+                        ___efCoreState = v; 
+                    })
+                    .None(() => { 
+                        ___efCoreState = null; 
+                    });
+            }
+        }
+
         private LocationDetails() { }
 
-        private LocationDetails(Alpha2Code countryCode, State state, City city, PostCode postCode, Address address)
+        private LocationDetails(Alpha2Code countryCode, Option<State> state, City city, PostCode postCode, Address address)
         {
             CountryCode = countryCode;
             State = state;
@@ -25,8 +44,8 @@ namespace BusinessLine.Core.Domain.Common
         }
 
         public static LocationDetails Create(
-            Alpha2Code countryCode, 
-            State state, 
+            Alpha2Code countryCode,
+            Option<State> state, 
             City city, 
             PostCode postCode, 
             Address address)

@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Application.Profiles.Queries.GetProfileDetails;
-using BusinessLine.Core.Application.Profiles.Queries.GetProfileList;
+﻿using Core.Application.Profiles.Queries.GetProfileDetails;
+using Core.Application.Profiles.Queries.GetProfileList;
 using System;
 using System.Collections.Generic;
 
-namespace BusinessLine.Core.Application.Profiles.Queries
+namespace Core.Application.Profiles.Queries
 {
     public interface IProfileDataService
     {

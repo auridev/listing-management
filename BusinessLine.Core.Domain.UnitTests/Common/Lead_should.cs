@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -16,15 +16,15 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         }
 
         [Fact]
-        public void have_owner_property()
+        public void have_UserInterested_property()
         {
-            _sut.Owner.Should().NotBeNull();
+            _sut.UserInterested.Should().NotBeNull();
         }
 
         [Fact]
-        public void have_CreatedDate_property()
+        public void have_DetailsSeenOn_property()
         {
-            _sut.CreatedDate.Should().BeCloseTo(DateTimeOffset.UtcNow);
+            _sut.DetailsSeenOn.Should().BeCloseTo(DateTimeOffset.UtcNow);
         }
 
         [Theory]

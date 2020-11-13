@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Application.Profiles.Queries.GetProfileList;
+﻿using Core.Application.Profiles.Queries.GetProfileList;
 using FluentAssertions;
 using Xunit;
 

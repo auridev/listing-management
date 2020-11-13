@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Application.Messages.Commands.SendMessage.Factory;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Messages;
+﻿using Core.Application.Messages.Commands.SendMessage.Factory;
+using Core.Domain.Common;
+using Core.Domain.Messages;
 using System;
 
-namespace BusinessLine.Core.Application.Messages.Commands.SendMessage
+namespace Core.Application.Messages.Commands.SendMessage
 {
     public sealed class SendMessageCommand : ISendMessageCommand
     {
@@ -23,9 +23,7 @@ namespace BusinessLine.Core.Application.Messages.Commands.SendMessage
             // Pre-requisites
             var recipient = Recipient.Create(model.Recipient);
             var subject = Subject.Create(model.Subject);
-            var messageBody = MessageBody.Create(
-                Template.Create(model.Body),
-                model.Params.Map(pair => TemplateParam.Create(pair.Key, pair.Value)));
+            var messageBody = MessageBody.Create(model.Body);
 
             // Command
             Message message = _factory.Create(recipient, subject, messageBody);

@@ -1,7 +1,7 @@
-﻿using BusinessLine.Common.Dates;
+﻿using Common.Dates;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BusinessLine.Common
+namespace Common
 {
     public static class CommonStartup
     {

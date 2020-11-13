@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Profiles;
+﻿using Core.Domain.Common;
+using Core.Domain.Profiles;
 using System;
 
 namespace BusinessLine.Core.Domain.UnitTests.TestMocks

@@ -1,11 +1,10 @@
-﻿using BusinessLine.Core.Application;
-using BusinessLine.Core.Application.Profiles.Commands;
-using BusinessLine.Persistence.Profiles;
+﻿using Core.Application.Profiles.Commands;
+using Persistence.Profiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BusinessLine.Persistence
+namespace Persistence
 {
     public static class PersistenceStartup
     {

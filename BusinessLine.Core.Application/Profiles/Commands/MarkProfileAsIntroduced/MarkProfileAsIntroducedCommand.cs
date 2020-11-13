@@ -1,10 +1,10 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Profiles;
+﻿using Core.Domain.Common;
+using Core.Domain.Profiles;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Profiles.Commands.MarkProfileAsIntroduced
+namespace Core.Application.Profiles.Commands.MarkProfileAsIntroduced
 {
     public sealed class MarkProfileAsIntroducedCommand : IMarkProfileAsIntroducedCommand
     {

@@ -1,6 +1,6 @@
-﻿using BusinessLine.Core.Application.Helpers;
+﻿using Core.Application.Helpers;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyListings
+namespace Core.Application.Listings.Queries.GetMyListings
 {
     public class GetMyListingsQueryParams : ListQueryParams
     {

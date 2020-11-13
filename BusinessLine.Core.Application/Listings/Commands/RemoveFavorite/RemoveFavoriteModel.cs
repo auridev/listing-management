@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLine.Core.Application.Listings.Commands.RemoveFavorite
+namespace Core.Application.Listings.Commands.RemoveFavorite
 {
     public class RemoveFavoriteModel
     {

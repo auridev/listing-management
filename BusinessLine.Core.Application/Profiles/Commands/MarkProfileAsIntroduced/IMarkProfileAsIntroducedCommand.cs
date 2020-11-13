@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Profiles.Commands.MarkProfileAsIntroduced
+﻿namespace Core.Application.Profiles.Commands.MarkProfileAsIntroduced
 {
     public interface IMarkProfileAsIntroducedCommand
     {

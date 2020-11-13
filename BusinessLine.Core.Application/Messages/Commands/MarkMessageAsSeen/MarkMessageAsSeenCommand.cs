@@ -1,10 +1,10 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Messages;
+﻿using Core.Domain.Common;
+using Core.Domain.Messages;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Messages.Commands.MarkMessageAsSeen
+namespace Core.Application.Messages.Commands.MarkMessageAsSeen
 {
     public sealed class MarkMessageAsSeenCommand : IMarkMessageAsSeenCommand
     {

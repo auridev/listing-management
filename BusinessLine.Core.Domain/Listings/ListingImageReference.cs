@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace BusinessLine.Core.Domain.Listings
+namespace Core.Domain.Listings
 {
     public class ListingImageReference : IEquatable<ListingImageReference>
     {

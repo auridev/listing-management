@@ -2,27 +2,28 @@
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
+    // represents the fact of a particular user (Owner) being interested in the details of a particular parent entitity
     public sealed class Lead
     {
-        public Owner Owner { get; }
-        public DateTimeOffset CreatedDate { get; }
+        public Owner UserInterested { get; }
+        public DateTimeOffset DetailsSeenOn { get; }
 
         private Lead() { }
-        private Lead(Owner owner, DateTimeOffset createdDate)
+        private Lead(Owner userInterested, DateTimeOffset detailsSeenOn)
         {
-            if (createdDate == default)
-                throw new ArgumentNullException(nameof(createdDate));
-            if (owner == null)
-                throw new ArgumentNullException(nameof(owner));
+            if (detailsSeenOn == default)
+                throw new ArgumentNullException(nameof(detailsSeenOn));
+            if (userInterested == null)
+                throw new ArgumentNullException(nameof(userInterested));
 
-            Owner = owner;
-            CreatedDate = createdDate;
+            UserInterested = userInterested;
+            DetailsSeenOn = detailsSeenOn;
         }
 
-        public static Lead Create(Owner owner, DateTimeOffset createdDate)
-            => new Lead(owner, createdDate);
+        public static Lead Create(Owner userInterested, DateTimeOffset detailsSeenOn)
+            => new Lead(userInterested, detailsSeenOn);
 
         public override bool Equals([AllowNull] object obj)
             => ValueObjectComparer<Lead>.Instance.Equals(this, obj);

@@ -1,8 +1,8 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Profiles.Commands;
-using BusinessLine.Core.Application.Profiles.Commands.MarkProfileAsIntroduced;
+﻿using Core.Application.Profiles.Commands;
+using Core.Application.Profiles.Commands.MarkProfileAsIntroduced;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Profiles;
+using Core.Domain.Profiles;
+using Common.Dates;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;

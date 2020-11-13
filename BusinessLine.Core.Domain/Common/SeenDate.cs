@@ -2,13 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
-    // Null Object for SeenDate
-    public class NotSeen : SeenDate
-    {
-        public override DateTimeOffset Value => new DateTimeOffset(DateTime.MinValue, TimeSpan.Zero);
-    }
 
     public class SeenDate : IEquatable<SeenDate>
     {
@@ -26,16 +21,11 @@ namespace BusinessLine.Core.Domain.Common
         public static SeenDate Create(DateTimeOffset? value)
         {
             if (!value.HasValue)
-                return CreateNone();
+                throw new ArgumentNullException(nameof(value));
             if(value.Value == _minValue)
-                return CreateNone();
+                throw new ArgumentException(nameof(value));
 
             return new SeenDate(value.Value);
-        }
-
-        public static SeenDate CreateNone()
-        {
-            return new NotSeen();
         }
 
         public override bool Equals([AllowNull] object obj)

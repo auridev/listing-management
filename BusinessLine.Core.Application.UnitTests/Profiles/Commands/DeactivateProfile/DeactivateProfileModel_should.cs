@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Application.Profiles.Commands.DeactivateProfile;
+﻿using Core.Application.Profiles.Commands.DeactivateProfile;
 using FluentAssertions;
 using System;
 using Xunit;

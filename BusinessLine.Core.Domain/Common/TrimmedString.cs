@@ -2,13 +2,10 @@
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
     public sealed class TrimmedString: IEquatable<TrimmedString>
     {
-        // need this for Null Object pattern
-        public static readonly TrimmedString None = new TrimmedString(string.Empty);
-
         public string Value { get; }
 
         private TrimmedString() { }

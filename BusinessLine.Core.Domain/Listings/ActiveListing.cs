@@ -1,15 +1,26 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
+using Core.Domain.Offers;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Linq;
 
-namespace BusinessLine.Core.Domain.Listings
+namespace Core.Domain.Listings
 {
     public sealed class ActiveListing : Listing
     {
         public DateTimeOffset ExpirationDate { get; }
-        public ICollection<Offer> Offers { get; } = new List<Offer>();
+
+        private readonly List<ReceivedOffer> _offers = new List<ReceivedOffer>();
+        public IReadOnlyList<ReceivedOffer> Offers => _offers.ToList();
+
+        private readonly List<Lead> _leads = new List<Lead>();
+        public IReadOnlyList<Lead> Leads => _leads.ToList();
+
+        private readonly List<FavoriteMark> _favorites = new List<FavoriteMark>();
+        public IReadOnlyList<FavoriteMark> Favorites => _favorites.ToList();
+
+        private ActiveListing() { }
 
         public ActiveListing(Guid id,
             Owner owner,
@@ -17,7 +28,7 @@ namespace BusinessLine.Core.Domain.Listings
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
-            DateTimeOffset expirationDate) 
+            DateTimeOffset expirationDate)
             : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation)
         {
             if (expirationDate == default)
@@ -38,36 +49,79 @@ namespace BusinessLine.Core.Domain.Listings
                 trimmedString);
         }
 
-        public void ReceiveOffer(Offer offer)
+        public void ReceiveOffer(ReceivedOffer offer)
         {
+            if (offer == null)
+                throw new ArgumentNullException(nameof(offer));
+
             if (Owner == offer.Owner) // ignore offers from owner of the listing 
                 return;
 
-            Offers // remove existing offers from the same owner
-                .Find(o => o.Owner == offer.Owner)
-                .IfSome(o => Offers.Remove(o));
+            _offers // remove existing offers from the same owner
+                .Find<ReceivedOffer>(o => o.Owner == offer.Owner)
+                .IfSome(o => _offers.Remove(o));
 
-            Offers.Add(offer);
+            _offers.Add(offer);
         }
 
-        public Option<ClosedListing> AcceptOffer(Offer offer, DateTimeOffset closedOn)
+        public Option<ClosedListing> AcceptOffer(ReceivedOffer offer, DateTimeOffset closedOn)
         {
-            var possibleListing = Offers
-                .Find(o => o == offer)
-                .Match(
-                    // offer found in received offers => successfully close the listing
-                    some => new ClosedListing(Id,
-                        Owner,
-                        ListingDetails,
-                        ContactDetails,
-                        LocationDetails,
-                        GeographicLocation,
-                        closedOn,
-                        some),
-                    // offer NOT found in received offers => don't close 
-                    () => Option<ClosedListing>.None);
+            if (offer == null)
+                throw new ArgumentNullException(nameof(offer));
 
-            return possibleListing;
+            // prerequisites
+            AcceptedOffer acceptedOffer = null;
+            List<RejectedOffer> rejectedOffers = new List<RejectedOffer>();
+
+            // find accepted and rejected offers
+            _offers.ForEach(o => 
+            {
+                if (o == offer)
+                    acceptedOffer = new AcceptedOffer(o.Id, o.Owner, o.MonetaryValue, o.CreatedDate);
+                else
+                    rejectedOffers.Add(new RejectedOffer(o.Id, o.Owner, o.MonetaryValue, o.CreatedDate));
+            });
+
+            if (acceptedOffer != null)
+                return new ClosedListing(Id, Owner, ListingDetails, ContactDetails, LocationDetails, GeographicLocation, closedOn, acceptedOffer, rejectedOffers);
+            else
+                return Option<ClosedListing>.None;
+        }
+
+        public void AddLead(Lead lead)
+        {
+            if (lead == null)
+                throw new ArgumentNullException(nameof(lead));
+
+            if (Owner == lead.UserInterested) // ignore leads from owner of the listing 
+                return;
+
+            _leads
+                .Find<Lead>(l => l.UserInterested == lead.UserInterested)
+                .IfNone(() => _leads.Add(lead));
+        }
+
+        public void MarkAsFavorite(FavoriteMark favorite)
+        {
+            if (favorite == null)
+                throw new ArgumentNullException(nameof(favorite));
+
+            if (Owner == favorite.FavoredBy) // ignore favorite marks from owner of the listing 
+                return;
+
+            _favorites
+                .Find<FavoriteMark>(f => f.FavoredBy == favorite.FavoredBy)
+                .IfNone(() => _favorites.Add(favorite));
+        }
+
+        public void RemoveFavorite(Owner favoredBy)
+        {
+            if (favoredBy == null)
+                throw new ArgumentNullException(nameof(favoredBy));
+
+            _favorites
+               .Find<FavoriteMark>(f => f.FavoredBy == favoredBy)
+               .IfSome(f => _favorites.Remove(f));
         }
     }
 }

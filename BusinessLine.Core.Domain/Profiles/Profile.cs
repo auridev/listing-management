@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace BusinessLine.Core.Domain.Profiles
+namespace Core.Domain.Profiles
 {
     public abstract class Profile : IEquatable<Profile>
     {

@@ -1,7 +1,7 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Listings.Commands.ReceiveOffer.Factory;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Application.Listings.Commands.ReceiveOffer.Factory;
+using Core.Domain.Common;
+using Core.Domain.Offers;
+using Common.Dates;
 using FluentAssertions;
 using Moq.AutoMock;
 using System;
@@ -31,11 +31,11 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReceiveOffer
             var owner = Owner.Create(Guid.NewGuid());
             var monetaryValue = MonetaryValue.Create(2M, CurrencyCode.Create("AAA"));
 
-            Offer offer = _sut.Create(owner, monetaryValue);
+            ReceivedOffer offer = _sut.Create(owner, monetaryValue);
 
             offer.Should().NotBeNull();
             offer.Id.Should().NotBeEmpty();
-            offer.SeenDate.Should().NotBeNull();
+            offer.SeenDate.IsNone.Should().BeTrue();
         }
     }
 }

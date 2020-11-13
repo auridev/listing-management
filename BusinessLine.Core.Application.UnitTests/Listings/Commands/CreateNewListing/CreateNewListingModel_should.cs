@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Application.Listings.Commands.CreateNewListing;
+﻿using Core.Application.Listings.Commands.CreateNewListing;
 using FluentAssertions;
 using Xunit;
 

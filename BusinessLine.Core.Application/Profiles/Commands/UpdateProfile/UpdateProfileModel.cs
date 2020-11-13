@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Profiles.Commands.UpdateProfile
+﻿namespace Core.Application.Profiles.Commands.UpdateProfile
 {
     public sealed class UpdateProfileModel
     {

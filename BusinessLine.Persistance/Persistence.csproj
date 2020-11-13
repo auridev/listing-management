@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessLine.Core.Application\BusinessLine.Core.Application.csproj" />
-    <ProjectReference Include="..\BusinessLine.Core.Domain\BusinessLine.Core.Domain.csproj" />
+    <ProjectReference Include="..\BusinessLine.Core.Application\Core.Application.csproj" />
+    <ProjectReference Include="..\BusinessLine.Core.Domain\Core.Domain.csproj" />
   </ItemGroup>
 
 </Project>

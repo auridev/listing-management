@@ -1,9 +1,6 @@
-﻿using BusinessLine.Core.Application.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Core.Application.Helpers;
 
-namespace BusinessLine.Core.Application.Messages.Queries.GetMyMessages
+namespace Core.Application.Messages.Queries.GetMyMessages
 {
     public class GetMyMessagesQueryParams : ListQueryParams
     {

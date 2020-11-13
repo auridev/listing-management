@@ -1,8 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
+using Core.Domain.Listings;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.RemoveFavorite
+namespace Core.Application.Listings.Commands.RemoveFavorite
 {
     public sealed class RemoveFavoriteCommand : IRemoveFavoriteCommand
     {
@@ -17,18 +18,19 @@ namespace BusinessLine.Core.Application.Listings.Commands.RemoveFavorite
         public void Execute(Guid userId, RemoveFavoriteModel model)
         {
             // Pre-requisites
-            Option<FavoriteUserListing> optionalFavoriteListing =
-                _repository.FindFavorite(userId, model.ListingId);
+            Owner favoredBy =
+                Owner.Create(userId);
+            Option<ActiveListing> optionalActiveListing =
+                _repository.FindActive(model.ListingId);
 
             // Command
-            optionalFavoriteListing
-                .Some(listing =>
+            optionalActiveListing
+                .IfSome(listing =>
                 {
-                    _repository.Delete(listing);
+                    listing.RemoveFavorite(favoredBy);
 
                     _repository.Save();
-                })
-                .None(() => { });
+                });
         }
     }
 }

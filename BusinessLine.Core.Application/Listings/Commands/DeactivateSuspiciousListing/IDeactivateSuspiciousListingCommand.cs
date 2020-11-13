@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Listings.Commands.DeactivateSuspiciousListing
+﻿namespace Core.Application.Listings.Commands.DeactivateSuspiciousListing
 {
     public interface IDeactivateSuspiciousListingCommand
     {

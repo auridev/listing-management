@@ -1,6 +1,6 @@
-﻿using BusinessLine.Core.Application.Listings.Queries;
-using BusinessLine.Core.Application.Listings.Queries.Common;
-using BusinessLine.Core.Application.Listings.Queries.GetMyActiveListingDetails;
+﻿using Core.Application.Listings.Queries;
+using Core.Application.Listings.Queries.Common;
+using Core.Application.Listings.Queries.GetMyActiveListingDetails;
 using FluentAssertions;
 using LanguageExt;
 using Moq;

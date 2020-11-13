@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLine.Core.Application.Messages.Queries.GetMyMessages
+namespace Core.Application.Messages.Queries.GetMyMessages
 {
     public class MyMessageModel
     {

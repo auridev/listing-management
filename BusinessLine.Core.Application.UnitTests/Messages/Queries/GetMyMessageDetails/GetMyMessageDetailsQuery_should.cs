@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Application.Messages.Queries;
-using BusinessLine.Core.Application.Messages.Queries.GetMyMessageDetails;
+﻿using Core.Application.Messages.Queries;
+using Core.Application.Messages.Queries.GetMyMessageDetails;
 using FluentAssertions;
 using LanguageExt;
 using Moq;

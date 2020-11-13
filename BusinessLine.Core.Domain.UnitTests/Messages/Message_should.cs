@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Messages;
+﻿using Core.Domain.Common;
+using Core.Domain.Messages;
 using FluentAssertions;
 using LanguageExt;
 using System;
@@ -14,12 +14,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Messages
         private static readonly Guid _id = Guid.NewGuid();
         private static readonly Recipient _recipient = Recipient.Create(Guid.NewGuid());
         private static readonly Subject _subject = Subject.Create("my subject");
-        private static readonly MessageBody _messageBody = MessageBody.Create(
-                Template.Create("my first message"),
-                new List<TemplateParam>()
-                {
-                    TemplateParam.Create("{id}", "123")
-                });
+        private static readonly MessageBody _messageBody = MessageBody.Create("my first message");
         private static readonly SeenDate _seenDate = SeenDate.Create(DateTimeOffset.UtcNow.AddDays(-1));
         private static readonly DateTimeOffset _createdDate = DateTimeOffset.UtcNow;
 
@@ -56,7 +51,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Messages
         [Fact]
         public void have_optional_SeenDate_property()
         {
-            _sut.SeenDate.Value.Should().BeCloseTo(DateTimeOffset.UtcNow.AddDays(-1), 5_000);
+            _sut.SeenDate.Some(seenDate => seenDate.Value.Should().BeCloseTo(DateTimeOffset.UtcNow.AddDays(-1), 5_000));
         }
 
         [Fact]
@@ -77,10 +72,10 @@ namespace BusinessLine.Core.Domain.UnitTests.Messages
         [Theory]
         [MemberData(nameof(InvalidArguments))]
         public void thrown_an_exception_during_creation_if_arguments_are_not_valid(
-            Guid id, 
-            Recipient recipient, 
-            Subject subject, 
-            MessageBody messageBody, 
+            Guid id,
+            Recipient recipient,
+            Subject subject,
+            MessageBody messageBody,
             DateTimeOffset createdDate)
         {
             Action action = () => new Message(id, recipient, subject, messageBody, _seenDate, createdDate);
@@ -108,8 +103,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Messages
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = (object) new Message(id, Recipient.Create(Guid.NewGuid()), Subject.Create("my subject 111"), _messageBody, _seenDate, _createdDate);
-            var second = (object) new Message(id, Recipient.Create(Guid.NewGuid()), Subject.Create("my subject 222"), _messageBody, _seenDate, _createdDate);
+            var first = (object)new Message(id, Recipient.Create(Guid.NewGuid()), Subject.Create("my subject 111"), _messageBody, _seenDate, _createdDate);
+            var second = (object)new Message(id, Recipient.Create(Guid.NewGuid()), Subject.Create("my subject 222"), _messageBody, _seenDate, _createdDate);
 
             // act
             var equals = first.Equals(second);
@@ -168,11 +163,11 @@ namespace BusinessLine.Core.Domain.UnitTests.Messages
         [Fact]
         public void markable_as_seen_by_recipient()
         {
-            var message = new Message(_id, _recipient, _subject, _messageBody, SeenDate.CreateNone(), _createdDate);
+            var message = new Message(_id, _recipient, _subject, _messageBody, Option<SeenDate>.None, _createdDate);
 
             message.HasBeenSeen(SeenDate.Create(DateTimeOffset.UtcNow.AddDays(-3)));
 
-            message.SeenDate.Value.Should().BeCloseTo(DateTimeOffset.UtcNow.AddDays(-3));
+            message.SeenDate.Some(seenDate => seenDate.Value.Should().BeCloseTo(DateTimeOffset.UtcNow.AddDays(-3)));
         }
     }
 }

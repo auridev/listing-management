@@ -1,16 +1,10 @@
-﻿using BusinessLine.Core.Domain.Extensions;
-using LanguageExt;
+﻿using Core.Domain.Extensions;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
-    // Null Object for State
-    public class NoState : State
-    {
-        public override TrimmedString Name => TrimmedString.None;
-    }
     public class State : IEquatable<State>
     {
         public virtual TrimmedString Name { get; }
@@ -22,16 +16,7 @@ namespace BusinessLine.Core.Domain.Common
             Name = name;
         }
         public static State Create(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return CreateNone();
-
-            return new State((TrimmedString)name.CapitalizeWords());
-        }
-        public static State CreateNone()
-        {
-            return new NoState();
-        }
+            => new State((TrimmedString)name.CapitalizeWords());
 
         public override bool Equals([AllowNull] object obj)
             => ValueObjectComparer<State>.Instance.Equals(this, obj);

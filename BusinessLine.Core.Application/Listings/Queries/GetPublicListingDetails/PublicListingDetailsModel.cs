@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetPublicListingDetails
+namespace Core.Application.Listings.Queries.GetPublicListingDetails
 {
     public class PublicListingDetailsModel
     {

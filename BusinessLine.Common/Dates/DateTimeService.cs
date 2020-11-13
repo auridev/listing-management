@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Common.Dates
+namespace Common.Dates
 {
     public class DateTimeService : IDateTimeService
     {

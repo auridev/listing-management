@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Listings.Commands.AcceptOffer
+﻿namespace Core.Application.Listings.Commands.AcceptOffer
 {
     public interface IAcceptOfferCommand
     {

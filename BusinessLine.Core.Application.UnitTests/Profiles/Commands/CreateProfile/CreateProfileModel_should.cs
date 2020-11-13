@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Application.Profiles.Commands.CreateProfile;
+﻿using Core.Application.Profiles.Commands.CreateProfile;
 using FluentAssertions;
 using Xunit;
 

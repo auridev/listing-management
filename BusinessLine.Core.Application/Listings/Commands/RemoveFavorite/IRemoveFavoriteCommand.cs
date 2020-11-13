@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.RemoveFavorite
+namespace Core.Application.Listings.Commands.RemoveFavorite
 {
     public interface IRemoveFavoriteCommand
     {

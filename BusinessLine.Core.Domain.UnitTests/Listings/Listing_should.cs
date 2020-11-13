@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Common;
+using Core.Domain.Listings;
 using BusinessLine.Core.Domain.UnitTests.TestMocks;
 using FluentAssertions;
 using System;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.MarkNewListingAsSuspicious
+namespace Core.Application.Listings.Commands.MarkNewListingAsSuspicious
 {
     public class MarkNewListingAsSuspiciousModel
     {

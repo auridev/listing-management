@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Listings;
 using FluentAssertions;
 using System;
 using Xunit;

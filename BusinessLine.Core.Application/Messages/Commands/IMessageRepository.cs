@@ -1,8 +1,8 @@
-﻿using BusinessLine.Core.Domain.Messages;
+﻿using Core.Domain.Messages;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Messages.Commands
+namespace Core.Application.Messages.Commands
 {
     public interface IMessageRepository
     {
