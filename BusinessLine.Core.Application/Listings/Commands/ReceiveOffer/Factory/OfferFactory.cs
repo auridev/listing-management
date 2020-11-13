@@ -1,10 +1,10 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Common;
+using Core.Domain.Offers;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.ReceiveOffer.Factory
+namespace Core.Application.Listings.Commands.ReceiveOffer.Factory
 {
     public sealed class OfferFactory : IOfferFactory
     {
@@ -16,12 +16,12 @@ namespace BusinessLine.Core.Application.Listings.Commands.ReceiveOffer.Factory
                 throw new ArgumentNullException(nameof(dateTimeService));
         }
 
-        public Offer Create(Owner owner, MonetaryValue monetaryValue)
+        public ReceivedOffer Create(Owner owner, MonetaryValue monetaryValue)
         {
-            DateTimeOffset nowInUtc = 
+            DateTimeOffset nowInUtc =
                 _dateTimeService.GetCurrentUtcDateTime();
 
-            return new Offer(Guid.NewGuid(), owner, monetaryValue, nowInUtc, SeenDate.CreateNone());
+            return new ReceivedOffer(Guid.NewGuid(), owner, monetaryValue, nowInUtc, Option<SeenDate>.None);
         }
     }
 }

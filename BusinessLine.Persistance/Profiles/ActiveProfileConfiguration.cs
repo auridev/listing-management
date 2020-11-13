@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Profiles;
+﻿using Core.Domain.Common;
+using Core.Domain.Profiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BusinessLine.Persistence.Profiles
+namespace Persistence.Profiles
 {
     public class ActiveProfileConfiguration : IEntityTypeConfiguration<ActiveProfile>
     {
@@ -49,16 +49,18 @@ namespace BusinessLine.Persistence.Profiles
                         });
 
                     contactDetails
-                        .Property(p => p.Company)
-                        .HasColumnName("company")
-                        .HasMaxLength(50)
-                        .HasConversion(domain => domain.Name.Value, db => Company.Create(db));
-
-                    contactDetails
                         .Property(p => p.Phone)
                         .HasColumnName("phone_number")
                         .HasMaxLength(25)
                         .HasConversion(domain => domain.Number, db => Phone.Create(db));
+
+                    contactDetails
+                        .Property(p => p.___efCoreCompany)
+                        .HasColumnName("company")
+                        .HasMaxLength(50)
+                        .HasConversion(domain => domain.Name.Value, db => Company.Create(db));
+                    contactDetails
+                        .Ignore(cd => cd.Company);
                 });
 
             builder.OwnsOne(
@@ -72,28 +74,30 @@ namespace BusinessLine.Persistence.Profiles
                         .HasConversion(domain => domain.Value, db => Alpha2Code.Create(db));
 
                      locationDetails
-                        .Property(p => p.State)
-                        .HasColumnName("state")
-                        .HasMaxLength(25)
-                        .HasConversion(domain => domain.Name.Value, db => State.Create(db));
-
-                     locationDetails
                         .Property(p => p.City)
                         .HasColumnName("city")
-                        .HasMaxLength(25)
+                        .HasMaxLength(50)
                         .HasConversion(domain => domain.Name.Value, db => City.Create(db));
 
                      locationDetails
                         .Property(p => p.PostCode)
                         .HasColumnName("post_code")
-                        .HasMaxLength(10)
+                        .HasMaxLength(15)
                         .HasConversion(domain => domain.Value.Value, db => PostCode.Create(db));
 
                      locationDetails
                         .Property(p => p.Address)
                         .HasColumnName("address")
-                        .HasMaxLength(100)
+                        .HasMaxLength(250)
                         .HasConversion(domain => domain.Value.Value, db => Address.Create(db));
+
+                     locationDetails
+                        .Property(p => p.___efCoreState)
+                        .HasColumnName("state")
+                        .HasMaxLength(25)
+                        .HasConversion(domain => domain.Name.Value, db => State.Create(db));
+                     locationDetails
+                        .Ignore(ld => ld.State);
                  });
 
             builder.OwnsOne(
@@ -133,10 +137,12 @@ namespace BusinessLine.Persistence.Profiles
                  });
 
             builder
-                .Property(p => p.IntroductionSeenOn)
+                .Property(p => p.___efCoreSeenDate)
                 .HasColumnName("introduction_seen_on")
-                .HasConversion(p => p.Value, p => SeenDate.Create(p))
-                .IsRequired(true);
+                .HasConversion(domain => domain.Value, db => SeenDate.Create(db))
+                .IsRequired(false);
+            builder
+                .Ignore(b => b.IntroductionSeenOn);
         }
     }
 }

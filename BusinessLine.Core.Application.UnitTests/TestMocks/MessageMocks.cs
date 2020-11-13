@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Messages;
+﻿using Core.Domain.Common;
+using Core.Domain.Messages;
 using LanguageExt;
 using System;
 
@@ -12,7 +12,7 @@ namespace BusinessLine.Core.Application.UnitTests.TestMocks
           ValueObjectMocks.Recipient,
           ValueObjectMocks.Subject,
           ValueObjectMocks.MessageBody,
-          SeenDate.CreateNone(),
+          Option<SeenDate>.None,
           DateTimeOffset.UtcNow);
     }
 }

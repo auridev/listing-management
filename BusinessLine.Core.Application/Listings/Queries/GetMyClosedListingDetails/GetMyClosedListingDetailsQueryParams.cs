@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyClosedListingDetails
+namespace Core.Application.Listings.Queries.GetMyClosedListingDetails
 {
     public class GetMyClosedListingDetailsQueryParams
     {

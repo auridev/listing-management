@@ -11,7 +11,6 @@
     <PackageReference Include="LanguageExt.Core" Version="3.4.15" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="Moq" Version="4.14.5" />
-    <PackageReference Include="Moq.AutoMock" Version="2.0.1" />
     <PackageReference Include="U2U.ValueObjectComparers" Version="2.2.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
@@ -25,9 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessLine.Common\BusinessLine.Common.csproj" />
-    <ProjectReference Include="..\BusinessLine.Core.Application\BusinessLine.Core.Application.csproj" />
-    <ProjectReference Include="..\BusinessLine.Core.Domain\BusinessLine.Core.Domain.csproj" />
+    <ProjectReference Include="..\BusinessLine.Common\Common.csproj" />
   </ItemGroup>
 
 </Project>

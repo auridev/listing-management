@@ -1,11 +1,12 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Common;
+using Core.Domain.Listings;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.AddLead
+namespace Core.Application.Listings.Commands.AddLead
 {
+    //marks an active listing seen by a user
     public sealed class AddLeadCommand : IAddLeadCommand
     {
         private readonly IListingRepository _repository;
@@ -24,7 +25,7 @@ namespace BusinessLine.Core.Application.Listings.Commands.AddLead
             // Pre-requisites
             DateTimeOffset createdDate =
                 _service.GetCurrentUtcDateTime();
-            Owner owner =
+            Owner userInterested =
                 Owner.Create(userId);
             Option<ActiveListing> optionalActiveListing =
                 _repository.FindActive(model.ListingId);
@@ -33,9 +34,9 @@ namespace BusinessLine.Core.Application.Listings.Commands.AddLead
             optionalActiveListing
                 .Some(listing =>
                 {
-                    var lead = Lead.Create(owner, createdDate);
+                    var lead = Lead.Create(userInterested, createdDate);
 
-                    _repository.Add(lead);
+                    listing.AddLead(lead);
 
                     _repository.Save();
                 })

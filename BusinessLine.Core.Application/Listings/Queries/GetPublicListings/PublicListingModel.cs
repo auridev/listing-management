@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetPublicListings
+namespace Core.Application.Listings.Queries.GetPublicListings
 {
     public class PublicListingModel
     {

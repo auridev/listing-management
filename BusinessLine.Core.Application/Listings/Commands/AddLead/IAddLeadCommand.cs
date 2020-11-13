@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.AddLead
+namespace Core.Application.Listings.Commands.AddLead
 {
     public interface IAddLeadCommand
     {

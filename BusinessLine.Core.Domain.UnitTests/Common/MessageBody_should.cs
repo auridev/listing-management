@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -9,45 +9,24 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
     public class MessageBody_should
     {
         private readonly MessageBody _sut;
-        private static readonly ICollection<TemplateParam> _params = new List<TemplateParam>()
-        {
-            TemplateParam.Create("{id}", "123"),
-            TemplateParam.Create("{name}", "AAA")
-        };
-        private static readonly Template _template = Template.Create("message text");
+
 
         public MessageBody_should()
         {
-            _sut = MessageBody.Create(_template, _params);
+            _sut = MessageBody.Create("I want to dance with somebody");
         }
 
         [Fact]
-        public void have_Template_property()
+        public void have_Content_property()
         {
-            _sut.Template.Should().Be(_template);
+            _sut.Content.Should().Be("I want to dance with somebody");
         }
 
         [Fact]
-        public void have_Params_property()
+        public void be_treated_as_equal_using_generic_equals_method_if_contents_match()
         {
-            _sut.Params.Should().BeEquivalentTo(_params);
-        }
-
-        [Fact]
-        public void be_treated_as_equal_using_generic_equals_method_if_templates_match()
-        {
-            var first = MessageBody.Create(
-                Template.Create("qwerty"),
-                new TemplateParam[]
-                {
-                    TemplateParam.Create("{id}", "123")
-                });
-            var second = MessageBody.Create(
-                Template.Create("qwerty"),
-                new TemplateParam[]
-                {
-                    TemplateParam.Create("{name}", "___")
-                });
+            var first = MessageBody.Create("aaaa");
+            var second = MessageBody.Create("aaaa");
 
             var equals = first.Equals(second);
 
@@ -55,20 +34,10 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         }
 
         [Fact]
-        public void be_treated_as_equal_using_object_equals_method_if_templates_match()
+        public void be_treated_as_equal_using_object_equals_method_if_contents_match()
         {
-            var first = (object)MessageBody.Create(
-                Template.Create("qwerty"),
-                new TemplateParam[]
-                {
-                    TemplateParam.Create("{id}", "123")
-                });
-            var second = (object)MessageBody.Create(
-                Template.Create("qwerty"),
-                new TemplateParam[]
-                {
-                    TemplateParam.Create("{name}", "___")
-                });
+            var first = (object) MessageBody.Create("bb");
+            var second = (object) MessageBody.Create("bb");
 
             var equals = first.Equals(second);
 
@@ -76,20 +45,10 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         }
 
         [Fact]
-        public void be_treated_as_equal_using_the_equals_operator_if_templates_match()
+        public void be_treated_as_equal_using_the_equals_operator_if_contents_match()
         {
-            var first = MessageBody.Create(
-                Template.Create("qwerty"),
-                new TemplateParam[]
-                {
-                    TemplateParam.Create("{id}", "123")
-                });
-            var second = MessageBody.Create(
-                Template.Create("qwerty"),
-                new TemplateParam[]
-                {
-                    TemplateParam.Create("{name}", "___")
-                });
+            var first = MessageBody.Create("cccccc");
+            var second = MessageBody.Create("cccccc");
 
             var equals = (first == second);
 
@@ -97,20 +56,10 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         }
 
         [Fact]
-        public void be_treated_as_not_equal_using_the_not_equals_operator_if_templates_dont_match()
+        public void be_treated_as_not_equal_using_the_not_equals_operator_if_contents_dont_match()
         {
-            var first = MessageBody.Create(
-                Template.Create("qwerty"),
-                new TemplateParam[]
-                {
-                    TemplateParam.Create("{id}", "123")
-                });
-            var second = MessageBody.Create(
-                Template.Create("aaaaa"),
-                new TemplateParam[]
-                {
-                    TemplateParam.Create("{id}", "123")
-                });
+            var first = MessageBody.Create("1");
+            var second = MessageBody.Create("2");
 
             var nonEquals = (first != second);
 
@@ -119,17 +68,20 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
 
         [Theory]
         [MemberData(nameof(InvalidArguments))]
-        public void throw_an_exception_during_creation_if_value_is_not_valid(Template template, TemplateParam[] templateParams)
+        public void throw_an_exception_during_creation_if_value_is_not_valid(string content)
         {
-            Action createAction = () => MessageBody.Create(template, templateParams);
+            Action createAction = () => MessageBody.Create(content);
 
             createAction.Should().Throw<ArgumentException>();
         }
 
         public static IEnumerable<object[]> InvalidArguments => new List<object[]>
         {
-            new object[] { null, null },
-            new object[] { null, _params },
+            new object[] { null },
+            new object[] { "" },
+            new object[] { default },
+            new object[] { string.Empty },
+            new object[] { "   " }
         };
     }
 }

@@ -1,7 +1,6 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using FluentAssertions;
 using Xunit;
-
 
 namespace BusinessLine.Core.Domain.UnitTests.Common
 {
@@ -12,13 +11,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         {
             var company = Company.Create("some name");
             company.Name.Value.Should().Be("some name");
-        }
-
-        [Fact]
-        public void be_NoCompany_if_name_is_not_valid()
-        {
-            var company = Company.Create(string.Empty);
-            company.Should().BeOfType(typeof(NoCompany));
         }
 
         [Fact]
@@ -52,22 +44,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
             var nonEquals = (first != second);
 
             nonEquals.Should().BeTrue();
-        }
-
-        [Fact]
-        public void have_NoCompany_with_default_Name_value()
-        {
-            var noCompany = Company.Create(string.Empty);
-
-            noCompany.Name.Should().Be(TrimmedString.None);
-        }
-
-        [Fact]
-        public void have_CreateNone_for_explicit_NoCompany_creation()
-        {
-            var company = Company.CreateNone();
-
-            company.Should().BeOfType(typeof(NoCompany));
         }
     }
 }

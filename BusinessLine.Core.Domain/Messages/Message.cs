@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace BusinessLine.Core.Domain.Messages
+namespace Core.Domain.Messages
 {
     public sealed class Message : IEquatable<Message>
     {
@@ -11,14 +11,38 @@ namespace BusinessLine.Core.Domain.Messages
         public Recipient Recipient { get; }
         public Subject Subject { get; }
         public MessageBody Body { get; }
-        public SeenDate SeenDate { get; private set; }
         public DateTimeOffset CreatedDate { get; }
+
+        // due to ORM limitations
+        public SeenDate ___efCoreSeenDate { get; private set; }
+        public Option<SeenDate> SeenDate
+        {
+            get
+            {
+                return ___efCoreSeenDate == null ? Option<SeenDate>.None : ___efCoreSeenDate;
+            }
+            private set
+            {
+                value
+                    .Some(v =>
+                    {
+                        ___efCoreSeenDate = v;
+                    })
+                    .None(() =>
+                    {
+                        ___efCoreSeenDate = null;
+                    });
+            }
+        }
+
+
+        private Message() { }
 
         public Message(Guid id, 
             Recipient recipient, 
             Subject subject, 
             MessageBody messageBody,
-            SeenDate seenDate,
+            Option<SeenDate> seenDate,
             DateTimeOffset createdDate)
         {
             if (id == default)

@@ -1,6 +1,6 @@
-﻿using BusinessLine.Core.Application.Helpers;
+﻿using Core.Application.Helpers;
 
-namespace BusinessLine.Core.Application.Profiles.Queries.GetProfileList
+namespace Core.Application.Profiles.Queries.GetProfileList
 {
     public class GetProfileListQueryParams : ListQueryParams
     {

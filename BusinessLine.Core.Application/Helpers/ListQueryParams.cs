@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Helpers
+﻿namespace Core.Application.Helpers
 {
     public class ListQueryParams
     {

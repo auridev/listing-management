@@ -1,16 +1,9 @@
-﻿using LanguageExt;
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
-    // Null Object for Company
-    public class NoCompany : Company
-    {
-        public override TrimmedString Name => TrimmedString.None;
-    }
-
     public class Company : IEquatable<Company>
     {
         public virtual TrimmedString Name { get; }
@@ -23,16 +16,7 @@ namespace BusinessLine.Core.Domain.Common
         }
 
         public static Company Create(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return CreateNone();
-
-            return new Company((TrimmedString)name);
-        }
-        public static Company CreateNone()
-        {
-            return new NoCompany();
-        }
+            => new Company((TrimmedString)name);
 
         public override bool Equals([AllowNull] object obj)
             => ValueObjectComparer<Company>.Instance.Equals(this, obj);

@@ -1,7 +1,7 @@
-﻿using BusinessLine.Core.Application.Listings.Queries.Common;
+﻿using Core.Application.Listings.Queries.Common;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyNewListingDetails
+namespace Core.Application.Listings.Queries.GetMyNewListingDetails
 {
     public class MyNewListingDetailsModel : ListingDetailsModel
     {

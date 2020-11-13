@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Application.Helpers;
+﻿using Core.Application.Helpers;
 using FluentAssertions;
 using Xunit;
 

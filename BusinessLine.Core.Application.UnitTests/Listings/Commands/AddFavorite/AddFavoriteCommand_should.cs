@@ -1,8 +1,8 @@
-﻿using BusinessLine.Core.Application.Listings.Commands;
-using BusinessLine.Core.Application.Listings.Commands.AddFavorite;
+﻿using Core.Application.Listings.Commands;
+using Core.Application.Listings.Commands.AddFavorite;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+using Core.Domain.Listings;
+using Common.Dates;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -34,6 +34,11 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AddFavorite
                 .Setup(r => r.FindActive(_listingId))
                 .Returns(Option<ActiveListing>.Some(_activeListing));
 
+            _mocker
+                .GetMock<IDateTimeService>()
+                .Setup(r => r.GetCurrentUtcDateTime())
+                .Returns(DateTimeOffset.UtcNow);
+
             _sut = _mocker.CreateInstance<AddFavoriteCommand>();
         }
 
@@ -47,15 +52,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AddFavorite
                 .Verify(r => r.FindActive(_listingId), Times.Once);
         }
 
-        [Fact]
-        public void add_favorite_listing_to_repo()
-        {
-            _sut.Execute(_userId, _model);
-
-            _mocker
-                .GetMock<IListingRepository>()
-                .Verify(r => r.Add(It.IsAny<FavoriteUserListing>()), Times.Once);
-        }
 
         [Fact]
         public void save_changes_to_repo()
@@ -80,25 +76,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AddFavorite
             _sut.Execute(_userId, _model);
 
             // assert
-            CheckMethodsWerentCalled();
-        }
-
-        [Fact]
-        public void do_nothing_if_listing_and_favorite_listing_have_same_owner() // i.e. someone's marking their own listings
-        {
-            var sameUserId = Guid.Parse("a976bed2-0340-4408-b501-5334d509f11e");
-
-            _sut.Execute(sameUserId, _model);
-
-            // assert
-            CheckMethodsWerentCalled();
-        }
-
-        private void CheckMethodsWerentCalled()
-        {
-            _mocker
-                .GetMock<IListingRepository>()
-                .Verify(r => r.Add(It.IsAny<FavoriteUserListing>()), Times.Never);
             _mocker
                 .GetMock<IListingRepository>()
                 .Verify(r => r.Save(), Times.Never);

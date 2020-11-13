@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using FluentAssertions;
 using LanguageExt;
 using Xunit;
@@ -26,7 +26,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
         [Fact]
         public void have_Company_property()
         {
-            _sut.Company.Name.ToString().Should().Be("cccc");
+            _sut.Company.Some(name => name.ToString().Should().Be("cccc"));
         }
 
         [Fact]
@@ -41,12 +41,11 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
             var contactDetails = ContactDetails.Create
             (
                 PersonName.Create("bob", "marley"),
-                Company.CreateNone(),
+                Option<Company>.None,
                 Phone.Create("333-11-444-555-666")
             );
 
-            contactDetails.Company.Should().BeOfType(typeof(NoCompany));
-            contactDetails.Company.Name.Should().Be(TrimmedString.None);
+            contactDetails.Company.IsNone.Should().BeTrue();
         }
 
         [Fact]
@@ -76,13 +75,13 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
             var first = ContactDetails.Create
             (
                 PersonName.Create("han", "solo"),
-                Company.CreateNone(),
+                Company.Create("Rebelion"),
                 Phone.Create("999-11-222-111-111")
             );
             var second = ContactDetails.Create
             (
                 PersonName.Create("han", "solo"),
-                Company.CreateNone(),
+                Company.Create("Rebelion"),
                 Phone.Create("999-11-222-111-111")
             );
 
@@ -97,7 +96,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
             var first = ContactDetails.Create
             (
                 PersonName.Create("han", "solo"),
-                Company.CreateNone(),
+                Company.Create("Empire"),
                 Phone.Create("999-11-222-111-111")
             );
             var second = ContactDetails.Create

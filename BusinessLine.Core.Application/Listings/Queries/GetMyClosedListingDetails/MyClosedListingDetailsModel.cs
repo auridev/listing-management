@@ -1,7 +1,7 @@
-﻿using BusinessLine.Core.Application.Listings.Queries.Common;
+﻿using Core.Application.Listings.Queries.Common;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyClosedListingDetails
+namespace Core.Application.Listings.Queries.GetMyClosedListingDetails
 {
     public class MyClosedListingDetailsModel : ListingDetailsModel
     {

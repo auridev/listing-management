@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -85,22 +85,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Common
             var nonEquals = first != (second);
 
             nonEquals.Should().BeTrue();
-        }
-
-        [Fact]
-        public void have_a_static_None_property()
-        {
-            var none = TrimmedString.None;
-
-            none.Should().NotBeNull();
-        }
-
-        [Fact]
-        public void have_None_with_value_of_empty()
-        {
-            var none = TrimmedString.None;
-
-            none.Value.Should().Be(string.Empty);
         }
     }
 }

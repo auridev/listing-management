@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.AcceptOffer
+namespace Core.Application.Listings.Commands.AcceptOffer
 {
     public class AcceptOfferModel
     {

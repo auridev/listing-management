@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Messages.Commands.MarkMessageAsSeen
+﻿namespace Core.Application.Messages.Commands.MarkMessageAsSeen
 {
     public interface IMarkMessageAsSeenCommand
     {

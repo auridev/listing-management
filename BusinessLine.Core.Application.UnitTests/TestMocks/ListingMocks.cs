@@ -1,5 +1,6 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Common;
+using Core.Domain.Listings;
+using Core.Domain.Offers;
 using System;
 
 namespace BusinessLine.Core.Application.UnitTests.TestMocks
@@ -44,21 +45,21 @@ namespace BusinessLine.Core.Application.UnitTests.TestMocks
             ValueObjectMocks.GeographicLocation,
             DateTimeOffset.UtcNow);
 
-        public static Offer Offer_1 = new Offer(
+        public static ReceivedOffer Offer_1 = new ReceivedOffer(
             Guid.Parse("29dcb8ec-2c90-4cfc-8c11-fc5c49d9a43b"),
             Owner.Create(Guid.NewGuid()),
             MonetaryValue.Create(12.5M, CurrencyCode.Create("ASD")),
             DateTimeOffset.UtcNow,
             SeenDate.Create(DateTimeOffset.UtcNow));
 
-        public static Offer Offer_2 = new Offer(
+        public static ReceivedOffer Offer_2 = new ReceivedOffer(
             Guid.Parse("2e565fb4-3a62-48ff-b040-bd30397521ce"),
             Owner.Create(Guid.NewGuid()),
             MonetaryValue.Create(87.2M, CurrencyCode.Create("ASD")),
             DateTimeOffset.UtcNow,
             SeenDate.Create(DateTimeOffset.UtcNow));
 
-        public static Offer Offer_3 = new Offer(
+        public static ReceivedOffer Offer_3 = new ReceivedOffer(
             Guid.Parse("2bfd4922-a20a-4b6a-8ea5-a0450bb5c6eb"),
             Owner.Create(Guid.NewGuid()),
             MonetaryValue.Create(3M, CurrencyCode.Create("ASD")),

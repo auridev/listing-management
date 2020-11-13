@@ -10,8 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessLine.Common\BusinessLine.Common.csproj" />
-    <ProjectReference Include="..\BusinessLine.Core.Domain\BusinessLine.Core.Domain.csproj" />
+    <ProjectReference Include="..\BusinessLine.Common\Common.csproj" />
+    <ProjectReference Include="..\BusinessLine.Core.Domain\Core.Domain.csproj" />
   </ItemGroup>
 
 </Project>

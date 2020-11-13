@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessLine.Core.Application.Messages.Queries.GetMyMessages
+namespace Core.Application.Messages.Queries.GetMyMessages
 {
     public interface IGetMyMessagesQuery
     {

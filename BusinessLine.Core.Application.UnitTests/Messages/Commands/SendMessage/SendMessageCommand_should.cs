@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Application.Messages.Commands;
-using BusinessLine.Core.Application.Messages.Commands.SendMessage;
-using BusinessLine.Core.Application.Messages.Commands.SendMessage.Factory;
+﻿using Core.Application.Messages.Commands;
+using Core.Application.Messages.Commands.SendMessage;
+using Core.Application.Messages.Commands.SendMessage.Factory;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Messages;
+using Core.Domain.Common;
+using Core.Domain.Messages;
 using Moq;
 using Moq.AutoMock;
 using System;
@@ -27,12 +27,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Commands.SendMessage
             {
                 Recipient = Guid.NewGuid(),
                 Subject = "aaaaa",
-                Body = "bbbbb",
-                Params = new KeyValuePair<string, string>[]
-                {
-                    new KeyValuePair<string, string>("aaa","bbb"),
-                    new KeyValuePair<string, string>("aaa","ccc"),
-                }
+                Body = "bbbbb"
             };
 
             _mocker

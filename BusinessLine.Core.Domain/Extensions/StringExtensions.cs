@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Linq;
 
-namespace BusinessLine.Core.Domain.Extensions
+namespace Core.Domain.Extensions
 {
     public static class StringExtensions
     {

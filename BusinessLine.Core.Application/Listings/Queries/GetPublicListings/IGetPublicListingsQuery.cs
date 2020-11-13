@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetPublicListings
+namespace Core.Application.Listings.Queries.GetPublicListings
 {
     public interface IGetPublicListingsQuery
     {

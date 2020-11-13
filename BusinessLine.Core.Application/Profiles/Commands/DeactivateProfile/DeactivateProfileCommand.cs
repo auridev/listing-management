@@ -1,8 +1,8 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
+using Common.Dates;
 using System;
 
-namespace BusinessLine.Core.Application.Profiles.Commands.DeactivateProfile
+namespace Core.Application.Profiles.Commands.DeactivateProfile
 {
     public sealed class DeactivateProfileCommand : IDeactivateProfileCommand
     {

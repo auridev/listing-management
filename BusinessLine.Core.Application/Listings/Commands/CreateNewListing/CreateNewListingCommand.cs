@@ -1,12 +1,12 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Listings.Commands.CreateNewListing.Factory;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Application.Listings.Commands.CreateNewListing.Factory;
+using Core.Domain.Common;
+using Core.Domain.Listings;
+using Common.Dates;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace BusinessLine.Core.Application.Listings.Commands.CreateNewListing
+namespace Core.Application.Listings.Commands.CreateNewListing
 {
     public sealed class CreateNewListingCommand : ICreateNewListingCommand
     {
@@ -15,7 +15,6 @@ namespace BusinessLine.Core.Application.Listings.Commands.CreateNewListing
         private readonly IDateTimeService _dateTimeService;
         private readonly IImageStorageService _imageStorageService;
         private readonly IListingImageReferenceFactory _listingImageReferenceFactory;
-
 
         public CreateNewListingCommand(IListingRepository repository,
             INewListingFactory factory,
@@ -65,8 +64,8 @@ namespace BusinessLine.Core.Application.Listings.Commands.CreateNewListing
                 model.Latitude,
                 model.Longitude);
 
-            // Command
-            var newListing = _factory.Create(owner,
+            // Create all the entities
+            NewListing newListing = _factory.Create(owner,
                 listingDetails,
                 contactDetails,
                 locationDetails,
@@ -75,13 +74,17 @@ namespace BusinessLine.Core.Application.Listings.Commands.CreateNewListing
 
             NewImageModel[] validImageModels =
                 GetValidImageModels(model.Images);
+
             (FileName FileName, NewImageModel Model)[] fileNameModelMap =
                 CreateFileNameModelMap(validImageModels);
+
             ListingImageReference[] imageReferences =
                 CreateImageReferences(newListing.Id, fileNameModelMap);
+
             ImageContent[] imageContents =
                 CreateImageContents(fileNameModelMap);
 
+            // Save all
             _repository.Add(newListing, imageReferences);
 
             _imageStorageService.Save(newListing.Id, imageContents, dateTag);

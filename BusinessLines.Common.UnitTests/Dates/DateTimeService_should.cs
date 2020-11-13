@@ -1,4 +1,4 @@
-﻿using BusinessLine.Common.Dates;
+﻿using Common.Dates;
 using FluentAssertions;
 using System;
 using Xunit;

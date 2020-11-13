@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Listings.Commands.MarkOfferAsSeen
+﻿namespace Core.Application.Listings.Commands.MarkOfferAsSeen
 {
     public interface IMarkOfferAsSeenCommand
     {

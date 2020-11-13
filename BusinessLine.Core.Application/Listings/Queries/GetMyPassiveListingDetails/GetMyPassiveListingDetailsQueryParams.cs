@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyPassiveListingDetails
+namespace Core.Application.Listings.Queries.GetMyPassiveListingDetails
 {
     public class GetMyPassiveListingDetailsQueryParams
     {

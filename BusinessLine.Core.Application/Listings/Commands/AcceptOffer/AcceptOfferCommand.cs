@@ -1,9 +1,10 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Listings;
+using Core.Domain.Offers;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.AcceptOffer
+namespace Core.Application.Listings.Commands.AcceptOffer
 {
     public sealed class AcceptOfferCommand : IAcceptOfferCommand
     {
@@ -27,7 +28,7 @@ namespace BusinessLine.Core.Application.Listings.Commands.AcceptOffer
         {
             Option<ActiveListing> optionalActiveListing =
                 _listingRepository.FindActive(model.ListingId);
-            Option<Offer> optionalOffer =
+            Option<ReceivedOffer> optionalOffer =
                 _offerRepository.Find(model.OfferId);
             DateTimeOffset closedOn =
                 _dateTimeService.GetCurrentUtcDateTime();

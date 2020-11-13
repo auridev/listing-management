@@ -1,10 +1,10 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Common;
+using Core.Domain.Listings;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.DeactivateNewListing
+namespace Core.Application.Listings.Commands.DeactivateNewListing
 {
     public sealed class DeactivateNewListingCommand : IDeactivateNewListingCommand
     {

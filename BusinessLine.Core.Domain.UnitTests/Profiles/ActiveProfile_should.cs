@@ -1,6 +1,7 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Profiles;
+﻿using Core.Domain.Common;
+using Core.Domain.Profiles;
 using FluentAssertions;
+using LanguageExt;
 using System;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _locationDetails,
                 _geographicLocation,
                 _userPreferences,
-                SeenDate.CreateNone());
+                Option<SeenDate>.None);
         }
 
         [Fact]
@@ -63,7 +64,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         [Fact]
         public void have_optional_IntroductionSeenOn_property()
         {
-            _sut.IntroductionSeenOn.Should().BeOfType(typeof(NotSeen));
+            _sut.IntroductionSeenOn.IsNone.Should().BeTrue();
         }
 
         [Fact]
@@ -71,7 +72,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         {
             _sut.HasSeenIntroduction(SeenDate.Create(DateTimeOffset.UtcNow));
 
-            _sut.IntroductionSeenOn.Value.Should().BeCloseTo(DateTimeOffset.UtcNow);
+            _sut.IntroductionSeenOn.Some(seen => seen.Value.Should().BeCloseTo(DateTimeOffset.UtcNow));
         }
     }
 }

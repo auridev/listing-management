@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Profiles.Commands.CreateProfile
+﻿namespace Core.Application.Profiles.Commands.CreateProfile
 {
     public sealed class CreateProfileModel
     {

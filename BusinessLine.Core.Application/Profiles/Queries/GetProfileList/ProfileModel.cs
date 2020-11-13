@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Profiles.Queries.GetProfileList
+namespace Core.Application.Profiles.Queries.GetProfileList
 {
     public class ProfileModel
     {

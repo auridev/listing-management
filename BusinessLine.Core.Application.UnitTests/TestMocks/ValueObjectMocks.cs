@@ -1,4 +1,4 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using System;
 using System.Collections.Generic;
 
@@ -30,11 +30,6 @@ namespace BusinessLine.Core.Application.UnitTests.TestMocks
 
         public static readonly Recipient Recipient = Recipient.Create(Guid.Parse("d1633a55-34fa-4e78-b2c0-348c3951d358"));
         public static readonly Subject Subject = Subject.Create("Some important stuff");
-        public static readonly MessageBody MessageBody = MessageBody.Create(
-                Template.Create("Hey {name}, pay attention"),
-                new List<TemplateParam>()
-                {
-                    TemplateParam.Create("{name}", "Vladimir")
-                });
+        public static readonly MessageBody MessageBody = MessageBody.Create("Hey Vladimir, pay attention");
     }
 }

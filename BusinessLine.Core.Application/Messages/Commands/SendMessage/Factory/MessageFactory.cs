@@ -1,10 +1,10 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Messages;
+﻿using Core.Domain.Common;
+using Core.Domain.Messages;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Messages.Commands.SendMessage.Factory
+namespace Core.Application.Messages.Commands.SendMessage.Factory
 {
     public sealed class MessageFactory : IMessageFactory
     {
@@ -20,7 +20,7 @@ namespace BusinessLine.Core.Application.Messages.Commands.SendMessage.Factory
             var id = Guid.NewGuid();
             var createdDate = _dateTimeService.GetCurrentUtcDateTime();
 
-            return new Message(id, recipient, subject, messageBody, SeenDate.CreateNone(), createdDate);
+            return new Message(id, recipient, subject, messageBody, Option<SeenDate>.None, createdDate);
         }
     }
 }

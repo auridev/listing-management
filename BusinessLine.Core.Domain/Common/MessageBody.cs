@@ -1,32 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
     public sealed class MessageBody : IEquatable<MessageBody>
     {
-        public Template Template { get; }
-
-        [Ignore]
-        public IEnumerable<TemplateParam> Params { get; }
-
+        public string Content { get; }
         private MessageBody() { }
-        private MessageBody(Template template, IEnumerable<TemplateParam> templateParams)
+        private MessageBody(string content)
         {
-            Template = template;
-            Params = templateParams;
+            Content = content;
         }
 
-        public static MessageBody Create(Template template, IEnumerable<TemplateParam> templateParams)
+        public static MessageBody Create(string content)
         {
-            if (template == null)
-                throw new ArgumentNullException(nameof(template));
-            if (templateParams == null)
-                throw new ArgumentNullException(nameof(templateParams));
+            if (string.IsNullOrWhiteSpace(content))
+                throw new ArgumentException(nameof(content));
 
-            return new MessageBody(template, templateParams);
+            return new MessageBody(content);
         }
 
         public override bool Equals([AllowNull] object obj)

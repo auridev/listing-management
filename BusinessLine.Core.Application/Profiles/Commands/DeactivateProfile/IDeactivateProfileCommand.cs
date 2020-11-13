@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Profiles.Commands.DeactivateProfile
+﻿namespace Core.Application.Profiles.Commands.DeactivateProfile
 {
     public interface IDeactivateProfileCommand
     {

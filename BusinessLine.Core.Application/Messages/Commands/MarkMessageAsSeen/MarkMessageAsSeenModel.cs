@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLine.Core.Application.Messages.Commands.MarkMessageAsSeen
+namespace Core.Application.Messages.Commands.MarkMessageAsSeen
 {
     public class MarkMessageAsSeenModel
     {

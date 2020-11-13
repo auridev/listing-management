@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Messages;
+﻿using Core.Domain.Common;
+using Core.Domain.Messages;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Messages.Commands.SendMessage.Factory
+namespace Core.Application.Messages.Commands.SendMessage.Factory
 {
     public interface IMessageFactory
     {

@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Profiles.Queries.GetProfileDetails
+﻿namespace Core.Application.Profiles.Queries.GetProfileDetails
 {
     public sealed class ProfileDetailsModel
     {

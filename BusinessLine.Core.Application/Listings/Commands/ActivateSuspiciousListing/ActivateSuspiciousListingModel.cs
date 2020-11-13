@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.ActivateSuspiciousListing
+namespace Core.Application.Listings.Commands.ActivateSuspiciousListing
 {
     public class ActivateSuspiciousListingModel
     {

@@ -1,8 +1,8 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Profiles;
+﻿using Core.Domain.Common;
+using Core.Domain.Profiles;
 using System;
 
-namespace BusinessLine.Core.Application.Profiles.Commands.CreateProfile.Factory
+namespace Core.Application.Profiles.Commands.CreateProfile.Factory
 {
     public interface IProfileFactory
     {

@@ -1,12 +1,14 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using System;
 using System.Collections.Generic;
 
-namespace BusinessLine.Core.Domain.Listings
+namespace Core.Domain.Listings
 {
     public sealed class NewListing : Listing
     {
         public DateTimeOffset CreatedDate { get; }
+
+        private NewListing() { }
 
         public NewListing(Guid id,
             Owner owner,

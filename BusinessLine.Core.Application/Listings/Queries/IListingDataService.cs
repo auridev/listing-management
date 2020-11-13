@@ -1,17 +1,17 @@
 ﻿
-using BusinessLine.Core.Application.Listings.Queries.GetMyActiveListingDetails;
-using BusinessLine.Core.Application.Listings.Queries.GetMyClosedListingDetails;
-using BusinessLine.Core.Application.Listings.Queries.GetMyExpiredListingDetails;
-using BusinessLine.Core.Application.Listings.Queries.GetMyListings;
-using BusinessLine.Core.Application.Listings.Queries.GetMyNewListingDetails;
-using BusinessLine.Core.Application.Listings.Queries.GetMyPassiveListingDetails;
-using BusinessLine.Core.Application.Listings.Queries.GetPublicListingDetails;
-using BusinessLine.Core.Application.Listings.Queries.GetPublicListings;
+using Core.Application.Listings.Queries.GetMyActiveListingDetails;
+using Core.Application.Listings.Queries.GetMyClosedListingDetails;
+using Core.Application.Listings.Queries.GetMyExpiredListingDetails;
+using Core.Application.Listings.Queries.GetMyListings;
+using Core.Application.Listings.Queries.GetMyNewListingDetails;
+using Core.Application.Listings.Queries.GetMyPassiveListingDetails;
+using Core.Application.Listings.Queries.GetPublicListingDetails;
+using Core.Application.Listings.Queries.GetPublicListings;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
 
-namespace BusinessLine.Core.Application.Listings.Queries
+namespace Core.Application.Listings.Queries
 {
     public interface IListingDataService
     {

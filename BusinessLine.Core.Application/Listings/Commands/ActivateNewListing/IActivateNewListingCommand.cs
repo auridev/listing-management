@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Listings.Commands.ActivateNewListing
+﻿namespace Core.Application.Listings.Commands.ActivateNewListing
 {
     public interface IActivateNewListingCommand
     {

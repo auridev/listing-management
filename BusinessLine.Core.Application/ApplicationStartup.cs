@@ -1,11 +1,9 @@
-﻿using BusinessLine.Core.Application.Profiles.Commands.CreateProfile;
-using BusinessLine.Core.Application.Profiles.Commands.CreateProfile.Factory;
-using BusinessLine.Core.Application.Profiles.Commands.MarkProfileAsIntroduced;
-using BusinessLine.Core.Application.Profiles.Queries.GetProfileDetails;
-using Microsoft.Extensions.Configuration;
+﻿using Core.Application.Profiles.Commands.CreateProfile;
+using Core.Application.Profiles.Commands.CreateProfile.Factory;
+using Core.Application.Profiles.Commands.MarkProfileAsIntroduced;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BusinessLine.Core.Application
+namespace Core.Application
 {
     public static class ApplicationStartup
     {

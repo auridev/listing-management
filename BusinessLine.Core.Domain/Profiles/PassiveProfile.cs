@@ -1,7 +1,7 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using System;
 
-namespace BusinessLine.Core.Domain.Profiles
+namespace Core.Domain.Profiles
 {
     public sealed class PassiveProfile : Profile
     {

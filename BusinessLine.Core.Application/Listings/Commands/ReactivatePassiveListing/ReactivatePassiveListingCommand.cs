@@ -1,9 +1,9 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Listings;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.ReactivatePassiveListing
+namespace Core.Application.Listings.Commands.ReactivatePassiveListing
 {
     public sealed class ReactivatePassiveListingCommand : IReactivatePassiveListingCommand
     {

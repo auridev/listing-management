@@ -1,8 +1,8 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Listings.Commands;
-using BusinessLine.Core.Application.Listings.Commands.MarkOfferAsSeen;
+﻿using Core.Application.Listings.Commands;
+using Core.Application.Listings.Commands.MarkOfferAsSeen;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Listings;
+using Core.Domain.Offers;
+using Common.Dates;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -15,7 +15,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkOfferAsS
     {
         private readonly MarkOfferAsSeenCommand _sut;
         private readonly MarkOfferAsSeenModel _model;
-        private readonly Offer _offer;
+        private readonly ReceivedOffer _offer;
         private readonly AutoMocker _mocker;
         private readonly Guid _offerId = Guid.NewGuid();
         private readonly DateTimeOffset _seenDate = DateTimeOffset.UtcNow.AddDays(-1);
@@ -32,7 +32,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkOfferAsS
             _mocker
                 .GetMock<IOfferRepository>()
                 .Setup(r => r.Find(_offerId))
-                .Returns(Option<Offer>.Some(_offer));
+                .Returns(Option<ReceivedOffer>.Some(_offer));
 
             _mocker
                 .GetMock<IDateTimeService>()
@@ -68,8 +68,8 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkOfferAsS
             _mocker
                 .GetMock<IOfferRepository>()
                 .Setup(r => r.Find(It.IsAny<Guid>()))
-                .Returns(Option<Offer>.None);
- 
+                .Returns(Option<ReceivedOffer>.None);
+
             _sut.Execute(_model);
 
             _mocker

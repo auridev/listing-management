@@ -1,23 +1,23 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace BusinessLine.Core.Domain.Listings
+namespace Core.Domain.Offers
 {
-    public sealed class Offer : IEquatable<Offer>
+    public abstract class Offer : IEquatable<Offer>
     {
         public Guid Id { get; }
         public Owner Owner { get; }
         public MonetaryValue MonetaryValue { get; }
         public DateTimeOffset CreatedDate { get; }
-        public SeenDate SeenDate { get; private set; }
 
-        public Offer(Guid id, 
-            Owner owner, 
-            MonetaryValue monetaryValue, 
-            DateTimeOffset createdDate,
-            SeenDate seenDate)
+        protected Offer() { }
+
+        public Offer(Guid id,
+            Owner owner,
+            MonetaryValue monetaryValue,
+            DateTimeOffset createdDate)
         {
             if (id == default)
                 throw new ArgumentNullException(nameof(id));
@@ -25,14 +25,13 @@ namespace BusinessLine.Core.Domain.Listings
                 throw new ArgumentNullException(nameof(owner));
             if (monetaryValue == null)
                 throw new ArgumentNullException(nameof(monetaryValue));
-            if(createdDate == default)
+            if (createdDate == default)
                 throw new ArgumentNullException(nameof(createdDate));
 
             Id = id;
             Owner = owner;
             MonetaryValue = monetaryValue;
             CreatedDate = createdDate;
-            SeenDate = seenDate;
         }
 
         public bool Equals([AllowNull] Offer other)
@@ -76,11 +75,6 @@ namespace BusinessLine.Core.Domain.Listings
         public override int GetHashCode()
         {
             return (GetType().ToString() + Id).GetHashCode();
-        }
-
-        public void HasBeenSeen(SeenDate seenDate)
-        {
-            SeenDate = seenDate;
         }
     }
 }

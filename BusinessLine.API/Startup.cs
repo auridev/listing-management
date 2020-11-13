@@ -1,6 +1,6 @@
-using BusinessLine.Common;
-using BusinessLine.Core.Application;
-using BusinessLine.Persistence;
+using Persistence;
+using Common;
+using Core.Application;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using System;
 
-namespace BusinessLine.API
+namespace API
 {
     public class Startup
     {

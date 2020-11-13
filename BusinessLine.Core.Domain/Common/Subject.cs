@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Domain.Extensions;
+﻿using Core.Domain.Extensions;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
     public sealed class Subject : IEquatable<Subject>
     {

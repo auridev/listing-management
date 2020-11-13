@@ -1,9 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Common;
+using Core.Domain.Listings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BusinessLine.Persistence.Listings
+namespace Persistence.Listings
 {
     public class ActiveListingConfiguration : IEntityTypeConfiguration<ActiveListing>
     {
@@ -20,6 +20,7 @@ namespace BusinessLine.Persistence.Listings
             builder
                 .Property(p => p.Owner)
                 .HasColumnName("owner")
+                .HasConversion(domain => domain.UserId, db => Owner.Create(db))
                 .IsRequired(true);
 
             builder.OwnsOne(
@@ -83,16 +84,18 @@ namespace BusinessLine.Persistence.Listings
                         });
 
                     contactDetails
-                        .Property(p => p.Company)
-                        .HasColumnName("company")
-                        .HasMaxLength(50)
-                        .HasConversion(domain => domain.Name.Value, db => Company.Create(db));
-
-                    contactDetails
                         .Property(p => p.Phone)
                         .HasColumnName("phone_number")
                         .HasMaxLength(25)
                         .HasConversion(domain => domain.Number, db => Phone.Create(db));
+
+                    contactDetails
+                        .Property(p => p.___efCoreCompany)
+                        .HasColumnName("company")
+                        .HasMaxLength(50)
+                        .HasConversion(domain => domain.Name.Value, db => Company.Create(db));
+                    contactDetails
+                        .Ignore(cd => cd.Company);
                 });
 
             builder.OwnsOne(
@@ -106,28 +109,31 @@ namespace BusinessLine.Persistence.Listings
                         .HasConversion(domain => domain.Value, db => Alpha2Code.Create(db));
 
                      locationDetails
-                        .Property(p => p.State)
-                        .HasColumnName("state")
-                        .HasMaxLength(25)
-                        .HasConversion(domain => domain.Name.Value, db => State.Create(db));
-
-                     locationDetails
                         .Property(p => p.City)
                         .HasColumnName("city")
-                        .HasMaxLength(25)
+                        .HasMaxLength(50)
                         .HasConversion(domain => domain.Name.Value, db => City.Create(db));
 
                      locationDetails
                         .Property(p => p.PostCode)
                         .HasColumnName("post_code")
-                        .HasMaxLength(10)
+                        .HasMaxLength(15)
                         .HasConversion(domain => domain.Value.Value, db => PostCode.Create(db));
 
                      locationDetails
                         .Property(p => p.Address)
                         .HasColumnName("address")
-                        .HasMaxLength(100)
+                        .HasMaxLength(250)
                         .HasConversion(domain => domain.Value.Value, db => Address.Create(db));
+
+                     locationDetails
+                       .Property(p => p.___efCoreState)
+                       .HasColumnName("state")
+                       .HasMaxLength(25)
+                       .HasConversion(domain => domain.Name.Value, db => State.Create(db));
+                     locationDetails
+                        .Ignore(ld => ld.State);
+
                  });
 
             builder.OwnsOne(
@@ -143,8 +149,67 @@ namespace BusinessLine.Persistence.Listings
                         .HasColumnName("longitude");
                 });
 
+            builder
+                .Property(p => p.ExpirationDate)
+                .HasColumnName("expiration_date")
+                .IsRequired(true);
 
+            builder
+                .HasMany(p => p.Offers)
+                .WithOne()
+                .HasForeignKey("active_listing_id")
+                .OnDelete(DeleteBehavior.Cascade)
+                .Metadata.PrincipalToDependent.SetPropertyAccessMode(PropertyAccessMode.Field);
 
+            builder
+                .OwnsMany(
+                    p => p.Leads,
+                    lead =>
+                    {
+                        lead.ToTable("leads");
+                        lead.Property<long>("lead_id");
+                        lead.HasKey("lead_id");
+
+                        lead
+                            .Property(p => p.UserInterested)
+                            .HasColumnName("user_interested")
+                            .HasConversion(domain => domain.UserId, db => Owner.Create(db))
+                            .IsRequired(true);
+
+                        lead
+                            .Property(p => p.DetailsSeenOn)
+                            .HasColumnName("details_seen_on")
+                            .IsRequired(true);
+
+                        lead
+                            .WithOwner()
+                            .HasForeignKey("active_listing_id");
+                    });
+
+            builder
+                .OwnsMany(
+                    p => p.Favorites,
+                    favorite =>
+                    {
+                        favorite.ToTable("favorites");
+                        favorite.Property<long>("favorite_id");
+                        favorite.HasKey("favorite_id");
+
+                        favorite
+                            .Property(p => p.FavoredBy)
+                            .HasColumnName("favored_by")
+                            .HasConversion(domain => domain.UserId, db => Owner.Create(db))
+                            .IsRequired(true);
+
+                        favorite
+                            .Property(p => p.MarkedAsFavoriteOn)
+                            .HasColumnName("marked_as_favorite_on")
+                            .IsRequired(true);
+
+                        favorite
+                            .WithOwner()
+                            .HasForeignKey("active_listing_id");
+                    });
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using LanguageExt;
 
-namespace BusinessLine.Core.Application.Services
+namespace Core.Application.Services
 {
     public interface ICurrencyLookupService
     {

@@ -1,9 +1,8 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Application.Listings.Commands;
-using BusinessLine.Core.Application.Listings.Commands.AddLead;
+﻿using Core.Application.Listings.Commands;
+using Core.Application.Listings.Commands.AddLead;
 using BusinessLine.Core.Application.UnitTests.TestMocks;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+using Core.Domain.Listings;
+using Common.Dates;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -55,16 +54,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AddLead
         }
 
         [Fact]
-        public void add_lead_to_repo()
-        {
-            _sut.Execute(_userId, _model);
-
-            _mocker
-                .GetMock<IListingRepository>()
-                .Verify(r => r.Add(It.IsAny<Lead>()), Times.Once);
-        }
-
-        [Fact]
         public void save_changes_to_repo()
         {
             _sut.Execute(_userId, _model);
@@ -87,10 +76,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AddLead
             _sut.Execute(_userId, _model);
 
             // assert
-            _mocker
-                .GetMock<IListingRepository>()
-                .Verify(r => r.Add(It.IsAny<Lead>()), Times.Never);
-
             _mocker
                 .GetMock<IListingRepository>()
                 .Verify(r => r.Save(), Times.Never);

@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Application.Listings.Queries;
-using BusinessLine.Core.Application.Listings.Queries.GetMyNewListingDetails;
+﻿using Core.Application.Listings.Queries;
+using Core.Application.Listings.Queries.GetMyNewListingDetails;
 using FluentAssertions;
 using LanguageExt;
 using Moq;

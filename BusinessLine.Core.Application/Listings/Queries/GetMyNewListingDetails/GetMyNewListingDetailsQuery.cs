@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyNewListingDetails
+namespace Core.Application.Listings.Queries.GetMyNewListingDetails
 {
     public sealed class GetMyNewListingDetailsQuery : IGetMyNewListingDetailsQuery
     {

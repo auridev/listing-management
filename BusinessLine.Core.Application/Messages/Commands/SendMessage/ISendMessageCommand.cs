@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Messages.Commands.SendMessage
+﻿namespace Core.Application.Messages.Commands.SendMessage
 {
     public interface ISendMessageCommand
     {

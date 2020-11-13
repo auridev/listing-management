@@ -1,5 +1,6 @@
-﻿using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Profiles;
+﻿using Core.Domain.Common;
+using Core.Domain.Profiles;
+using LanguageExt;
 using System;
 
 namespace BusinessLine.Core.Application.UnitTests.TestMocks
@@ -14,6 +15,6 @@ namespace BusinessLine.Core.Application.UnitTests.TestMocks
             ValueObjectMocks.LocationDetails,
             ValueObjectMocks.GeographicLocation,
             ValueObjectMocks.UserPreferences,
-            SeenDate.CreateNone());
+            Option<SeenDate>.None);
     }
 }

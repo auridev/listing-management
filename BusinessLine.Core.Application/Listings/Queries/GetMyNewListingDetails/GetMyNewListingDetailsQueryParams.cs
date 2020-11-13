@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyNewListingDetails
+namespace Core.Application.Listings.Queries.GetMyNewListingDetails
 {
     public class GetMyNewListingDetailsQueryParams
     {

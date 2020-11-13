@@ -9,8 +9,4 @@
     <PackageReference Include="U2U.ValueObjectComparers" Version="2.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common\Dummy\" />
-  </ItemGroup>
-
 </Project>

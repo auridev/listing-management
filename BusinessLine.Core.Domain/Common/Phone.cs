@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using U2U.ValueObjectComparers;
 
-namespace BusinessLine.Core.Domain.Common
+namespace Core.Domain.Common
 {
     public sealed class Phone : IEquatable<Phone>
     {

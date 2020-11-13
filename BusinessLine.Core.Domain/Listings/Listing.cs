@@ -1,10 +1,9 @@
-﻿using BusinessLine.Core.Domain.Common;
+﻿using Core.Domain.Common;
 using LanguageExt;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace BusinessLine.Core.Domain.Listings
+namespace Core.Domain.Listings
 {
     public abstract class Listing : IEquatable<Listing>
     {
@@ -15,6 +14,10 @@ namespace BusinessLine.Core.Domain.Listings
         public ContactDetails ContactDetails { get; }
         public LocationDetails LocationDetails { get; }
         public GeographicLocation GeographicLocation { get; }
+
+        protected Listing()
+        {
+        }
 
         public Listing(Guid id,
             Owner owner,

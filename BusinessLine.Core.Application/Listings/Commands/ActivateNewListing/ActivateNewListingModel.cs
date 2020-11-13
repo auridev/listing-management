@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.ActivateNewListing
+namespace Core.Application.Listings.Commands.ActivateNewListing
 {
     public class ActivateNewListingModel
     {

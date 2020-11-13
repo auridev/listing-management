@@ -1,6 +1,6 @@
-﻿using BusinessLine.Core.Application.Listings.Commands.CreateNewListing.Factory;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Application.Listings.Commands.CreateNewListing.Factory;
+using Core.Domain.Common;
+using Core.Domain.Listings;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;

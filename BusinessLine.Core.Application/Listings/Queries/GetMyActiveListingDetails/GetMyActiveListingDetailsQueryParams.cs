@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLine.Core.Application.Listings.Queries.GetMyActiveListingDetails
+namespace Core.Application.Listings.Queries.GetMyActiveListingDetails
 {
     public class GetMyActiveListingDetailsQueryParams
     {

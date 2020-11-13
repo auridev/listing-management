@@ -1,4 +1,4 @@
-﻿namespace BusinessLine.Core.Application.Listings.Commands.ReactivatePassiveListing
+﻿namespace Core.Application.Listings.Commands.ReactivatePassiveListing
 {
     public interface IReactivatePassiveListingCommand
     {

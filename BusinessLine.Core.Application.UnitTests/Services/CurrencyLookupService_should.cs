@@ -1,5 +1,5 @@
-﻿using BusinessLine.Core.Application.Services;
-using BusinessLine.Core.Domain.Common;
+﻿using Core.Application.Services;
+using Core.Domain.Common;
 using FluentAssertions;
 using LanguageExt;
 using Xunit;

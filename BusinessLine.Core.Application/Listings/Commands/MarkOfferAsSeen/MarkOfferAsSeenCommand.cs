@@ -1,10 +1,10 @@
-﻿using BusinessLine.Common.Dates;
-using BusinessLine.Core.Domain.Common;
-using BusinessLine.Core.Domain.Listings;
+﻿using Core.Domain.Common;
+using Core.Domain.Offers;
+using Common.Dates;
 using LanguageExt;
 using System;
 
-namespace BusinessLine.Core.Application.Listings.Commands.MarkOfferAsSeen
+namespace Core.Application.Listings.Commands.MarkOfferAsSeen
 {
     public sealed class MarkOfferAsSeenCommand : IMarkOfferAsSeenCommand
     {
@@ -24,7 +24,7 @@ namespace BusinessLine.Core.Application.Listings.Commands.MarkOfferAsSeen
             // Pre-requisites
             DateTimeOffset dateTimeOffset = _dateTimeService.GetCurrentUtcDateTime();
             SeenDate seenDate = SeenDate.Create(dateTimeOffset);
-            Option<Offer> optionalOffer = _repository.Find(model.OfferId);
+            Option<ReceivedOffer> optionalOffer = _repository.Find(model.OfferId);
 
             // Command
             optionalOffer
