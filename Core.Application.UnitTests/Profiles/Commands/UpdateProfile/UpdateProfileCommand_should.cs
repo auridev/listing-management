@@ -1,7 +1,7 @@
 ﻿using Core.Application.Profiles.Commands;
 using Core.Application.Profiles.Commands.UpdateProfile;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Profiles;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -14,7 +14,7 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.UpdateProfil
     {
         private readonly UpdateProfileCommand _sut;
         private readonly AutoMocker _mocker;
-        private readonly ActiveProfile _profile = ProfileMocks.UK_Profile;
+        private readonly ActiveProfile _profile = FakesCollection.UK_Profile;
         private readonly UpdateProfileModel _model;
         private readonly Guid _profileId = Guid.Parse("5e495dd3-1ec6-48e6-896f-8729291b21dc");
 

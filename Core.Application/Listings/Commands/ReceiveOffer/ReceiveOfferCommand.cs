@@ -36,6 +36,8 @@ namespace Core.Application.Listings.Commands.ReceiveOffer
                 {
                     activeListing.ReceiveOffer(offer);
 
+                    _listingRepository.Update(activeListing);
+
                     _listingRepository.Save();
                 })
                 .None(() => { });

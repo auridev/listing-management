@@ -1,8 +1,8 @@
-﻿using Core.Application.Listings.Commands;
+﻿using Common.Dates;
+using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.AddLead;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Listings;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -28,7 +28,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AddLead
             {
                 ListingId = _listingId
             };
-            _activeListing = ListingMocks.ActiveListing_1;
+            _activeListing = FakesCollection.ActiveListing_1;
 
             _mocker
                 .GetMock<IListingRepository>()
@@ -51,6 +51,16 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AddLead
             _mocker
                 .GetMock<IListingRepository>()
                 .Verify(r => r.FindActive(_listingId), Times.Once);
+        }
+
+        [Fact]
+        public void update_the_listing()
+        {
+            _sut.Execute(_userId, _model);
+
+            _mocker
+                .GetMock<IListingRepository>()
+                .Verify(r => r.Update(It.IsAny<ActiveListing>()), Times.Once);
         }
 
         [Fact]
@@ -79,6 +89,9 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.AddLead
             _mocker
                 .GetMock<IListingRepository>()
                 .Verify(r => r.Save(), Times.Never);
+            _mocker
+                .GetMock<IListingRepository>()
+                .Verify(r => r.Update(It.IsAny<ActiveListing>()), Times.Never);
         }
     }
 }

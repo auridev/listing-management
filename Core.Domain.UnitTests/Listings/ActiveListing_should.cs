@@ -168,6 +168,33 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         public void accept_existing_offer()
         {
             // arrange
+            var offerId = Guid.NewGuid();
+
+            var offer1 = new ReceivedOffer(offerId,
+                Owner.Create(Guid.NewGuid()),
+                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
+                DateTimeOffset.UtcNow,
+                SeenDate.Create(DateTimeOffset.UtcNow));
+            var offer2 = new ReceivedOffer(Guid.NewGuid(),
+                Owner.Create(Guid.NewGuid()),
+                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
+                DateTimeOffset.UtcNow,
+                SeenDate.Create(DateTimeOffset.UtcNow));
+            _sut.ReceiveOffer(offer1);
+            _sut.ReceiveOffer(offer2);
+
+            // act
+            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(offerId, DateTimeOffset.Now);
+
+            // assert
+            optionalClosedListing.IsSome.Should().BeTrue();
+            optionalClosedListing.IfSome(l => l.AcceptedOffer.Id.Should().Be(offer1.Id));
+        }
+
+        [Fact]
+        public void not_accept_non_existing_offers()
+        {
+            // arrange
             var offer1 = new ReceivedOffer(Guid.NewGuid(),
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
@@ -182,25 +209,18 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             _sut.ReceiveOffer(offer2);
 
             // act
-            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(offer1, DateTimeOffset.Now);
+            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(Guid.NewGuid(), DateTimeOffset.Now);
 
             // assert
-            optionalClosedListing.IsSome.Should().BeTrue();
-            optionalClosedListing.IfSome(l => l.AcceptedOffer.Id.Should().Be(offer1.Id));
-        }
-
-        [Fact]
-        public void not_accept_null_offers()
-        {
-            Action action = () => _sut.AcceptOffer(null, DateTimeOffset.Now);
-
-            action.Should().Throw<ArgumentNullException>();
+            optionalClosedListing.IsSome.Should().BeFalse();
         }
 
         [Fact]
         public void mark_other_offers_as_rejected()
         {
             // arrange
+            var offerId = Guid.NewGuid();
+
             var offer1 = new ReceivedOffer(Guid.NewGuid(),
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
@@ -211,7 +231,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 MonetaryValue.Create(2M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
                 SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer3 = new ReceivedOffer(Guid.NewGuid(),
+            var offer3 = new ReceivedOffer(offerId,
                 Owner.Create(Guid.NewGuid()),
                 MonetaryValue.Create(3M, CurrencyCode.Create("eur")),
                 DateTimeOffset.UtcNow,
@@ -221,34 +241,11 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             _sut.ReceiveOffer(offer3);
 
             // act
-            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(offer3, DateTimeOffset.Now);
+            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(offerId, DateTimeOffset.Now);
 
             // assert
             optionalClosedListing.IfSome(l => l.RejectedOffers[0].Id.Should().Be(offer1.Id));
             optionalClosedListing.IfSome(l => l.RejectedOffers[1].Id.Should().Be(offer2.Id));
-        }
-
-        [Fact]
-        public void not_create_a_closed_listing_if_offer_does_not_exist_in_the_listing()
-        {
-            // arrange
-            var offer1 = new ReceivedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer2 = new ReceivedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            _sut.ReceiveOffer(offer1);
-
-            // act
-            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(offer2, DateTimeOffset.Now);
-
-            // assert
-            optionalClosedListing.IsNone.Should().BeTrue();
         }
 
         [Fact]
@@ -372,6 +369,54 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             Action action = () => _sut.RemoveFavorite(null);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void allow_to_mark_received_offers_as_seen()
+        {
+            // arrange
+            var offerId1 = Guid.NewGuid();
+            var offer1 = new ReceivedOffer(offerId1,
+                Owner.Create(Guid.NewGuid()),
+                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
+                DateTimeOffset.UtcNow,
+                Option<SeenDate>.None);
+            var offerId2 = Guid.NewGuid();
+            var offer2 = new ReceivedOffer(offerId2,
+                Owner.Create(Guid.NewGuid()),
+                MonetaryValue.Create(2M, CurrencyCode.Create("eur")),
+                DateTimeOffset.UtcNow,
+                Option<SeenDate>.None);
+
+            _sut.ReceiveOffer(offer1);
+            _sut.ReceiveOffer(offer2);
+
+            // act
+            _sut.MarkOfferAsSeen(offerId1, SeenDate.Create(DateTimeOffset.Now));
+
+            // assert
+            _sut.Offers.First(o => o == offer1).SeenDate.IsSome.Should().BeTrue();
+            _sut.Offers.First(o => o == offer2).SeenDate.IsSome.Should().BeFalse();
+        }
+
+        [Fact]
+        public void only_mark_existing_received_offers_as_seen()
+        {
+            // arrange
+            var offerId1 = Guid.NewGuid();
+            var offer1 = new ReceivedOffer(offerId1,
+                Owner.Create(Guid.NewGuid()),
+                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
+                DateTimeOffset.UtcNow,
+                Option<SeenDate>.None);
+
+            _sut.ReceiveOffer(offer1);
+
+            // act
+            _sut.MarkOfferAsSeen(Guid.NewGuid(), SeenDate.Create(DateTimeOffset.Now));
+
+            // assert
+            _sut.Offers.First(o => o == offer1).SeenDate.IsSome.Should().BeFalse();
         }
     }
 }

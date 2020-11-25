@@ -1,6 +1,5 @@
-﻿using Core.Domain.Listings;
-using Core.Domain.Offers;
-using Common.Dates;
+﻿using Common.Dates;
+using Core.Domain.Listings;
 using LanguageExt;
 using System;
 
@@ -9,17 +8,12 @@ namespace Core.Application.Listings.Commands.AcceptOffer
     public sealed class AcceptOfferCommand : IAcceptOfferCommand
     {
         private readonly IListingRepository _listingRepository;
-        private readonly IOfferRepository _offerRepository;
         private readonly IDateTimeService _dateTimeService;
 
-        public AcceptOfferCommand(IListingRepository listingRepository,
-            IOfferRepository offerRepository,
-            IDateTimeService dateTimeService)
+        public AcceptOfferCommand(IListingRepository listingRepository, IDateTimeService dateTimeService)
         {
             _listingRepository = listingRepository ??
                 throw new ArgumentNullException(nameof(listingRepository));
-            _offerRepository = offerRepository ??
-                throw new ArgumentNullException(nameof(offerRepository));
             _dateTimeService = dateTimeService ??
                 throw new ArgumentNullException(nameof(dateTimeService));
         }
@@ -28,34 +22,24 @@ namespace Core.Application.Listings.Commands.AcceptOffer
         {
             Option<ActiveListing> optionalActiveListing =
                 _listingRepository.FindActive(model.ListingId);
-            Option<ReceivedOffer> optionalOffer =
-                _offerRepository.Find(model.OfferId);
             DateTimeOffset closedOn =
                 _dateTimeService.GetCurrentUtcDateTime();
 
             optionalActiveListing
-                .Some(l =>
+                .IfSome(l =>
                 {
-                    optionalOffer
-                        .Some(o =>
+                    Option<ClosedListing> optionalClosedListing = l.AcceptOffer(model.OfferId, closedOn);
+                    optionalClosedListing
+                        .IfSome(cl =>
                         {
-                            Option<ClosedListing> optionalClosedListing = l.AcceptOffer(o, closedOn);
-                            optionalClosedListing
-                                .Some(cl =>
-                                {
-                                    _listingRepository.Add(cl);
+                            _listingRepository.Add(cl);
 
-                                    _listingRepository.Delete(l);
+                            _listingRepository.Delete(l);
 
-                                    _listingRepository.Save();
+                            _listingRepository.Save();
 
-                                })
-                                .None(() => { });
-
-                        })
-                        .None(() => { });
-                })
-                .None(() => { });
+                        });
+                });
         }
     }
 }

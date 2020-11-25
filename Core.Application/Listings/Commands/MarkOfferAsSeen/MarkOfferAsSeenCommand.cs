@@ -1,6 +1,6 @@
-﻿using Core.Domain.Common;
-using Core.Domain.Offers;
-using Common.Dates;
+﻿using Common.Dates;
+using Core.Domain.Common;
+using Core.Domain.Listings;
 using LanguageExt;
 using System;
 
@@ -8,13 +8,13 @@ namespace Core.Application.Listings.Commands.MarkOfferAsSeen
 {
     public sealed class MarkOfferAsSeenCommand : IMarkOfferAsSeenCommand
     {
-        private readonly IOfferRepository _repository;
+        private readonly IListingRepository _listingRepository;
         private readonly IDateTimeService _dateTimeService;
 
-        public MarkOfferAsSeenCommand(IOfferRepository repository, IDateTimeService dateTimeService)
+        public MarkOfferAsSeenCommand(IListingRepository listingRepository, IDateTimeService dateTimeService)
         {
-            _repository = repository ??
-                throw new ArgumentNullException(nameof(repository));
+            _listingRepository = listingRepository ??
+                throw new ArgumentNullException(nameof(listingRepository));
             _dateTimeService = dateTimeService ??
                 throw new ArgumentNullException(nameof(dateTimeService));
         }
@@ -22,19 +22,23 @@ namespace Core.Application.Listings.Commands.MarkOfferAsSeen
         public void Execute(MarkOfferAsSeenModel model)
         {
             // Pre-requisites
-            DateTimeOffset dateTimeOffset = _dateTimeService.GetCurrentUtcDateTime();
-            SeenDate seenDate = SeenDate.Create(dateTimeOffset);
-            Option<ReceivedOffer> optionalOffer = _repository.Find(model.OfferId);
+            DateTimeOffset dateTimeOffset = 
+                _dateTimeService.GetCurrentUtcDateTime();
+            SeenDate seenDate = 
+                SeenDate.Create(dateTimeOffset);
+            Option<ActiveListing> optionalActiveListing =
+                _listingRepository.FindActive(model.ListingId);
 
             // Command
-            optionalOffer
-                .Some(offer =>
+            optionalActiveListing
+                .IfSome(l =>
                 {
-                    offer.HasBeenSeen(seenDate);
+                    l.MarkOfferAsSeen(model.OfferId, seenDate);
 
-                    _repository.Save();
-                })
-                .None(() => { });
+                    _listingRepository.Update(l);
+
+                    _listingRepository.Save();
+                });
         }
     }
 }

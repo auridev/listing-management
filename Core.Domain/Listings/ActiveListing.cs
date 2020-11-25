@@ -64,10 +64,13 @@ namespace Core.Domain.Listings
             _offers.Add(offer);
         }
 
-        public Option<ClosedListing> AcceptOffer(ReceivedOffer offer, DateTimeOffset closedOn)
+        public Option<ClosedListing> AcceptOffer(Guid receivedOfferId, DateTimeOffset closedOn)
         {
-            if (offer == null)
-                throw new ArgumentNullException(nameof(offer));
+            // find the matching offer
+            Option<ReceivedOffer> offer = 
+                FindReceivedOfferById(receivedOfferId);
+            if (offer.IsNone)
+                return Option<ClosedListing>.None;
 
             // prerequisites
             AcceptedOffer acceptedOffer = null;
@@ -86,6 +89,11 @@ namespace Core.Domain.Listings
                 return new ClosedListing(Id, Owner, ListingDetails, ContactDetails, LocationDetails, GeographicLocation, closedOn, acceptedOffer, rejectedOffers);
             else
                 return Option<ClosedListing>.None;
+        }
+
+        private Option<ReceivedOffer> FindReceivedOfferById(Guid receivedOfferId)
+        {
+            return _offers.Find<ReceivedOffer>(o => o.Id == receivedOfferId);
         }
 
         public void AddLead(Lead lead)
@@ -122,6 +130,13 @@ namespace Core.Domain.Listings
             _favorites
                .Find<FavoriteMark>(f => f.FavoredBy == favoredBy)
                .IfSome(f => _favorites.Remove(f));
+        }
+
+        public void MarkOfferAsSeen(Guid offerId, SeenDate seenDate)
+        {
+            _offers
+                .Find<ReceivedOffer>(o => o.Id == offerId)
+                .IfSome(o => o.HasBeenSeen(seenDate));
         }
     }
 }

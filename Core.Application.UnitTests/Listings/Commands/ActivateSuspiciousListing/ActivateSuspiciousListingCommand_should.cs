@@ -1,8 +1,8 @@
-﻿using Core.Application.Listings.Commands;
+﻿using Common.Dates;
+using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.ActivateSuspiciousListing;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Listings;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -23,7 +23,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ActivateSusp
         public ActivateSuspiciousListingCommand_should()
         {
             _mocker = new AutoMocker();
-            _suspiciousListing = ListingMocks.SuspiciousListing_1;
+            _suspiciousListing = FakesCollection.SuspiciousListing_1;
             _model = new ActivateSuspiciousListingModel()
             {
                 ListingId = _listingId

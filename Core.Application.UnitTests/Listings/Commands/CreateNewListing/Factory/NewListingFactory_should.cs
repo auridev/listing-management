@@ -1,7 +1,7 @@
 ﻿using Core.Application.Listings.Commands.CreateNewListing.Factory;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Common;
 using Core.Domain.Listings;
+using Core.UnitTests.Mocks;
 using FluentAssertions;
 using System;
 using Xunit;
@@ -15,10 +15,10 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.CreateNewLis
         {
             // arrange
             var owner = Owner.Create(Guid.NewGuid());
-            var listingDetails = ValueObjectMocks.ListingDetails;
-            var contactDetails = ValueObjectMocks.ContactDetails;
-            var locationDetail = ValueObjectMocks.LocationDetails;
-            var geographicLocation = ValueObjectMocks.GeographicLocation;
+            var listingDetails = FakesCollection.ListingDetails;
+            var contactDetails = FakesCollection.ContactDetails;
+            var locationDetail = FakesCollection.LocationDetails;
+            var geographicLocation = FakesCollection.GeographicLocation;
             var createdDate = DateTimeOffset.UtcNow;
             var sut = new NewListingFactory();
 
