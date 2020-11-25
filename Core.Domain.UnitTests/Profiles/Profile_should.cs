@@ -1,6 +1,6 @@
 ﻿using Core.Domain.Common;
 using Core.Domain.Profiles;
-using BusinessLine.Core.Domain.UnitTests.TestMocks;
+using Core.UnitTests.Mocks;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -30,8 +30,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
 
         public Profile_should()
         {
-            _sut = new ProfileMock(Guid.NewGuid(), 
-                Guid.NewGuid(), 
+            _sut = new ProfileTestFake(Guid.NewGuid(),
+                Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
@@ -94,15 +94,15 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
 
         [Theory]
         [MemberData(nameof(InvalidArguments))]
-        public void thrown_an_exception_during_creation_if_arguments_are_not_valid(Guid id, 
-            Guid userId, 
-            Email email, 
-            ContactDetails contactDetails, 
-            LocationDetails locationDetails, 
-            GeographicLocation geographicLocation, 
+        public void thrown_an_exception_during_creation_if_arguments_are_not_valid(Guid id,
+            Guid userId,
+            Email email,
+            ContactDetails contactDetails,
+            LocationDetails locationDetails,
+            GeographicLocation geographicLocation,
             UserPreferences userPreferences)
         {
-            Action createAction = () => new ProfileMock(id,
+            Action createAction = () => new ProfileTestFake(id,
                 userId,
                 email,
                 contactDetails,
@@ -119,14 +119,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new ProfileMock(id,
+            var first = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 _userPreferences);
-            var second = new ProfileMock(id,
+            var second = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
@@ -146,14 +146,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = (object) new ProfileMock(id,
+            var first = (object)new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 _userPreferences);
-            var second = (object) new ProfileMock(id,
+            var second = (object)new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
@@ -173,14 +173,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new ProfileMock(id,
+            var first = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 _userPreferences);
-            var second = new ProfileMock(id,
+            var second = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
@@ -199,14 +199,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         public void be_treated_as_not_equal_using_the_not_equals_operator_if_ids_dont_match()
         {
             // arrange
-            var first = new ProfileMock(Guid.NewGuid(),
+            var first = new ProfileTestFake(Guid.NewGuid(),
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 _userPreferences);
-            var second = new ProfileMock(Guid.NewGuid(),
+            var second = new ProfileTestFake(Guid.NewGuid(),
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
@@ -226,14 +226,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new ProfileMock(id,
+            var first = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 _userPreferences);
-            var second = new ProfileMock(id,
+            var second = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,

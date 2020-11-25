@@ -1,8 +1,8 @@
-﻿using Core.Application.Messages.Commands;
+﻿using Common.Dates;
+using Core.Application.Messages.Commands;
 using Core.Application.Messages.Commands.MarkMessageAsSeen;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Messages;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -23,7 +23,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Commands.MarkMessageA
         public MarkMessageAsSeenCommand_should()
         {
             _mocker = new AutoMocker();
-            _message = MessageMocks.Message_1;
+            _message = FakesCollection.Message_1;
             _model = new MarkMessageAsSeenModel()
             {
                 MessageId = _messageId

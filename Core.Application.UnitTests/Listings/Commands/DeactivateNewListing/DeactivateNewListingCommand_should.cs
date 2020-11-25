@@ -1,8 +1,8 @@
-﻿using Core.Application.Listings.Commands;
+﻿using Common.Dates;
+using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.DeactivateNewListing;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Listings;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -23,7 +23,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.DeactivateNe
         public DeactivateNewListingCommand_should()
         {
             _mocker = new AutoMocker();
-            _newListing = ListingMocks.NewListing_1;
+            _newListing = FakesCollection.NewListing_1;
             _model = new DeactivateNewListingModel()
             {
                 ListingId = _listingId,

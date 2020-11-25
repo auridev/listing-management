@@ -1,10 +1,10 @@
-﻿using Core.Application.Listings.Commands;
+﻿using Common.Dates;
+using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.CreateNewListing;
 using Core.Application.Listings.Commands.CreateNewListing.Factory;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Common;
 using Core.Domain.Listings;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using Moq;
 using Moq.AutoMock;
 using System;
@@ -59,10 +59,10 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.CreateNewLis
             _listing = new NewListing(
                 Guid.NewGuid(),
                 Owner.Create(Guid.NewGuid()),
-                ValueObjectMocks.ListingDetails,
-                ValueObjectMocks.ContactDetails,
-                ValueObjectMocks.LocationDetails,
-                ValueObjectMocks.GeographicLocation,
+                FakesCollection.ListingDetails,
+                FakesCollection.ContactDetails,
+                FakesCollection.LocationDetails,
+                FakesCollection.GeographicLocation,
                 DateTimeOffset.UtcNow);
 
             _mocker

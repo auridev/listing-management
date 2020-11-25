@@ -1,8 +1,8 @@
-﻿using Core.Application.Profiles.Commands;
+﻿using Common.Dates;
+using Core.Application.Profiles.Commands;
 using Core.Application.Profiles.Commands.MarkProfileAsIntroduced;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Profiles;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -23,7 +23,7 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.MarkProfileA
         public MarkProfileAsIntroducedCommand_should()
         {
             _mocker = new AutoMocker();
-            _activeProfile = ProfileMocks.UK_Profile;
+            _activeProfile = FakesCollection.UK_Profile;
             _model = new MarkProfileAsIntroducedModel()
             {
                 ProfileId = _profileId

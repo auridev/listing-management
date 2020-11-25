@@ -2,18 +2,16 @@
 using Core.Domain.Offers;
 using System;
 
-namespace BusinessLine.Core.Domain.UnitTests.TestMocks
+namespace Core.UnitTests.Mocks
 {
-    // used only to test abstract offer stuff
-    internal class OfferMock : Offer
+    public class OfferTestFake : Offer
     {
-        public OfferMock(Guid id,
+        public OfferTestFake(Guid id,
             Owner owner,
             MonetaryValue monetaryValue,
             DateTimeOffset createdDate)
             : base(id, owner, monetaryValue, createdDate)
         {
-
         }
     }
 }

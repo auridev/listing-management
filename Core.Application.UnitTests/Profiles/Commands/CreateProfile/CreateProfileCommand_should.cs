@@ -1,9 +1,9 @@
 ﻿using Core.Application.Profiles.Commands;
 using Core.Application.Profiles.Commands.CreateProfile;
 using Core.Application.Profiles.Commands.CreateProfile.Factory;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Common;
 using Core.Domain.Profiles;
+using Core.UnitTests.Mocks;
 using Moq;
 using Moq.AutoMock;
 using System;
@@ -39,7 +39,7 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.CreateProfil
                 MassUnit = "lb",
                 CurrencyCode = "eur"
             };
-            _profile = ProfileMocks.UK_Profile;
+            _profile = FakesCollection.UK_Profile;
             _mocker
                 .GetMock<IProfileFactory>()
                 .Setup(factory => factory.CreateActive(

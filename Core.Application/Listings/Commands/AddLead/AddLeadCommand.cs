@@ -38,6 +38,8 @@ namespace Core.Application.Listings.Commands.AddLead
 
                     listing.AddLead(lead);
 
+                    _repository.Update(listing);
+
                     _repository.Save();
                 })
                 .None(() => { });

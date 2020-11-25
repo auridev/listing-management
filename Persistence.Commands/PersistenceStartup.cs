@@ -10,7 +10,6 @@ namespace Persistence.Commands
     {
         public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
-
             services.AddDbContext<PersistenceContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection"),

@@ -35,6 +35,8 @@ namespace Core.Application.Listings.Commands.AddFavorite
                 {
                     listing.MarkAsFavorite(favoriteMark);
 
+                    _repository.Update(listing);
+
                     _repository.Save();
                 });
         }

@@ -29,6 +29,8 @@ namespace Core.Application.Listings.Commands.RemoveFavorite
                 {
                     listing.RemoveFavorite(favoredBy);
 
+                    _repository.Update(listing);
+
                     _repository.Save();
                 });
         }
