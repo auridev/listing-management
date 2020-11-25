@@ -1,8 +1,8 @@
-﻿using Core.Application.Listings.Commands;
+﻿using Common.Dates;
+using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.DeactivateActiveListing;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Listings;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -22,7 +22,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.DeactivateAc
         public DeactivateActiveListingCommand_should()
         {
             _mocker = new AutoMocker();
-            _activeListing = ListingMocks.ActiveListing_1;
+            _activeListing = FakesCollection.ActiveListing_1;
             _model = new DeactivateActiveListingModel()
             {
                 ListingId = _listingId,

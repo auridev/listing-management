@@ -1,5 +1,5 @@
 ﻿using Core.Domain.Common;
-using BusinessLine.Core.Domain.UnitTests.TestMocks;
+using Core.UnitTests.Mocks;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         [Fact]
         public void have_an_Id_property()
         {
-            var offer = new OfferMock(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var offer = new OfferTestFake(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             offer.Id.Should().NotBeEmpty();
         }
@@ -23,7 +23,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         [Fact]
         public void thrown_an_exception_during_creation_if_Id_is_not_valid()
         {
-            Action createAction = () => new OfferMock(Guid.Empty, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            Action createAction = () => new OfferTestFake(Guid.Empty, _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             createAction.Should().Throw<ArgumentNullException>();
         }
@@ -31,7 +31,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         [Fact]
         public void have_an_Owner_property()
         {
-            var offer = new OfferMock(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var offer = new OfferTestFake(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             offer.Owner.Should().Be(_owner);
         }
@@ -39,7 +39,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         [Fact]
         public void have_a_MonetaryValue_property()
         {
-            var offer = new OfferMock(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var offer = new OfferTestFake(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             offer.MonetaryValue.Should().Be(_monetaryValue);
         }
@@ -47,7 +47,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         [Fact]
         public void have_CreatedDate_property()
         {
-            var offer = new OfferMock(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var offer = new OfferTestFake(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             offer.CreatedDate.Should().BeCloseTo(DateTimeOffset.UtcNow);
         }
@@ -66,7 +66,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         [MemberData(nameof(InvalidArguments))]
         public void thrown_an_exception_during_creation_if_arguments_are_not_valid(Guid id, Owner owner, MonetaryValue monetaryValue, DateTimeOffset createdDate)
         {
-            Action createAction = () => new OfferMock(id, owner, monetaryValue, createdDate);
+            Action createAction = () => new OfferTestFake(id, owner, monetaryValue, createdDate);
 
             createAction.Should().Throw<ArgumentNullException>();
         }
@@ -76,8 +76,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new OfferMock(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
-            var second = new OfferMock(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var first = new OfferTestFake(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var second = new OfferTestFake(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             // act
             var equals = first.Equals(second);
@@ -91,8 +91,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = (object)new OfferMock(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
-            var second = (object)new OfferMock(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var first = (object)new OfferTestFake(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var second = (object)new OfferTestFake(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             // act
             var equals = first.Equals(second);
@@ -106,8 +106,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new OfferMock(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
-            var second = new OfferMock(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var first = new OfferTestFake(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var second = new OfferTestFake(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             // act
             var equals = (first == second);
@@ -120,8 +120,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         public void be_treated_as_not_equal_using_the_not_equals_operator_if_ids_dont_match()
         {
             // arrange
-            var first = new OfferMock(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
-            var second = new OfferMock(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var first = new OfferTestFake(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var second = new OfferTestFake(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             // act
             var nonEquals = (first != second);
@@ -135,8 +135,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new OfferMock(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
-            var second = new OfferMock(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var first = new OfferTestFake(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
+            var second = new OfferTestFake(id, _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             // act
             var equals = (first == second);

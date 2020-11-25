@@ -2,12 +2,11 @@
 using Core.Domain.Profiles;
 using System;
 
-namespace BusinessLine.Core.Domain.UnitTests.TestMocks
+namespace Core.UnitTests.Mocks
 {
-    // used only to test abstract profile stuff
-    internal class ProfileMock : Profile
+    public class ProfileTestFake : Profile
     {
-        public ProfileMock(Guid id,
+        public ProfileTestFake(Guid id,
             Guid userId,
             Email email,
             ContactDetails contactDetails,

@@ -17,17 +17,26 @@ namespace Persistence.Commands.Profiles
 
         public void Add(ActiveProfile activeProfile)
         {
+            if (activeProfile == null)
+                throw new ArgumentNullException(nameof(activeProfile));
+
             _context.ActiveProfiles.Add(activeProfile);
         }
 
         public void Add(PassiveProfile passiveProfile)
         {
-            throw new NotImplementedException();
+            if (passiveProfile == null)
+                throw new ArgumentNullException(nameof(passiveProfile));
+
+            _context.PassiveProfiles.Add(passiveProfile);
         }
 
         public void Delete(ActiveProfile activeProfile)
         {
-            throw new NotImplementedException();
+            if (activeProfile == null)
+                throw new ArgumentNullException(nameof(activeProfile));
+
+            _context.ActiveProfiles.Remove(activeProfile);
         }
 
         public Option<ActiveProfile> Find(Guid id)
@@ -44,9 +53,10 @@ namespace Persistence.Commands.Profiles
             _context.SaveChanges();
         }
 
+        // there's no need for implementation because of how EF tracks changes
         public void Update(ActiveProfile activeProfile)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

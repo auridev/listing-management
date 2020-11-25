@@ -1,13 +1,12 @@
 ﻿using Core.Application.Messages.Commands;
 using Core.Application.Messages.Commands.SendMessage;
 using Core.Application.Messages.Commands.SendMessage.Factory;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Common;
 using Core.Domain.Messages;
+using Core.UnitTests.Mocks;
 using Moq;
 using Moq.AutoMock;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace BusinessLine.Core.Application.UnitTests.Messages.Commands.SendMessage
@@ -22,7 +21,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Commands.SendMessage
         public SendMessageCommand_should()
         {
             _mocker = new AutoMocker();
-            _message = MessageMocks.Message_1;
+            _message = FakesCollection.Message_1;
             _model = new SendMessageModel()
             {
                 Recipient = Guid.NewGuid(),

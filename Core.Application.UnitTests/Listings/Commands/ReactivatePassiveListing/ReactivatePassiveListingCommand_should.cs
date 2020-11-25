@@ -1,8 +1,8 @@
-﻿using Core.Application.Listings.Commands;
+﻿using Common.Dates;
+using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.ReactivatePassiveListing;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Listings;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -25,7 +25,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReactivatePa
         public ReactivatePassiveListingCommand_should()
         {
             _mocker = new AutoMocker();
-            _passiveListing = ListingMocks.PassiveListing_1;
+            _passiveListing = FakesCollection.PassiveListing_1;
             _model = new ReactivatePassiveListingModel()
             {
                 ListingId = _listingId

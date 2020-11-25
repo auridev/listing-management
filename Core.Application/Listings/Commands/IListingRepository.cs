@@ -18,6 +18,8 @@ namespace Core.Application.Listings.Commands
         void Add(SuspiciousListing suspiciousListing);
         void Add(ClosedListing closedListing);
 
+        void Update(ActiveListing activeListing);
+
         void Delete(NewListing newListing);
         void Delete(ActiveListing activeListing);
         void Delete(PassiveListing passiveListing);

@@ -32,15 +32,13 @@ namespace API
                 });
 
             services
-                .AddCommon();
+                .AddCommon(_configuration);
 
             services
                 .AddPersistence(_configuration);
 
             services
                 .AddApplication();
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

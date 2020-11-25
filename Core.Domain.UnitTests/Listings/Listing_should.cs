@@ -1,6 +1,6 @@
 ﻿using Core.Domain.Common;
 using Core.Domain.Listings;
-using BusinessLine.Core.Domain.UnitTests.TestMocks;
+using Core.UnitTests.Mocks;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
 
         public Listing_should()
         {
-            _sut = new ListingMock(Guid.NewGuid(),
+            _sut = new ListingTestFake(Guid.NewGuid(),
                 _owner,
                 _listingDetails,
                 _contactDetails,
@@ -100,7 +100,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             LocationDetails locationDetails,
             GeographicLocation geographicLocation)
         {
-            Action createAction = () => new ListingMock(id,
+            Action createAction = () => new ListingTestFake(id,
                 owner,
                 listingDetails,
                 contactDetails,
@@ -116,14 +116,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new ListingMock(id,
+            var first = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 "first");
-            var second = new ListingMock(id,
+            var second = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
@@ -143,14 +143,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = (object) new ListingMock(id,
+            var first = (object)new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 "first");
-            var second = (object) new ListingMock(id,
+            var second = (object)new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
@@ -170,14 +170,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new ListingMock(id,
+            var first = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 "first");
-            var second = new ListingMock(id,
+            var second = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
@@ -196,14 +196,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         public void be_treated_as_not_equal_using_the_not_equals_operator_if_ids_dont_match()
         {
             // arrange
-            var first = new ListingMock(Guid.NewGuid(),
+            var first = new ListingTestFake(Guid.NewGuid(),
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 "first");
-            var second = new ListingMock(Guid.NewGuid(),
+            var second = new ListingTestFake(Guid.NewGuid(),
                 _owner,
                 _listingDetails,
                 _contactDetails,
@@ -223,14 +223,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         {
             // arrange
             var id = Guid.NewGuid();
-            var first = new ListingMock(id,
+            var first = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
                 "aaaaaaaaaa");
-            var second = new ListingMock(id,
+            var second = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,

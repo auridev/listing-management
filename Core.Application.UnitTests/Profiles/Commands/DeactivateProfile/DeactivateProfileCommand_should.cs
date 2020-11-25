@@ -1,8 +1,8 @@
-﻿using Core.Application.Profiles.Commands;
+﻿using Common.Dates;
+using Core.Application.Profiles.Commands;
 using Core.Application.Profiles.Commands.DeactivateProfile;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
 using Core.Domain.Profiles;
-using Common.Dates;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -15,7 +15,7 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.DeactivatePr
     {
         private readonly DeactivateProfileCommand _sut;
         private readonly AutoMocker _mocker;
-        private readonly ActiveProfile _profile = ProfileMocks.UK_Profile;
+        private readonly ActiveProfile _profile = FakesCollection.UK_Profile;
         private readonly DeactivateProfileModel _model;
 
         public DeactivateProfileCommand_should()

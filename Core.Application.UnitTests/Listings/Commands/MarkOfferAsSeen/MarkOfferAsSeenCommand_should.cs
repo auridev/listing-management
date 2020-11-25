@@ -1,8 +1,8 @@
-﻿using Core.Application.Listings.Commands;
+﻿using Common.Dates;
+using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.MarkOfferAsSeen;
-using BusinessLine.Core.Application.UnitTests.TestMocks;
-using Core.Domain.Offers;
-using Common.Dates;
+using Core.Domain.Listings;
+using Core.UnitTests.Mocks;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
@@ -15,24 +15,26 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkOfferAsS
     {
         private readonly MarkOfferAsSeenCommand _sut;
         private readonly MarkOfferAsSeenModel _model;
-        private readonly ReceivedOffer _offer;
+        private readonly ActiveListing _activeListing;
         private readonly AutoMocker _mocker;
         private readonly Guid _offerId = Guid.NewGuid();
+        private readonly Guid _listingId = Guid.NewGuid();
         private readonly DateTimeOffset _seenDate = DateTimeOffset.UtcNow.AddDays(-1);
 
         public MarkOfferAsSeenCommand_should()
         {
             _mocker = new AutoMocker();
-            _offer = ListingMocks.Offer_1;
+            _activeListing = FakesCollection.ActiveListing_2;
             _model = new MarkOfferAsSeenModel()
             {
+                ListingId = _listingId,
                 OfferId = _offerId
             };
 
             _mocker
-                .GetMock<IOfferRepository>()
-                .Setup(r => r.Find(_offerId))
-                .Returns(Option<ReceivedOffer>.Some(_offer));
+                .GetMock<IListingRepository>()
+                .Setup(r => r.FindActive(_listingId))
+                .Returns(Option<ActiveListing>.Some(_activeListing));
 
             _mocker
                 .GetMock<IDateTimeService>()
@@ -43,14 +45,25 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkOfferAsS
         }
 
         [Fact]
-        public void retrieve_offer_from_repository()
+        public void retrieve_listing_from_repository()
         {
             _sut.Execute(_model);
 
             _mocker
-                .GetMock<IOfferRepository>()
-                .Verify(r => r.Find(_offerId), Times.Once);
+                .GetMock<IListingRepository>()
+                .Verify(r => r.FindActive(_listingId), Times.Once);
         }
+
+        [Fact]
+        public void update_the_listing()
+        {
+            _sut.Execute(_model);
+
+            _mocker
+                .GetMock<IListingRepository>()
+                .Verify(r => r.Update(It.IsAny<ActiveListing>()), Times.Once);
+        }
+
 
         [Fact]
         public void save_repository_changes()
@@ -58,23 +71,27 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkOfferAsS
             _sut.Execute(_model);
 
             _mocker
-                .GetMock<IOfferRepository>()
+                .GetMock<IListingRepository>()
                 .Verify(r => r.Save(), Times.Once);
         }
 
         [Fact]
-        public void do_nothing_if_offer_is_not_found()
+        public void do_nothing_if_listing_is_not_found()
         {
             _mocker
-                .GetMock<IOfferRepository>()
-                .Setup(r => r.Find(It.IsAny<Guid>()))
-                .Returns(Option<ReceivedOffer>.None);
+                .GetMock<IListingRepository>()
+                .Setup(r => r.FindActive(It.IsAny<Guid>()))
+                .Returns(Option<ActiveListing>.None);
 
             _sut.Execute(_model);
 
             _mocker
-                .GetMock<IOfferRepository>()
+                .GetMock<IListingRepository>()
                 .Verify(r => r.Save(), Times.Never);
+
+            _mocker
+                .GetMock<IListingRepository>()
+                .Verify(r => r.Update(It.IsAny<ActiveListing>()), Times.Never);
         }
     }
 }

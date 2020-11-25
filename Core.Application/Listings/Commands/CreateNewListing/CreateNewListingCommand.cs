@@ -10,26 +10,26 @@ namespace Core.Application.Listings.Commands.CreateNewListing
 {
     public sealed class CreateNewListingCommand : ICreateNewListingCommand
     {
-        private readonly IListingRepository _repository;
+        private readonly IListingRepository _listingRepository;
         private readonly INewListingFactory _factory;
         private readonly IDateTimeService _dateTimeService;
-        private readonly IImageStorageService _imageStorageService;
+        private readonly IImagePersistenceService _imageRepository;
         private readonly IListingImageReferenceFactory _listingImageReferenceFactory;
 
-        public CreateNewListingCommand(IListingRepository repository,
+        public CreateNewListingCommand(IListingRepository listingRepository,
             INewListingFactory factory,
             IDateTimeService dateTimeService,
-            IImageStorageService imageStorageService,
+            IImagePersistenceService imageRepository,
             IListingImageReferenceFactory listingImageReferenceFactory)
         {
-            _repository = repository ??
-                throw new ArgumentNullException(nameof(repository));
+            _listingRepository = listingRepository ??
+                throw new ArgumentNullException(nameof(listingRepository));
             _factory = factory ??
                 throw new ArgumentNullException(nameof(factory)); ;
             _dateTimeService = dateTimeService ??
                 throw new ArgumentNullException(nameof(dateTimeService));
-            _imageStorageService = imageStorageService ??
-                throw new ArgumentNullException(nameof(imageStorageService));
+            _imageRepository = imageRepository ??
+                throw new ArgumentNullException(nameof(imageRepository));
             _listingImageReferenceFactory = listingImageReferenceFactory ??
                 throw new ArgumentNullException(nameof(listingImageReferenceFactory));
         }
@@ -85,11 +85,11 @@ namespace Core.Application.Listings.Commands.CreateNewListing
                 CreateImageContents(fileNameModelMap);
 
             // Save all
-            _repository.Add(newListing, imageReferences);
+            _listingRepository.Add(newListing, imageReferences);
 
-            _imageStorageService.Save(newListing.Id, imageContents, dateTag);
+            _imageRepository.AddAndSave(newListing.Id, imageContents, dateTag);
 
-            _repository.Save();
+            _listingRepository.Save();
         }
 
         private NewImageModel[] GetValidImageModels(NewImageModel[] imageModels)
