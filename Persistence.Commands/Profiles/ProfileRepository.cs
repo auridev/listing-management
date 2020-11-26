@@ -7,9 +7,9 @@ namespace Persistence.Commands.Profiles
 {
     public class ProfileRepository : IProfileRepository
     {
-        private readonly PersistenceContext _context;
+        private readonly CommandPersistenceContext _context;
 
-        public ProfileRepository(PersistenceContext context)
+        public ProfileRepository(CommandPersistenceContext context)
         {
             _context = context ??
                 throw new ArgumentNullException(nameof(context));

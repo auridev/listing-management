@@ -9,9 +9,9 @@ namespace Persistence.Commands.Listings
     // implicit cast wokrs as well but I want this to be more readable 
     public class ListingRepository : IListingRepository
     {
-        private readonly PersistenceContext _context;
+        private readonly CommandPersistenceContext _context;
 
-        public ListingRepository(PersistenceContext context)
+        public ListingRepository(CommandPersistenceContext context)
         {
             _context = context ??
                 throw new ArgumentNullException(nameof(context));

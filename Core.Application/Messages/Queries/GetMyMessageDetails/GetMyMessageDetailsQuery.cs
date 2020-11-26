@@ -5,8 +5,8 @@ namespace Core.Application.Messages.Queries.GetMyMessageDetails
 {
     public sealed class GetMyMessageDetailsQuery : IGetMyMessageDetailsQuery
     {
-        private readonly IMessageDataService _dataService;
-        public GetMyMessageDetailsQuery(IMessageDataService dataService)
+        private readonly IMessageQueryRepository _dataService;
+        public GetMyMessageDetailsQuery(IMessageQueryRepository dataService)
         {
             _dataService = dataService ??
                 throw new ArgumentNullException(nameof(dataService));
