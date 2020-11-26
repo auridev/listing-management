@@ -1,4 +1,5 @@
-﻿using Core.Application.Messages.Queries;
+﻿using Core.Application.Helpers;
+using Core.Application.Messages.Queries;
 using Core.Application.Messages.Queries.GetMyMessages;
 using FluentAssertions;
 using Moq;
@@ -13,29 +14,21 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessages
     {
         private readonly GetMyMessagesQuery _sut;
         private readonly GetMyMessagesQueryParams _queryParams;
-        private readonly ICollection<MyMessageModel> _model;
+        private readonly PagedList<MyMessageModel> _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
 
         public GetMyMessagesQuery_should()
         {
             _mocker = new AutoMocker();
-            _model = new List<MyMessageModel>()
-            {
-                new MyMessageModel()
-                {
-                    Id = Guid.NewGuid(),
-                    Subject = "title",
-                    CreatedDate = DateTimeOffset.UtcNow
-                }
-            };
+            _model = new PagedList<MyMessageModel>(new List<MyMessageModel>(), 1, 1, 1);
             _queryParams = new GetMyMessagesQueryParams()
             {
                 PageNumber = 1,
                 PageSize = 11,
             };
             _mocker
-                .GetMock<IMessageDataService>()
+                .GetMock<IMessageQueryRepository>()
                 .Setup(s => s.Get(_userId, _queryParams))
                 .Returns(_model);
 
@@ -52,12 +45,12 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessages
         }
 
         [Fact]
-        public void retrieve_collection_from_data_access_service()
+        public void retrieve_collection_from_repository()
         {
             ICollection<MyMessageModel> result = _sut.Execute(_userId, _queryParams);
 
             _mocker
-                .GetMock<IMessageDataService>()
+                .GetMock<IMessageQueryRepository>()
                 .Verify(s => s.Get(_userId, _queryParams), Times.Once);
         }
 

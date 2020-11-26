@@ -9,9 +9,9 @@ namespace Persistence.Commands.Messages
     // implicit cast wokrs as well but I want this to be more readable 
     public class MessageRepository : IMessageRepository
     {
-        private readonly PersistenceContext _context;
+        private readonly CommandPersistenceContext _context;
 
-        public MessageRepository(PersistenceContext context)
+        public MessageRepository(CommandPersistenceContext context)
         {
             _context = context ??
                 throw new ArgumentNullException(nameof(context));

@@ -31,16 +31,12 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
                 Id = Guid.NewGuid(),
                 Subject = "subjec",
                 Body = "body",
-                Params = new KeyValuePair<string, string>[]
-                {
-                    new KeyValuePair<string, string>("id","123"),
-                    new KeyValuePair<string, string>("name","adadadssad"),
-                },
+                CreatedDate = DateTimeOffset.UtcNow,
                 Seen = true
             };
 
             _mocker
-                .GetMock<IMessageDataService>()
+                .GetMock<IMessageQueryRepository>()
                 .Setup(s => s.Find(_userId, _queryParams))
                 .Returns(Option<MyMessageDetailsModel>.Some(_model));
 
@@ -48,12 +44,12 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
         }
 
         [Fact]
-        public void retrieve_message_from_dataservice()
+        public void retrieve_message_from_repository()
         {
             Option<MyMessageDetailsModel> model = _sut.Execute(_userId, _queryParams);
 
             _mocker
-                .GetMock<IMessageDataService>()
+                .GetMock<IMessageQueryRepository>()
                 .Verify(s => s.Find(_userId, _queryParams), Times.Once);
         }
 
@@ -62,7 +58,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
         {
             // arrange
             _mocker
-                .GetMock<IMessageDataService>()
+                .GetMock<IMessageQueryRepository>()
                 .Setup(s => s.Find(_userId, _queryParams))
                 .Returns(Option<MyMessageDetailsModel>.None);
 

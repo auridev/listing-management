@@ -1,5 +1,4 @@
-﻿using Core.Domain.Common;
-using Core.Domain.Listings;
+﻿using Core.Domain.Listings;
 using Core.Domain.Messages;
 using Core.Domain.Profiles;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,7 @@ using System.Reflection;
 
 namespace Persistence.Commands
 {
-    public class PersistenceContext : DbContext
+    public class CommandPersistenceContext : DbContext
     {
         public DbSet<ActiveProfile> ActiveProfiles { get; set; }
         public DbSet<PassiveProfile> PassiveProfiles { get; set; }
@@ -19,7 +18,7 @@ namespace Persistence.Commands
         public DbSet<SuspiciousListing> SuspiciousListings { get; set; }
         public DbSet<Message> Messages { get; set; }
 
-        public PersistenceContext(DbContextOptions<PersistenceContext> options)
+        public CommandPersistenceContext(DbContextOptions<CommandPersistenceContext> options)
             : base(options)
         {
         }

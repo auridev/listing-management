@@ -14,6 +14,10 @@ namespace Persistence.Commands.Messages
                 .HasKey(p => p.Id);
 
             builder
+                .HasIndex(p => p.Recipient)
+                .HasDatabaseName("index_recipient");
+
+            builder
                 .Property(p => p.Id)
                 .HasColumnName("id");
 

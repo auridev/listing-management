@@ -1,4 +1,5 @@
 using Common;
+using Common.ApplicationSettings;
 using Core.Application;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using Persistence.Commands;
+using Persistence.Queries;
 using System;
 
 namespace API
@@ -31,14 +33,23 @@ namespace API
                     action.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
 
+            // load configuration before any other modules
             services
-                .AddCommon(_configuration);
+                .Configure<ImageRepositorySettings>(_configuration.GetSection("ImageRepository"));
+            services
+                .Configure<ConnectionStrings>(_configuration.GetSection("ConnectionStrings"));
 
             services
-                .AddPersistence(_configuration);
+                .AddCommon();
 
             services
                 .AddApplication();
+
+            services
+                .AddPersistenceForCommands(_configuration);
+
+            services
+                .AddPersistenceForQueries();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

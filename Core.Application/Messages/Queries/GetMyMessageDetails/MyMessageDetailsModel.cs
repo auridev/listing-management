@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Core.Application.Messages.Queries.GetMyMessageDetails
 {
@@ -9,7 +7,7 @@ namespace Core.Application.Messages.Queries.GetMyMessageDetails
         public Guid Id { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
-        public KeyValuePair<string, string>[] Params { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
         public bool Seen { get; set; }
     }
 }

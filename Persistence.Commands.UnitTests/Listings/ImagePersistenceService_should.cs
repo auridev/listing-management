@@ -5,13 +5,12 @@ using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.AutoMock;
-using Persistence.Commands.Listings;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
-namespace Persistence.Commands.UnitTests
+namespace Persistence.Commands.Listings.UnitTests
 {
     public class ImagePersistenceService_should
     {
@@ -31,8 +30,8 @@ namespace Persistence.Commands.UnitTests
         {
             _mocker = new AutoMocker();
 
-            IOptions<ImageRepositorySettings> settings = 
-                Options.Create(new ImageRepositorySettings() { Location = "aaa"} );
+            IOptions<ImageRepositorySettings> settings =
+                Options.Create(new ImageRepositorySettings() { Location = "aaa" });
             _mocker.Use(settings);
 
             _mocker

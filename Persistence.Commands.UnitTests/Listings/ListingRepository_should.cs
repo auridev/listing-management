@@ -10,17 +10,17 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Persistence.Commands.UnitTests
+namespace Persistence.Commands.Listings.UnitTests
 {
     public class ListingRepository_should
     {
-        private readonly DbContextOptions<PersistenceContext> _options;
+        private readonly DbContextOptions<CommandPersistenceContext> _options;
 
         public ListingRepository_should()
         {
             var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = ":memory:" };
             var connection = new SqliteConnection(connectionStringBuilder.ToString());
-            _options = new DbContextOptionsBuilder<PersistenceContext>()
+            _options = new DbContextOptionsBuilder<CommandPersistenceContext>()
                 .UseSqlite(connection)
                 .Options;
         }
@@ -28,7 +28,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_add_when_new_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -45,7 +45,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_add_when_listing_image_references_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -61,7 +61,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_add_when_active_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -78,7 +78,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_add_when_passive_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -95,7 +95,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_add_when_suspicious_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -112,7 +112,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_add_when_closed_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -129,7 +129,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_delete_when_new_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -146,7 +146,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_active_when_active_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -163,7 +163,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_active_when_passive_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -180,7 +180,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_during_active_when_suspicious_listing_is_null()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -228,7 +228,7 @@ namespace Persistence.Commands.UnitTests
         [MemberData(nameof(FindActiveListingArguments))]
         public void return_correct_option_depending_on_whether_active_listing_exists_or_not(ActiveListing listingToAdd, string idToFind, bool shouldExist)
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 context.Database.OpenConnection();
                 context.Database.EnsureCreated();
@@ -236,7 +236,7 @@ namespace Persistence.Commands.UnitTests
                 context.SaveChanges();
             }
 
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 var repository = new ListingRepository(context);
 
@@ -284,7 +284,7 @@ namespace Persistence.Commands.UnitTests
         [MemberData(nameof(FindNewListingArguments))]
         public void return_correct_option_depending_on_whether_new_listing_exists_or_not(NewListing listingToAdd, string idToFind, bool shouldExist)
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 context.Database.OpenConnection();
                 context.Database.EnsureCreated();
@@ -292,7 +292,7 @@ namespace Persistence.Commands.UnitTests
                 context.SaveChanges();
             }
 
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 var repository = new ListingRepository(context);
 
@@ -342,7 +342,7 @@ namespace Persistence.Commands.UnitTests
         [MemberData(nameof(FindPassiveListingArguments))]
         public void return_correct_option_depending_on_whether_passive_listing_exists_or_not(PassiveListing listingToAdd, string idToFind, bool shouldExist)
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 context.Database.OpenConnection();
                 context.Database.EnsureCreated();
@@ -350,7 +350,7 @@ namespace Persistence.Commands.UnitTests
                 context.SaveChanges();
             }
 
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 var repository = new ListingRepository(context);
 
@@ -400,7 +400,7 @@ namespace Persistence.Commands.UnitTests
         [MemberData(nameof(FindSuspiciousListingArguments))]
         public void return_correct_option_depending_on_whether_suspicious_listing_exists_or_not(SuspiciousListing listingToAdd, string idToFind, bool shouldExist)
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 context.Database.OpenConnection();
                 context.Database.EnsureCreated();
@@ -408,7 +408,7 @@ namespace Persistence.Commands.UnitTests
                 context.SaveChanges();
             }
 
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 var repository = new ListingRepository(context);
 

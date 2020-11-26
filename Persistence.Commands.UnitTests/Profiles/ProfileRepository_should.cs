@@ -5,15 +5,14 @@ using FluentAssertions;
 using LanguageExt;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Commands.Profiles;
 using System;
 using Xunit;
 
-namespace Persistence.Commands.UnitTests
+namespace Persistence.Commands.Profiles.UnitTests
 {
     public class ProfileRepository_should
     {
-        private readonly DbContextOptions<PersistenceContext> _options;
+        private readonly DbContextOptions<CommandPersistenceContext> _options;
         private readonly ActiveProfile _fakeActiveProfile = new ActiveProfile(
             new Guid("4413c264-b7f5-4b0b-a50c-23523c7a61d1"),
             Guid.NewGuid(),
@@ -28,7 +27,7 @@ namespace Persistence.Commands.UnitTests
         {
             var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = ":memory:" };
             var connection = new SqliteConnection(connectionStringBuilder.ToString());
-            _options = new DbContextOptionsBuilder<PersistenceContext>()
+            _options = new DbContextOptionsBuilder<CommandPersistenceContext>()
                 .UseSqlite(connection)
                 .Options;
         }
@@ -36,7 +35,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_when_adding_a_null_active_profile()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ProfileRepository(context);
@@ -53,7 +52,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_when_adding_a_null_passive_profile()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ProfileRepository(context);
@@ -70,7 +69,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void throw_exception_when_deleting_a_null_active_profile()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ProfileRepository(context);
@@ -86,7 +85,7 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void return_Some_if_active_profile_exists()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 context.Database.OpenConnection();
                 context.Database.EnsureCreated();
@@ -94,7 +93,7 @@ namespace Persistence.Commands.UnitTests
                 context.SaveChanges();
             }
 
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ProfileRepository(context);
@@ -110,13 +109,13 @@ namespace Persistence.Commands.UnitTests
         [Fact]
         public void return_None_if_active_profile_does_not_exist()
         {
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 context.Database.OpenConnection();
                 context.Database.EnsureCreated();
             }
 
-            using (var context = new PersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options))
             {
                 // Arrange
                 var repository = new ProfileRepository(context);
