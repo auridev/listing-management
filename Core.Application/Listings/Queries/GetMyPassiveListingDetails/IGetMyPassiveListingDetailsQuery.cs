@@ -5,6 +5,6 @@ namespace Core.Application.Listings.Queries.GetMyPassiveListingDetails
 {
     public interface IGetMyPassiveListingDetailsQuery
     {
-        Option<MyPassiveListingDetailsModel> Execute(Guid userId, GetMyPassiveListingDetailsQueryParams queryParams);
+        Option<MyPassiveListingDetailsModel> Execute(Guid userId, Guid listingId);
     }
 }

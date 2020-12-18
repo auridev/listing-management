@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Core.Application.Listings.Queries.Common;
+using System;
 
 namespace Core.Application.Listings.Queries.GetPublicListingDetails
 {
@@ -13,5 +12,6 @@ namespace Core.Application.Listings.Queries.GetPublicListingDetails
         public string MassUnit { get; set; }
         public string Description { get; set; }
         public string City { get; set; }
+        public OfferDetailsModel MyOffer { get; set; }
     }
 }

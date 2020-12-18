@@ -5,20 +5,17 @@ namespace Core.Application.Listings.Queries.GetPublicListingDetails
 {
     public sealed class GetPublicListingDetailsQuery : IGetPublicListingDetailsQuery
     {
-        private readonly IListingDataService _dataService;
+        private readonly IListingReadOnlyRepository _repository;
 
-        public GetPublicListingDetailsQuery(IListingDataService dataService)
+        public GetPublicListingDetailsQuery(IListingReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
-        public Option<PublicListingDetailsModel> Execute(Guid userId, GetPublicListingDetailsQueryParams queryParams)
+        public Option<PublicListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
-            if (queryParams == null)
-                return Option<PublicListingDetailsModel>.None;
-
-            return _dataService.FindPublic(userId, queryParams);
+            return _repository.FindPublic(userId, listingId);
         }
     }
 }

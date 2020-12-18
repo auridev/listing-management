@@ -5,6 +5,6 @@ namespace Core.Application.Listings.Queries.GetMyNewListingDetails
 {
     public interface IGetMyNewListingDetailsQuery
     {
-        Option<MyNewListingDetailsModel> Execute(Guid userId, GetMyNewListingDetailsQueryParams queryParams);
+        Option<MyNewListingDetailsModel> Execute(Guid userId, Guid listingId);
     }
 }

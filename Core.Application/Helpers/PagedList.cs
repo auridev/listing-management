@@ -29,5 +29,10 @@ namespace Core.Application.Helpers
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
             AddRange(items);
         }
+
+        public static PagedList<T> CreateEmpty()
+        {
+            return new PagedList<T>(new List<T>(), 0, 1, 1);
+        }
     }
 }

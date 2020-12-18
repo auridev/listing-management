@@ -59,6 +59,7 @@ namespace Core.UnitTests.Mocks
             LocationDetails,
             GeographicLocation,
             DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
             TrimmedString.Create("qwerty"));
 
         public static PassiveListing PassiveListing_1 => new PassiveListing(
@@ -69,6 +70,7 @@ namespace Core.UnitTests.Mocks
             LocationDetails,
             GeographicLocation,
             DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
             TrimmedString.Create("too passive"));
 
         public static ActiveListing ActiveListing_1 => new ActiveListing(
@@ -78,6 +80,7 @@ namespace Core.UnitTests.Mocks
             ContactDetails,
             LocationDetails,
             GeographicLocation,
+            DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow);
 
         public static ReceivedOffer Offer_1 = new ReceivedOffer(
@@ -108,6 +111,7 @@ namespace Core.UnitTests.Mocks
             ContactDetails,
             LocationDetails,
             GeographicLocation,
+            DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow);
 
         public static Message Message_1 => new Message(
@@ -126,6 +130,7 @@ namespace Core.UnitTests.Mocks
             LocationDetails,
             GeographicLocation,
             UserPreferences,
+            DateTimeOffset.UtcNow,
             Option<SeenDate>.None);
     }
 }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Application.Helpers;
+using System;
 
 namespace Core.Application.Messages.Queries.GetMyMessages
 {
     public interface IGetMyMessagesQuery
     {
-        ICollection<MyMessageModel> Execute(Guid userId, GetMyMessagesQueryParams queryParams);
+        PagedList<MyMessageModel> Execute(Guid userId, GetMyMessagesQueryParams queryParams);
     }
 }

@@ -1,0 +1,20 @@
+﻿         delete from [dbo].[active_listings]
+         delete from [dbo].[new_listings]
+         delete from [dbo].[passive_listings]
+
+         delete from [dbo].[messages]
+         delete from [dbo].[active_profiles]
+         delete from [dbo].[passive_profiles]
+
+
+
+
+
+
+         select * from  [dbo].[active_listings]
+         select * from  [dbo].[new_listings]
+         select * from  [dbo].[passive_listings]
+
+         select * from  [dbo].[messages]
+         select * from  [dbo].[active_profiles]
+         select * from  [dbo].[passive_profiles]

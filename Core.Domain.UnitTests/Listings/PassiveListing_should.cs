@@ -18,6 +18,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails, 
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(-3), 
                 TrimmedString.Create("something bad"));
 
@@ -33,6 +34,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails, 
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(1), 
                 TrimmedString.Create("aaaaa"));
 
@@ -55,6 +57,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 closedOn,
                 reason);
 
@@ -70,6 +73,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails, 
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(-111), 
                 TrimmedString.Create("xx xx"));
 
@@ -87,6 +91,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails, 
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(-10), 
                 TrimmedString.Create("incorrect details"));
 

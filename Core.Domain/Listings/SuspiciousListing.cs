@@ -1,6 +1,5 @@
 ﻿using Core.Domain.Common;
 using System;
-using System.Collections.Generic;
 
 namespace Core.Domain.Listings
 {
@@ -17,9 +16,10 @@ namespace Core.Domain.Listings
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
+            DateTimeOffset createdDate,
             DateTimeOffset markedAsSuspiciousAt,
             TrimmedString reason)
-            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation)
+            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation, createdDate)
         {
             if (markedAsSuspiciousAt == default)
                 throw new ArgumentNullException(nameof(markedAsSuspiciousAt));
@@ -38,6 +38,7 @@ namespace Core.Domain.Listings
                 ContactDetails,
                 LocationDetails,
                 GeographicLocation,
+                CreatedDate,
                 deactivationDate,
                 trimmedString);
         }
@@ -51,6 +52,7 @@ namespace Core.Domain.Listings
                 ContactDetails,
                 LocationDetails,
                 GeographicLocation,
+                CreatedDate,
                 expirationDate);
         }
     }

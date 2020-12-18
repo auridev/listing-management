@@ -15,6 +15,11 @@ namespace Persistence.Commands.Profiles
             builder
                 .Property(p => p.Id)
                 .HasColumnName("id");
+
+            builder
+                .HasIndex(p => p.UserId)
+                .HasDatabaseName("index_active_profile_user_id");
+
             builder
                 .Property(p => p.UserId)
                 .HasColumnName("user_id")
@@ -135,6 +140,11 @@ namespace Persistence.Commands.Profiles
                         .HasMaxLength(3)
                         .HasConversion(domain => domain.Value, db => CurrencyCode.Create(db));
                  });
+
+            builder
+                .Property(p => p.CreatedDate)
+                .HasColumnName("created_date")
+                .IsRequired(true);
 
             builder
                 .Property(p => p.___efCoreSeenDate)

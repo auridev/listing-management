@@ -12,8 +12,9 @@ namespace Core.Domain.Listings
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
+            DateTimeOffset createdDate,
             DateTimeOffset expiredOn)
-            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation)
+            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation, createdDate)
         {
             if (expiredOn == default)
                 throw new ArgumentNullException(nameof(expiredOn));

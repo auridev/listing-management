@@ -5,20 +5,17 @@ namespace Core.Application.Listings.Queries.GetMyActiveListingDetails
 {
     public sealed class GetMyActiveListingDetailsQuery : IGetMyActiveListingDetailsQuery
     {
-        private readonly IListingDataService _dataService;
+        private readonly IListingReadOnlyRepository _repository;
 
-        public GetMyActiveListingDetailsQuery(IListingDataService dataService)
+        public GetMyActiveListingDetailsQuery(IListingReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
-        public Option<MyActiveListingDetailsModel> Execute(Guid userId, GetMyActiveListingDetailsQueryParams queryParams)
+        public Option<MyActiveListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
-            if (queryParams == null)
-                return Option<MyActiveListingDetailsModel>.None;
-
-            return _dataService.FindMyActive(userId, queryParams);
+            return _repository.FindMyActive(userId, listingId);
         }
     }
 }

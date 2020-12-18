@@ -49,7 +49,8 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.CreateProfil
                     It.IsAny<ContactDetails>(),
                     It.IsAny<LocationDetails>(),
                     It.IsAny<GeographicLocation>(),
-                    It.IsAny<UserPreferences>()))
+                    It.IsAny<UserPreferences>(),
+                    It.IsAny<DateTimeOffset>()))
                 .Returns(_profile);
 
             _sut = _mocker.CreateInstance<CreateProfileCommand>();

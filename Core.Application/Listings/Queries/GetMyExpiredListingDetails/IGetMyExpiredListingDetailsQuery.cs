@@ -5,6 +5,6 @@ namespace Core.Application.Listings.Queries.GetMyExpiredListingDetails
 {
     public interface IGetMyExpiredListingDetailsQuery
     {
-        Option<MyExpiredListingDetailsModel> Execute(Guid userId, GetMyExpiredListingDetailsQueryParams queryParams);
+        Option<MyExpiredListingDetailsModel> Execute(Guid userId, Guid listingId);
     }
 }

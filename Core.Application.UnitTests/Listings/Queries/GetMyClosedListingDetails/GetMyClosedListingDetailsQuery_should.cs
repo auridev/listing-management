@@ -13,7 +13,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyClosedLi
     public class GetMyClosedListingDetailsQuery_should
     {
         private readonly GetMyClosedListingDetailsQuery _sut;
-        private readonly GetMyClosedListingDetailsQueryParams _queryParams;
         private readonly MyClosedListingDetailsModel _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
@@ -22,10 +21,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyClosedLi
         public GetMyClosedListingDetailsQuery_should()
         {
             _mocker = new AutoMocker();
-            _queryParams = new GetMyClosedListingDetailsQueryParams()
-            {
-                ListingId = _listingId
-            };
             _model = new MyClosedListingDetailsModel()
             {
                 Id = Guid.NewGuid(),
@@ -46,15 +41,13 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyClosedLi
                 Address = "asd",
                 Latitude = 1.1D,
                 Longitude = 2.2D,
+                CreatedDate = DateTimeOffset.UtcNow.AddDays(-10),
                 ClosedOn = DateTimeOffset.UtcNow.AddDays(10),
-                AcceptedOffer = new OfferDetailsModel()
-                {
-                    Id = Guid.NewGuid(),
-                    Value = 9M,
-                    CurrencyCode = "SSS"
-                },
+                AcceptedOfferValue = 9M,
+                AcceptedOfferCurrencyCode = "SSS",
                 OfferOwnerContactDetails = new OfferOwnerContactDetailsModel()
                 {
+                    Id = Guid.NewGuid(),
                     FirstName = "John",
                     LastName = "Smith",
                     Phone = "121313",
@@ -63,8 +56,8 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyClosedLi
             };
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyClosed(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyClosed(_userId, _listingId))
                 .Returns(Option<MyClosedListingDetailsModel>.Some(_model));
 
 
@@ -74,11 +67,11 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyClosedLi
         [Fact]
         public void retrieve_my_closed_listing_details_from_dataservice()
         {
-            Option<MyClosedListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
+            Option<MyClosedListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Verify(s => s.FindMyClosed(_userId, _queryParams), Times.Once);
+                .GetMock<IListingReadOnlyRepository>()
+                .Verify(s => s.FindMyClosed(_userId, _listingId), Times.Once);
         }
 
         [Fact]
@@ -86,22 +79,12 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyClosedLi
         {
             // arrange
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyClosed(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyClosed(_userId, _listingId))
                 .Returns(Option<MyClosedListingDetailsModel>.None);
 
             // act
-            Option<MyClosedListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
-
-            // assert
-            model.IsNone.Should().BeTrue();
-        }
-
-        [Fact]
-        public void return_none_if_query_params_is_not_valid()
-        {
-            // act
-            Option<MyClosedListingDetailsModel> model = _sut.Execute(_userId, null);
+            Option<MyClosedListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             // assert
             model.IsNone.Should().BeTrue();

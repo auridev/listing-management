@@ -19,6 +19,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow,
                 TrimmedString.Create("robot didnt understand description"));
         }
@@ -74,6 +75,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 markedAsSuspiciousAt,
                 reason);
 

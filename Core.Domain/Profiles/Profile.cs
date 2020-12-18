@@ -14,6 +14,7 @@ namespace Core.Domain.Profiles
         public LocationDetails LocationDetails { get; protected set; }
         public GeographicLocation GeographicLocation { get; protected set; }
         public UserPreferences UserPreferences { get; protected set; }
+        public DateTimeOffset CreatedDate { get; }
 
         protected Profile()
         {
@@ -25,7 +26,8 @@ namespace Core.Domain.Profiles
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
-            UserPreferences userPreferences)
+            UserPreferences userPreferences,
+            DateTimeOffset createdDate)
         {
             if (id == default)
                 throw new ArgumentNullException(nameof(id));
@@ -41,6 +43,8 @@ namespace Core.Domain.Profiles
                 throw new ArgumentNullException(nameof(geographicLocation));
             if (userPreferences == null)
                 throw new ArgumentNullException(nameof(userPreferences));
+            if (createdDate == default)
+                throw new ArgumentNullException(nameof(createdDate));
 
             Id = id;
             UserId = userId;
@@ -49,6 +53,7 @@ namespace Core.Domain.Profiles
             LocationDetails = locationDetails;
             GeographicLocation = geographicLocation;
             UserPreferences = userPreferences;
+            CreatedDate = createdDate;
         }
 
         public bool Equals([AllowNull] Profile other)

@@ -12,6 +12,7 @@ namespace Core.Application.Profiles.Commands.CreateProfile.Factory
             ContactDetails contactDetails, 
             LocationDetails locationDetails, 
             GeographicLocation geographicLocation, 
-            UserPreferences userPreferences);
+            UserPreferences userPreferences,
+            DateTimeOffset createdDate);
     }
 }

@@ -18,6 +18,10 @@ namespace Persistence.Commands.Listings
                 .HasColumnName("id");
 
             builder
+                .HasIndex(p => p.Owner)
+                .HasDatabaseName("index_new_listing_owner");
+
+            builder
                 .Property(p => p.Owner)
                 .HasColumnName("owner")
                 .HasConversion(domain => domain.UserId, db => Owner.Create(db))

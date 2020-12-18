@@ -26,6 +26,10 @@ namespace Persistence.Commands.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_date");
+
                     b.Property<DateTimeOffset>("ExpirationDate")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("expiration_date");
@@ -35,6 +39,9 @@ namespace Persistence.Commands.Migrations
                         .HasColumnName("owner");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Owner")
+                        .HasDatabaseName("index_active_listing_owner");
 
                     b.ToTable("active_listings");
                 });
@@ -50,11 +57,18 @@ namespace Persistence.Commands.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("closed_on");
 
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_date");
+
                     b.Property<Guid>("Owner")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("owner");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Owner")
+                        .HasDatabaseName("index_closed_listing_owner");
 
                     b.ToTable("closed_listings");
                 });
@@ -102,6 +116,9 @@ namespace Persistence.Commands.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Owner")
+                        .HasDatabaseName("index_new_listing_owner");
+
                     b.ToTable("new_listings");
                 });
 
@@ -111,6 +128,10 @@ namespace Persistence.Commands.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_date");
 
                     b.Property<DateTimeOffset>("DeactivationDate")
                         .HasColumnType("datetimeoffset")
@@ -128,6 +149,9 @@ namespace Persistence.Commands.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Owner")
+                        .HasDatabaseName("index_passive_listing_owner");
+
                     b.ToTable("passive_listings");
                 });
 
@@ -137,6 +161,10 @@ namespace Persistence.Commands.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_date");
 
                     b.Property<DateTimeOffset>("MarkedAsSuspiciousAt")
                         .HasColumnType("datetimeoffset")
@@ -153,6 +181,9 @@ namespace Persistence.Commands.Migrations
                         .HasColumnName("reason");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Owner")
+                        .HasDatabaseName("index_suspicious_listing_owner");
 
                     b.ToTable("suspicious_listings");
                 });
@@ -191,7 +222,7 @@ namespace Persistence.Commands.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Recipient")
-                        .HasDatabaseName("index_recipient");
+                        .HasDatabaseName("index_message_recipient");
 
                     b.ToTable("messages");
                 });
@@ -257,6 +288,10 @@ namespace Persistence.Commands.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_date");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -273,6 +308,9 @@ namespace Persistence.Commands.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("index_active_profile_user_id");
+
                     b.ToTable("active_profiles");
                 });
 
@@ -282,6 +320,10 @@ namespace Persistence.Commands.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("created_date");
 
                     b.Property<DateTimeOffset>("DeactivationDate")
                         .HasColumnType("datetimeoffset")
@@ -304,6 +346,9 @@ namespace Persistence.Commands.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("index_passive_profile_user_id");
 
                     b.ToTable("passive_profiles");
                 });

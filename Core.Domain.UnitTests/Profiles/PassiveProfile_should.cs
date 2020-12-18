@@ -20,6 +20,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _locationDetails,
                 _geographicLocation,
                 _userPreferences,
+                _createdDate,
                 DateTimeOffset.UtcNow,
                 TrimmedString.Create("user account canceled"));
         }
@@ -62,6 +63,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 locationDetails,
                 geographicLocation,
                 userPreferences,
+                _createdDate,
                 deactivationDate,
                 reason);
 

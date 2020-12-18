@@ -12,7 +12,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyNewListi
     public class GetMyNewListingDetailsQuery_should
     {
         private readonly GetMyNewListingDetailsQuery _sut;
-        private readonly GetMyNewListingDetailsQueryParams _queryParams;
         private readonly MyNewListingDetailsModel _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
@@ -21,10 +20,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyNewListi
         public GetMyNewListingDetailsQuery_should()
         {
             _mocker = new AutoMocker();
-            _queryParams = new GetMyNewListingDetailsQueryParams()
-            {
-                ListingId = _listingId
-            };
             _model = new MyNewListingDetailsModel()
             {
                 Id = Guid.NewGuid(),
@@ -45,12 +40,12 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyNewListi
                 Address = "asd",
                 Latitude = 1.1D,
                 Longitude = 2.2D,
-                CreatedOn = DateTimeOffset.UtcNow.AddDays(10)
+                CreatedDate = DateTimeOffset.UtcNow.AddDays(10)
             };
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyNew(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyNew(_userId, _listingId))
                 .Returns(Option<MyNewListingDetailsModel>.Some(_model));
 
 
@@ -60,30 +55,22 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyNewListi
         [Fact]
         public void retrieve_my_new_listing_details_from_dataservice()
         {
-            Option<MyNewListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
+            Option<MyNewListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Verify(s => s.FindMyNew(_userId, _queryParams), Times.Once);
+                .GetMock<IListingReadOnlyRepository>()
+                .Verify(s => s.FindMyNew(_userId, _listingId), Times.Once);
         }
 
         [Fact]
         public void return_none_if_listing_details_does_not_exist()
         {
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyNew(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyNew(_userId, _listingId))
                 .Returns(Option<MyNewListingDetailsModel>.None);
 
-            Option<MyNewListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
-
-            model.IsNone.Should().BeTrue();
-        }
-
-        [Fact]
-        public void return_none_if_query_params_is_not_valid()
-        {
-            Option<MyNewListingDetailsModel> model = _sut.Execute(_userId, null);
+            Option<MyNewListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             model.IsNone.Should().BeTrue();
         }

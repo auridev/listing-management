@@ -5,6 +5,6 @@ namespace Core.Application.Listings.Queries.GetMyClosedListingDetails
 {
     public interface IGetMyClosedListingDetailsQuery
     {
-        Option<MyClosedListingDetailsModel> Execute(Guid userId, GetMyClosedListingDetailsQueryParams queryParams);
+        Option<MyClosedListingDetailsModel> Execute(Guid userId, Guid listingId);
     }
 }

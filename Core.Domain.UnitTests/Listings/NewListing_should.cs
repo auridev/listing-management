@@ -22,12 +22,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         }
 
         [Fact]
-        public void have_a_CreatedDate_property()
-        {
-            _sut.CreatedDate.Should().BeCloseTo(DateTimeOffset.UtcNow);
-        }
-
-        [Fact]
         public void be_deactivatble()
         {
             // act

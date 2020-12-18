@@ -21,6 +21,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(90));
         }
 
@@ -45,6 +46,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(-90));
 
             createAction.Should().Throw<ArgumentException>();
@@ -59,6 +61,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 default);
 
             createAction.Should().Throw<ArgumentNullException>();
@@ -110,6 +113,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(24));
             var offer = new ReceivedOffer(Guid.NewGuid(),
                 sameOwner,
@@ -136,6 +140,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(24));
             var dymmyOffer = new ReceivedOffer(Guid.NewGuid(), // just an offer from some owner to increase the count
                 Owner.Create(Guid.NewGuid()),

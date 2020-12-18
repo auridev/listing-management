@@ -1,4 +1,5 @@
-﻿using Core.Application.Listings.Queries;
+﻿using Core.Application.Helpers;
+using Core.Application.Listings.Queries;
 using Core.Application.Listings.Queries.GetMyListings;
 using FluentAssertions;
 using Moq;
@@ -13,29 +14,22 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyListings
     {
         private readonly GetMyListingsQuery _sut;
         private readonly GetMyListingsQueryParams _queryParams;
-        private readonly ICollection<MyListingModel> _model;
+        private readonly PagedList<MyListingModel> _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
 
         public GetMyListingsQuery_should()
         {
             _mocker = new AutoMocker();
-            _model = new List<MyListingModel>()
-            {
-                new MyListingModel()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "title",
-                    MaterialType = "aaaa"
-                }
-            };
+            _model = new PagedList<MyListingModel>(new List<MyListingModel>(), 1, 1, 1);
+
             _queryParams = new GetMyListingsQueryParams()
             {
                 PageNumber = 1,
                 PageSize = 11,
             };
             _mocker
-                .GetMock<IListingDataService>()
+                .GetMock<IListingReadOnlyRepository>()
                 .Setup(s => s.GetMy(_userId, _queryParams))
                 .Returns(_model);
 
@@ -57,7 +51,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyListings
             ICollection<MyListingModel> result = _sut.Execute(_userId, _queryParams);
 
             _mocker
-                .GetMock<IListingDataService>()
+                .GetMock<IListingReadOnlyRepository>()
                 .Verify(s => s.GetMy(_userId, _queryParams), Times.Once);
         }
 

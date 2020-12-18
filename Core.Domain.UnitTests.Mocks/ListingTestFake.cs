@@ -13,8 +13,9 @@ namespace Core.UnitTests.Mocks
             ContactDetails contactDetails,
             LocationDetails pickupLocationDetails,
             GeographicLocation geographicLocation,
+            DateTimeOffset createdDate,
             string name)
-            : base(id, owner, listingDetails, contactDetails, pickupLocationDetails, geographicLocation)
+            : base(id, owner, listingDetails, contactDetails, pickupLocationDetails, geographicLocation, createdDate)
         {
             Name = name;
         }

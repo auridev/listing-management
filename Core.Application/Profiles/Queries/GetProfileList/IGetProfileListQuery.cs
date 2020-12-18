@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Application.Helpers;
+using System;
 
 namespace Core.Application.Profiles.Queries.GetProfileList
 {
     public interface IGetProfileListQuery
     {
-        ICollection<ProfileModel> Execute(Guid userId, GetProfileListQueryParams queryParams);
+        PagedList<ProfileModel> Execute(GetProfileListQueryParams queryParams);
     }
 }

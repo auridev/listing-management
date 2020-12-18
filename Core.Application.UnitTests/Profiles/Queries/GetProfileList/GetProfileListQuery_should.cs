@@ -1,4 +1,5 @@
-﻿using Core.Application.Profiles.Queries;
+﻿using Core.Application.Helpers;
+using Core.Application.Profiles.Queries;
 using Core.Application.Profiles.Queries.GetProfileList;
 using FluentAssertions;
 using Moq;
@@ -14,8 +15,7 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Queries.GetProfileLis
         private readonly GetProfileListQuery _sut;
         private readonly AutoMocker _mocker;
         private readonly GetProfileListQueryParams _queryParams;
-        private readonly ICollection<ProfileModel> _model;
-        private readonly Guid _userId = Guid.NewGuid();
+        private readonly PagedList<ProfileModel> _model;
 
         public GetProfileListQuery_should()
         {
@@ -25,14 +25,11 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Queries.GetProfileLis
                 Search = "aaa",
                 IsActive = null
             };
-            _model = new ProfileModel[]
-            {
-                new ProfileModel()
-            };
+            _model = PagedList<ProfileModel>.CreateEmpty();
 
             _mocker
-              .GetMock<IProfileDataService>()
-              .Setup(s => s.Get(_userId, It.IsAny<GetProfileListQueryParams>()))
+              .GetMock<IProfileReadOnlyRepository>()
+              .Setup(s => s.Get(It.IsAny<GetProfileListQueryParams>()))
               .Returns(_model);
 
 
@@ -42,25 +39,25 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Queries.GetProfileLis
         [Fact]
         public void return_ProfileModel_collection()
         {
-            ICollection<ProfileModel> result = _sut.Execute(_userId, _queryParams);
+            ICollection<ProfileModel> result = _sut.Execute(_queryParams);
 
             result.Should().NotBeNull();
         }
 
         [Fact]
-        public void retrieve_the_collection_from_data_access_service()
+        public void retrieve_paged_list_from_repository()
         {
-            ICollection<ProfileModel> result = _sut.Execute(_userId, _queryParams);
+            PagedList<ProfileModel> result = _sut.Execute(_queryParams);
 
             _mocker
-                .GetMock<IProfileDataService>()
-                .Verify(s => s.Get(_userId, _queryParams), Times.Once);
+                .GetMock<IProfileReadOnlyRepository>()
+                .Verify(s => s.Get(_queryParams), Times.Once);
         }
 
         [Fact]
-        public void return_an_empty_collection_if_queryParams_is_not_valid()
+        public void return_an_empty_paged_list_if_queryParams_is_not_valid()
         {
-            ICollection<ProfileModel> result = _sut.Execute(_userId, null);
+            PagedList<ProfileModel> result = _sut.Execute(null);
 
             result.Should().NotBeNull();
             result.Count.Should().Be(0);

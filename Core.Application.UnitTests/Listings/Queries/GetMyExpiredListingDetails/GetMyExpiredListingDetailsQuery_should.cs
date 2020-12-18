@@ -12,7 +12,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyExpiredL
     public class GetMyExpiredListingDetailsQuery_should
     {
         private readonly GetMyExpiredListingDetailsQuery _sut;
-        private readonly GetMyExpiredListingDetailsQueryParams _queryParams;
         private readonly MyExpiredListingDetailsModel _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
@@ -21,10 +20,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyExpiredL
         public GetMyExpiredListingDetailsQuery_should()
         {
             _mocker = new AutoMocker();
-            _queryParams = new GetMyExpiredListingDetailsQueryParams()
-            {
-                ListingId = _listingId
-            };
             _model = new MyExpiredListingDetailsModel()
             {
                 Id = Guid.NewGuid(),
@@ -49,8 +44,8 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyExpiredL
             };
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyExpired(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyExpired(_userId, _listingId))
                 .Returns(Option<MyExpiredListingDetailsModel>.Some(_model));
 
 
@@ -60,11 +55,11 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyExpiredL
         [Fact]
         public void retrieve_my_expired_listing_details_from_dataservice()
         {
-            Option<MyExpiredListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
+            Option<MyExpiredListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Verify(s => s.FindMyExpired(_userId, _queryParams), Times.Once);
+                .GetMock<IListingReadOnlyRepository>()
+                .Verify(s => s.FindMyExpired(_userId, _listingId), Times.Once);
         }
 
         [Fact]
@@ -72,22 +67,12 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyExpiredL
         {
             // arrange
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyExpired(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyExpired(_userId, _listingId))
                 .Returns(Option<MyExpiredListingDetailsModel>.None);
 
             // act
-            Option<MyExpiredListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
-
-            // assert
-            model.IsNone.Should().BeTrue();
-        }
-
-        [Fact]
-        public void return_none_if_query_params_is_not_valid()
-        {
-            // act
-            Option<MyExpiredListingDetailsModel> model = _sut.Execute(_userId, null);
+            Option<MyExpiredListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             // assert
             model.IsNone.Should().BeTrue();

@@ -5,6 +5,6 @@ namespace Core.Application.Listings.Queries.GetMyNewListingDetails
 {
     public class MyNewListingDetailsModel : ListingDetailsModel
     {
-        public DateTimeOffset CreatedOn { get; set; }
+                
     }
 }

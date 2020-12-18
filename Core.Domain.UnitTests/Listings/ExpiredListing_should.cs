@@ -16,6 +16,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(-1));
 
             newListing.ExpiredOn.Should().BeCloseTo(DateTimeOffset.UtcNow.AddDays(-1));
@@ -30,6 +31,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 DateTimeOffset.UtcNow.AddDays(1));
 
             createAction.Should().Throw<ArgumentException>();
@@ -44,6 +46,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
+                _createdDate,
                 default);
 
             createAction.Should().Throw<ArgumentNullException>();

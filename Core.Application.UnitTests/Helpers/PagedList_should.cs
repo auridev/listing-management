@@ -106,5 +106,13 @@ namespace Core.Application.UnitTests.Helpers
 
             createAction.Should().Throw<ArgumentException>();
         }
+
+        [Fact]
+        public void create_an_empty_paged_list_with_no_items()
+        {
+            var sut = PagedList<int>.CreateEmpty();
+
+            sut.Count.Should().Be(0);
+        }
     }
 }

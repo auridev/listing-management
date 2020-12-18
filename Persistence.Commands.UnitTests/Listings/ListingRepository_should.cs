@@ -205,6 +205,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.ContactDetails,
                     FakesCollection.LocationDetails,
                     FakesCollection.GeographicLocation,
+                    DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow),
                 "67fd3c72-a71d-4d46-8a62-635baade03e7",
                 true
@@ -218,6 +219,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.ContactDetails,
                     FakesCollection.LocationDetails,
                     FakesCollection.GeographicLocation,
+                    DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow),
                 "22222222-2222-2222-2222-222222222222",
                 false
@@ -318,6 +320,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.LocationDetails,
                     FakesCollection.GeographicLocation,
                     DateTimeOffset.UtcNow,
+                    DateTimeOffset.UtcNow,
                     TrimmedString.Create("too passive")),
                 "d63be5b2-a70d-4cd9-b5e9-8cb390152a76",
                 true
@@ -331,6 +334,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.ContactDetails,
                     FakesCollection.LocationDetails,
                     FakesCollection.GeographicLocation,
+                    DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
                     TrimmedString.Create("too passive")),
                 "22222222-2222-2222-2222-222222222222",
@@ -376,6 +380,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.LocationDetails,
                     FakesCollection.GeographicLocation,
                     DateTimeOffset.UtcNow,
+                    DateTimeOffset.UtcNow,
                     TrimmedString.Create("qwerty")),
                 "25fbbb10-ddec-4d48-adbc-4c5f4aed84a4",
                 true
@@ -389,6 +394,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.ContactDetails,
                     FakesCollection.LocationDetails,
                     FakesCollection.GeographicLocation,
+                    DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
                     TrimmedString.Create("qwerty")),
                 "22222222-2222-2222-2222-222222222222",

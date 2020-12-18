@@ -34,5 +34,17 @@ namespace BusinessLine.Core.Application.UnitTests.Helpers
             // assert => equals to max allowed
             _sut.PageSize.Should().Be(25);
         }
+
+        [Fact]
+        public void have_a_DefaultOffset_property()
+        {
+            var sut = new ListQueryParams()
+            {
+                PageNumber = 3,
+                PageSize = 20
+            };
+
+            sut.DefaultOffset.Should().Be(40);
+        }
     }
 }

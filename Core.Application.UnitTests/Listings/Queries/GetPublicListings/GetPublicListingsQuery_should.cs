@@ -1,4 +1,5 @@
-﻿using Core.Application.Listings.Queries;
+﻿using Core.Application.Helpers;
+using Core.Application.Listings.Queries;
 using Core.Application.Listings.Queries.GetPublicListings;
 using FluentAssertions;
 using Moq;
@@ -13,35 +14,25 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetPublicList
     {
         private readonly GetPublicListingsQuery _sut;
         private readonly GetPublicListingsQueryParams _queryParams;
-        private readonly ICollection<PublicListingModel> _model;
+        private readonly PagedList<PublicListingModel> _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
 
         public GetPublicListingsQuery_should()
         {
             _mocker = new AutoMocker();
-            _model = new List<PublicListingModel>()
-            {
-                new PublicListingModel()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "title",
-                    MaterialType = "aaaa",
-                    Country = "ania",
-                    City = "ius",
-                    Weight  = 23.7F
-                }
-    
-            };
+            _model = new PagedList<PublicListingModel>(new List<PublicListingModel>(), 1, 1, 1);
+            
             _queryParams = new GetPublicListingsQueryParams()
             {
                 PageNumber = 1,
                 PageSize = 11,
                 MaterialTypeIds = new int [] { 10, 20 },
-                SearchParam = "asd"
+                SearchParam = "asd",
+                OnlyWithMyOffers = false
             };
             _mocker
-                .GetMock<IListingDataService>()
+                .GetMock<IListingReadOnlyRepository>()
                 .Setup(s => s.GetPublic(_userId, _queryParams))
                 .Returns(_model);
 
@@ -62,7 +53,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetPublicList
             ICollection<PublicListingModel> result = _sut.Execute(_userId, _queryParams);
 
             _mocker
-                .GetMock<IListingDataService>()
+                .GetMock<IListingReadOnlyRepository>()
                 .Verify(s => s.GetPublic(_userId, _queryParams), Times.Once);
         }
 

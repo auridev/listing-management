@@ -5,20 +5,17 @@ namespace Core.Application.Listings.Queries.GetMyPassiveListingDetails
 {
     public sealed class GetMyPassiveListingDetailsQuery : IGetMyPassiveListingDetailsQuery
     {
-        private readonly IListingDataService _dataService;
+        private readonly IListingReadOnlyRepository _repository;
 
-        public GetMyPassiveListingDetailsQuery(IListingDataService dataService)
+        public GetMyPassiveListingDetailsQuery(IListingReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
-        public Option<MyPassiveListingDetailsModel> Execute(Guid userId, GetMyPassiveListingDetailsQueryParams queryParams)
+        public Option<MyPassiveListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
-            if (queryParams == null)
-                return Option<MyPassiveListingDetailsModel>.None;
-
-            return _dataService.FindMyPassive(userId, queryParams);
+            return _repository.FindMyPassive(userId, listingId);
         }
     }
 }
