@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Application.Listings.Queries.Common;
+using System;
 
 namespace Core.Application.Listings.Queries.GetMyListings
 {
@@ -6,6 +7,7 @@ namespace Core.Application.Listings.Queries.GetMyListings
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
-        public string MaterialType { get; set; }
+        public string MaterialTypeId { get; set; }
+        public ListingType Type { get; set; }
     }
 }

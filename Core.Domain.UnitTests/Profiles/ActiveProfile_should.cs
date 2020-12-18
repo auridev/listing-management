@@ -20,6 +20,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _locationDetails,
                 _geographicLocation,
                 _userPreferences,
+                _createdDate,
                 Option<SeenDate>.None);
         }
 

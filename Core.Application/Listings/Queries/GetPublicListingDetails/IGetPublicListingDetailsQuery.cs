@@ -5,6 +5,6 @@ namespace Core.Application.Listings.Queries.GetPublicListingDetails
 {
     public interface IGetPublicListingDetailsQuery
     {
-        Option<PublicListingDetailsModel> Execute(Guid userId, GetPublicListingDetailsQueryParams queryParams);
+        Option<PublicListingDetailsModel> Execute(Guid userId, Guid listingId);
     }
 }

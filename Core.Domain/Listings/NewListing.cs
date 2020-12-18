@@ -1,13 +1,10 @@
 ﻿using Core.Domain.Common;
 using System;
-using System.Collections.Generic;
 
 namespace Core.Domain.Listings
 {
     public sealed class NewListing : Listing
     {
-        public DateTimeOffset CreatedDate { get; }
-
         private NewListing() { }
 
         public NewListing(Guid id,
@@ -17,12 +14,10 @@ namespace Core.Domain.Listings
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
             DateTimeOffset createdDate)
-            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation)
+            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation, createdDate)
         {
             if (createdDate == default)
                 throw new ArgumentNullException(nameof(createdDate));
-
-            CreatedDate = createdDate;
         }
 
         public PassiveListing Deactivate(TrimmedString trimmedString, DateTimeOffset deactivationDate)
@@ -33,6 +28,7 @@ namespace Core.Domain.Listings
                 ContactDetails,
                 LocationDetails,
                 GeographicLocation,
+                CreatedDate,
                 deactivationDate,
                 trimmedString);
         }
@@ -46,6 +42,7 @@ namespace Core.Domain.Listings
                 ContactDetails,
                 LocationDetails,
                 GeographicLocation,
+                CreatedDate,
                 expirationDate);
         }
 
@@ -58,6 +55,7 @@ namespace Core.Domain.Listings
                 ContactDetails,
                 LocationDetails,
                 GeographicLocation,
+                CreatedDate,
                 markedAsSuspiciousAt,
                 reason);
         }

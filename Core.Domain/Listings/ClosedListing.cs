@@ -22,10 +22,11 @@ namespace Core.Domain.Listings
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
+            DateTimeOffset createdDate,
             DateTimeOffset closedOn,
             AcceptedOffer acceptedOffer,
             List<RejectedOffer> rejectedOffers)
-            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation)
+            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation, createdDate)
         {
             if (closedOn == default)
                 throw new ArgumentNullException(nameof(closedOn));

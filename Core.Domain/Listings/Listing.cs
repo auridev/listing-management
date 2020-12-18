@@ -14,6 +14,7 @@ namespace Core.Domain.Listings
         public ContactDetails ContactDetails { get; }
         public LocationDetails LocationDetails { get; }
         public GeographicLocation GeographicLocation { get; }
+        public DateTimeOffset CreatedDate { get; }
 
         protected Listing()
         {
@@ -24,7 +25,8 @@ namespace Core.Domain.Listings
             ListingDetails listingDetails,
             ContactDetails contactDetails,
             LocationDetails locationDetails,
-            GeographicLocation geographicLocation)
+            GeographicLocation geographicLocation,
+            DateTimeOffset createdDate)
         {
             if (id == default)
                 throw new ArgumentNullException(nameof(id));
@@ -38,6 +40,8 @@ namespace Core.Domain.Listings
                 throw new ArgumentNullException(nameof(locationDetails));
             if (geographicLocation == null)
                 throw new ArgumentNullException(nameof(geographicLocation));
+            if (createdDate == default)
+                throw new ArgumentNullException(nameof(createdDate));
 
             Id = id;
             Owner = owner;
@@ -45,6 +49,7 @@ namespace Core.Domain.Listings
             ContactDetails = contactDetails;
             LocationDetails = locationDetails;
             GeographicLocation = geographicLocation;
+            CreatedDate = createdDate;
         }
 
         public bool Equals([AllowNull] Listing other)

@@ -1,4 +1,5 @@
-﻿using Core.Application.Profiles.Commands.CreateProfile.Factory;
+﻿using Common.Dates;
+using Core.Application.Profiles.Commands.CreateProfile.Factory;
 using Core.Domain.Common;
 using System;
 
@@ -8,13 +9,16 @@ namespace Core.Application.Profiles.Commands.CreateProfile
     {
         private readonly IProfileRepository _repository;
         private readonly IProfileFactory _factory;
+        private readonly IDateTimeService _dateTimeService;
 
-        public CreateProfileCommand(IProfileRepository repository, IProfileFactory factory)
+        public CreateProfileCommand(IProfileRepository repository, IProfileFactory factory, IDateTimeService dateTimeService)
         {
             _repository = repository ??
                 throw new ArgumentNullException(nameof(repository));
             _factory = factory ??
                 throw new ArgumentNullException(nameof(factory));
+            _dateTimeService = dateTimeService ??
+                throw new ArgumentNullException(nameof(dateTimeService));
         }
 
         public void Execute(Guid userid, CreateProfileModel model)
@@ -43,6 +47,8 @@ namespace Core.Application.Profiles.Commands.CreateProfile
                 MassMeasurementUnit.BySymbol(model.MassUnit),
                 CurrencyCode.Create(model.CurrencyCode));
 
+            var createdDate = _dateTimeService.GetCurrentUtcDateTime();
+
             // Command
             var activeProfile = _factory.CreateActive(
                 Guid.NewGuid(),
@@ -51,7 +57,8 @@ namespace Core.Application.Profiles.Commands.CreateProfile
                 contactDetails,
                 locationDetails,
                 geographicLocation,
-                userPreferences);
+                userPreferences,
+                createdDate);
 
             _repository.Add(activeProfile);
 

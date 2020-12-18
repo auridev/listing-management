@@ -20,5 +20,7 @@
                     : value;
             }
         }
+
+        public int DefaultOffset => (PageNumber - 1) * PageSize;
     }
 }

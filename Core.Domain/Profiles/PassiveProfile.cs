@@ -17,9 +17,10 @@ namespace Core.Domain.Profiles
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
             UserPreferences userPreferences,
+            DateTimeOffset createdDate,
             DateTimeOffset deactivationDate,
             TrimmedString reason)
-            : base(id, userId, email, contactDetails, locationDetails, geographicLocation, userPreferences)
+            : base(id, userId, email, contactDetails, locationDetails, geographicLocation, userPreferences, createdDate)
         {
             if (deactivationDate == default)
                 throw new ArgumentNullException(nameof(deactivationDate));

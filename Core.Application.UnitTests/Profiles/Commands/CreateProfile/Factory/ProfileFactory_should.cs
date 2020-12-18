@@ -43,7 +43,8 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.CreateProfil
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                DateTimeOffset.UtcNow);
 
             activeProfile.Should().NotBeNull();
         }

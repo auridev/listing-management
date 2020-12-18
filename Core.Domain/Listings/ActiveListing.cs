@@ -28,8 +28,9 @@ namespace Core.Domain.Listings
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
+            DateTimeOffset createdDate,
             DateTimeOffset expirationDate)
-            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation)
+            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation, createdDate)
         {
             if (expirationDate == default)
                 throw new ArgumentNullException(nameof(expirationDate));
@@ -45,6 +46,7 @@ namespace Core.Domain.Listings
                 ContactDetails,
                 LocationDetails,
                 GeographicLocation,
+                CreatedDate,
                 deactivationDate,
                 trimmedString);
         }
@@ -86,7 +88,7 @@ namespace Core.Domain.Listings
             });
 
             if (acceptedOffer != null)
-                return new ClosedListing(Id, Owner, ListingDetails, ContactDetails, LocationDetails, GeographicLocation, closedOn, acceptedOffer, rejectedOffers);
+                return new ClosedListing(Id, Owner, ListingDetails, ContactDetails, LocationDetails, GeographicLocation, CreatedDate, closedOn, acceptedOffer, rejectedOffers);
             else
                 return Option<ClosedListing>.None;
         }

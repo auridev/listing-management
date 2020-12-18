@@ -12,7 +12,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyPassiveL
     public class GetMyPassiveListingDetailsQuery_should
     {
         private readonly GetMyPassiveListingDetailsQuery _sut;
-        private readonly GetMyPassiveListingDetailsQueryParams _queryParams;
         private readonly MyPassiveListingDetailsModel _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
@@ -21,10 +20,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyPassiveL
         public GetMyPassiveListingDetailsQuery_should()
         {
             _mocker = new AutoMocker();
-            _queryParams = new GetMyPassiveListingDetailsQueryParams()
-            {
-                ListingId = _listingId
-            };
             _model = new MyPassiveListingDetailsModel()
             {
                 Id = Guid.NewGuid(),
@@ -45,13 +40,14 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyPassiveL
                 Address = "asd",
                 Latitude = 1.1D,
                 Longitude = 2.2D,
+                CreatedDate = DateTimeOffset.UtcNow.AddDays(-10),
                 DeactivationDate = DateTimeOffset.UtcNow.AddDays(10),
                 DeactivationReason = "asdasd"
             };
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyPassive(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyPassive(_userId, _listingId))
                 .Returns(Option<MyPassiveListingDetailsModel>.Some(_model));
 
 
@@ -61,30 +57,22 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyPassiveL
         [Fact]
         public void retrieve_my_new_listing_details_from_dataservice()
         {
-            Option<MyPassiveListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
+            Option<MyPassiveListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Verify(s => s.FindMyPassive(_userId, _queryParams), Times.Once);
+                .GetMock<IListingReadOnlyRepository>()
+                .Verify(s => s.FindMyPassive(_userId, _listingId), Times.Once);
         }
 
         [Fact]
         public void return_none_if_listing_details_does_not_exist()
         {
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyPassive(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyPassive(_userId, _listingId))
                 .Returns(Option<MyPassiveListingDetailsModel>.None);
 
-            Option<MyPassiveListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
-
-            model.IsNone.Should().BeTrue();
-        }
-
-        [Fact]
-        public void return_none_if_query_params_is_not_valid()
-        {
-            Option<MyPassiveListingDetailsModel> model = _sut.Execute(_userId, null);
+            Option<MyPassiveListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             model.IsNone.Should().BeTrue();
         }

@@ -5,19 +5,16 @@ namespace Core.Application.Listings.Queries.GetMyNewListingDetails
 {
     public sealed class GetMyNewListingDetailsQuery : IGetMyNewListingDetailsQuery
     {
-        private readonly IListingDataService _dataService;
-        public GetMyNewListingDetailsQuery(IListingDataService dataService)
+        private readonly IListingReadOnlyRepository _repository;
+        public GetMyNewListingDetailsQuery(IListingReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
-        public Option<MyNewListingDetailsModel> Execute(Guid userId, GetMyNewListingDetailsQueryParams queryParams)
+        public Option<MyNewListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
-            if (queryParams == null)
-                return Option<MyNewListingDetailsModel>.None;
-
-            return _dataService.FindMyNew(userId, queryParams);
+            return _repository.FindMyNew(userId, listingId);
         }
     }
 }

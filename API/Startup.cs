@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using Persistence.Commands;
+using Persistence.Commands.Helpers;
 using Persistence.Queries;
 using System;
 
@@ -58,6 +59,7 @@ namespace API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.EnsureDatabaseSeeded();
             }
             else
             {

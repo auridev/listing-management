@@ -12,8 +12,9 @@ namespace Core.UnitTests.Mocks
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
-            UserPreferences userPreferences)
-            : base(id, userId, email, contactDetails, locationDetails, geographicLocation, userPreferences)
+            UserPreferences userPreferences,
+            DateTimeOffset createdDate)
+            : base(id, userId, email, contactDetails, locationDetails, geographicLocation, userPreferences, createdDate)
         {
         }
     }

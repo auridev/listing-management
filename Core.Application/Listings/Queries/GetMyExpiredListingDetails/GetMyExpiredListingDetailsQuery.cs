@@ -5,20 +5,17 @@ namespace Core.Application.Listings.Queries.GetMyExpiredListingDetails
 {
     public sealed class GetMyExpiredListingDetailsQuery : IGetMyExpiredListingDetailsQuery
     {
-        private readonly IListingDataService _dataService;
+        private readonly IListingReadOnlyRepository _repository;
 
-        public GetMyExpiredListingDetailsQuery(IListingDataService dataService)
+        public GetMyExpiredListingDetailsQuery(IListingReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
-        public Option<MyExpiredListingDetailsModel> Execute(Guid userId, GetMyExpiredListingDetailsQueryParams queryParams)
+        public Option<MyExpiredListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
-            if (queryParams == null)
-                return Option<MyExpiredListingDetailsModel>.None;
-
-            return _dataService.FindMyExpired(userId, queryParams);
+            return _repository.FindMyExpired(userId, listingId);
         }
     }
 }

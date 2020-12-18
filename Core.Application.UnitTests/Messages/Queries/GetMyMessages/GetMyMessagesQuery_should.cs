@@ -28,7 +28,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessages
                 PageSize = 11,
             };
             _mocker
-                .GetMock<IMessageQueryRepository>()
+                .GetMock<IMessageReadOnlyRepository>()
                 .Setup(s => s.Get(_userId, _queryParams))
                 .Returns(_model);
 
@@ -37,27 +37,27 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessages
 
 
         [Fact]
-        public void return_model_collection()
+        public void return_paged_model_list()
         {
-            ICollection<MyMessageModel> result = _sut.Execute(_userId, _queryParams);
+            PagedList<MyMessageModel> result = _sut.Execute(_userId, _queryParams);
 
             result.Should().NotBeNull();
         }
 
         [Fact]
-        public void retrieve_collection_from_repository()
+        public void retrieve_paged_list_from_repository()
         {
-            ICollection<MyMessageModel> result = _sut.Execute(_userId, _queryParams);
+            PagedList<MyMessageModel> result = _sut.Execute(_userId, _queryParams);
 
             _mocker
-                .GetMock<IMessageQueryRepository>()
+                .GetMock<IMessageReadOnlyRepository>()
                 .Verify(s => s.Get(_userId, _queryParams), Times.Once);
         }
 
         [Fact]
-        public void return_empty_collection_if_queryParams_is_not_valid()
+        public void return_empty_paged_list_if_queryParams_is_not_valid()
         {
-            ICollection<MyMessageModel> result = _sut.Execute(_userId, null);
+            PagedList<MyMessageModel> result = _sut.Execute(_userId, null);
 
             result.Should().NotBeNull();
             result.Count.Should().Be(0);

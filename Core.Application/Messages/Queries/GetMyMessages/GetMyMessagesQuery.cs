@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Application.Helpers;
+using System;
 
 namespace Core.Application.Messages.Queries.GetMyMessages
 {
     public sealed class GetMyMessagesQuery : IGetMyMessagesQuery
     {
-        private readonly IMessageQueryRepository _dataService;
-        public GetMyMessagesQuery(IMessageQueryRepository dataService)
+        private readonly IMessageReadOnlyRepository _repository;
+        public GetMyMessagesQuery(IMessageReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
-        public ICollection<MyMessageModel> Execute(Guid userId, GetMyMessagesQueryParams queryParams)
+        public PagedList<MyMessageModel> Execute(Guid userId, GetMyMessagesQueryParams queryParams)
         {
             if (queryParams == null)
-                return new MyMessageModel[0];
+                return PagedList<MyMessageModel>.CreateEmpty();
 
-            return _dataService.Get(userId, queryParams);
+            return _repository.Get(userId, queryParams);
         }
     }
 }

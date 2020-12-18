@@ -6,6 +6,7 @@ using LanguageExt;
 using Moq;
 using Moq.AutoMock;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveListingDetails
@@ -13,7 +14,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveLi
     public class GetMyActiveListingDetailsQuery_should
     {
         private readonly GetMyActiveListingDetailsQuery _sut;
-        private readonly GetMyActiveListingDetailsQueryParams _queryParams;
         private readonly MyActiveListingDetailsModel _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
@@ -22,10 +22,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveLi
         public GetMyActiveListingDetailsQuery_should()
         {
             _mocker = new AutoMocker();
-            _queryParams = new GetMyActiveListingDetailsQueryParams()
-            {
-                ListingId = _listingId
-            };
             _model = new MyActiveListingDetailsModel()
             {
                 Id = Guid.NewGuid(),
@@ -46,8 +42,9 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveLi
                 Address = "asd",
                 Latitude = 1.1D,
                 Longitude = 2.2D,
+                CreatedDate = DateTimeOffset.UtcNow.AddDays(-10),
                 ExpirationDate = DateTimeOffset.UtcNow.AddDays(10),
-                ReceivedOffers = new OfferDetailsModel[] 
+                ReceivedOffers = new List<OfferDetailsModel> 
                 {
                     new OfferDetailsModel()
                     {
@@ -65,8 +62,8 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveLi
             };
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyActive(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyActive(_userId, _listingId))
                 .Returns(Option<MyActiveListingDetailsModel>.Some(_model));
 
 
@@ -76,11 +73,11 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveLi
         [Fact]
         public void retrieve_my_active_listing_details_from_dataservice()
         {
-            Option<MyActiveListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
+            Option<MyActiveListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             _mocker
-                .GetMock<IListingDataService>()
-                .Verify(s => s.FindMyActive(_userId, _queryParams), Times.Once);
+                .GetMock<IListingReadOnlyRepository>()
+                .Verify(s => s.FindMyActive(_userId, _listingId), Times.Once);
         }
 
         [Fact]
@@ -88,22 +85,12 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveLi
         {
             // arrange
             _mocker
-                .GetMock<IListingDataService>()
-                .Setup(s => s.FindMyActive(_userId, _queryParams))
+                .GetMock<IListingReadOnlyRepository>()
+                .Setup(s => s.FindMyActive(_userId, _listingId))
                 .Returns(Option<MyActiveListingDetailsModel>.None);
 
             // act
-            Option<MyActiveListingDetailsModel> model = _sut.Execute(_userId, _queryParams);
-
-            // assert
-            model.IsNone.Should().BeTrue();
-        }
-
-        [Fact]
-        public void return_none_if_query_params_is_not_valid()
-        {
-            // act
-            Option<MyActiveListingDetailsModel> model = _sut.Execute(_userId, null);
+            Option<MyActiveListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
             // assert
             model.IsNone.Should().BeTrue();

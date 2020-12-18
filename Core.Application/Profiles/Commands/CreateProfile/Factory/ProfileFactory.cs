@@ -13,7 +13,8 @@ namespace Core.Application.Profiles.Commands.CreateProfile.Factory
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
-            UserPreferences userPreferences)
+            UserPreferences userPreferences,
+            DateTimeOffset createdDate)
         {
 
             return new ActiveProfile(id,
@@ -23,6 +24,7 @@ namespace Core.Application.Profiles.Commands.CreateProfile.Factory
                 locationDetails,
                 geographicLocation,
                 userPreferences,
+                createdDate,
                 Option<SeenDate>.None);
         }
     }

@@ -6,5 +6,6 @@ namespace Core.Application.Listings.Queries.GetPublicListings
     {
         public object MaterialTypeIds { get; set; }
         public string SearchParam { get; set; }
+        public bool OnlyWithMyOffers { get; set; }
     }
 }

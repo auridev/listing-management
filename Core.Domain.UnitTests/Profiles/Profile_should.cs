@@ -25,6 +25,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 DistanceMeasurementUnit.Kilometer,
                 MassMeasurementUnit.Kilogram,
                 CurrencyCode.Create("eur"));
+        protected static readonly DateTimeOffset _createdDate = DateTimeOffset.UtcNow;
 
         private readonly Profile _sut;
 
@@ -36,7 +37,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
         }
 
         [Fact]
@@ -81,15 +83,22 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
             _sut.UserPreferences.Should().Be(_userPreferences);
         }
 
+        [Fact]
+        public void have_a_CreatedDate_property()
+        {
+            _sut.CreatedDate.Should().BeCloseTo(_createdDate);
+        }
+
         public static IEnumerable<object[]> InvalidArguments => new List<object[]>
         {
-            new object[] { Guid.Empty, Guid.NewGuid(), _email, _contactDetails, _locationDetails, _geographicLocation, _userPreferences},
-            new object[] { Guid.NewGuid(), Guid.Empty, _email, _contactDetails, _locationDetails, _geographicLocation, _userPreferences},
-            new object[] { Guid.NewGuid(), Guid.NewGuid(), null, _contactDetails, _locationDetails, _geographicLocation, _userPreferences},
-            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, null, _locationDetails, _geographicLocation, _userPreferences},
-            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, _contactDetails, null, _geographicLocation, _userPreferences},
-            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, _contactDetails, _locationDetails, null, _userPreferences},
-            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, _contactDetails, _locationDetails, _geographicLocation, null},
+            new object[] { Guid.Empty, Guid.NewGuid(), _email, _contactDetails, _locationDetails, _geographicLocation, _userPreferences, _createdDate },
+            new object[] { Guid.NewGuid(), Guid.Empty, _email, _contactDetails, _locationDetails, _geographicLocation, _userPreferences, _createdDate },
+            new object[] { Guid.NewGuid(), Guid.NewGuid(), null, _contactDetails, _locationDetails, _geographicLocation, _userPreferences, _createdDate },
+            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, null, _locationDetails, _geographicLocation, _userPreferences, _createdDate },
+            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, _contactDetails, null, _geographicLocation, _userPreferences, _createdDate },
+            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, _contactDetails, _locationDetails, null, _userPreferences, _createdDate },
+            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, _contactDetails, _locationDetails, _geographicLocation, null, _createdDate },
+            new object[] { Guid.NewGuid(), Guid.NewGuid(), _email, _contactDetails, _locationDetails, _geographicLocation, _userPreferences, default},
         };
 
         [Theory]
@@ -100,7 +109,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
-            UserPreferences userPreferences)
+            UserPreferences userPreferences,
+            DateTimeOffset createdDate)
         {
             Action createAction = () => new ProfileTestFake(id,
                 userId,
@@ -108,7 +118,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 contactDetails,
                 locationDetails,
                 geographicLocation,
-                userPreferences);
+                userPreferences,
+                createdDate);
 
             createAction.Should().Throw<ArgumentNullException>();
         }
@@ -125,14 +136,16 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
             var second = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
 
             // act
             var equals = first.Equals(second);
@@ -152,14 +165,16 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
             var second = (object)new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
 
             // act
             var equals = first.Equals(second);
@@ -179,14 +194,16 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
             var second = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
 
             // act
             var equals = (first == second);
@@ -205,14 +222,16 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
             var second = new ProfileTestFake(Guid.NewGuid(),
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
 
             // act
             var nonEquals = (first != second);
@@ -232,14 +251,16 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
             var second = new ProfileTestFake(id,
                 Guid.NewGuid(),
                 _email,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _userPreferences);
+                _userPreferences,
+                _createdDate);
 
             // act
             var equals = (first == second);

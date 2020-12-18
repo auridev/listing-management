@@ -16,9 +16,10 @@ namespace Core.Domain.Listings
             ContactDetails contactDetails,
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
+            DateTimeOffset createdDate,
             DateTimeOffset deactivationDate,
             TrimmedString reason)
-            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation)
+            : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation, createdDate)
         {
             if (deactivationDate == default)
                 throw new ArgumentNullException(nameof(deactivationDate));
@@ -38,6 +39,7 @@ namespace Core.Domain.Listings
                 ContactDetails,
                 LocationDetails,
                 GeographicLocation,
+                CreatedDate,
                 expirationDate);
         }
     }

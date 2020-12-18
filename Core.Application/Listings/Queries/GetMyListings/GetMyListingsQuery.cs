@@ -5,11 +5,11 @@ namespace Core.Application.Listings.Queries.GetMyListings
 {
     public sealed class GetMyListingsQuery : IGetMyListingsQuery
     {
-        private readonly IListingDataService _dataService;
-        public GetMyListingsQuery(IListingDataService dataService)
+        private readonly IListingReadOnlyRepository _repository;
+        public GetMyListingsQuery(IListingReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
         public ICollection<MyListingModel> Execute(Guid userId, GetMyListingsQueryParams queryParams)
@@ -17,7 +17,7 @@ namespace Core.Application.Listings.Queries.GetMyListings
             if (queryParams == null)
                 return new MyListingModel[0];
 
-            return _dataService.GetMy(userId, queryParams);
+            return _repository.GetMy(userId, queryParams);
         }
     }
 }

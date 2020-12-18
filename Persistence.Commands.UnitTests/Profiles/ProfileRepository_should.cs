@@ -21,6 +21,7 @@ namespace Persistence.Commands.Profiles.UnitTests
             FakesCollection.LocationDetails,
             FakesCollection.GeographicLocation,
             FakesCollection.UserPreferences,
+            DateTimeOffset.UtcNow,
             Option<SeenDate>.None);
 
         public ProfileRepository_should()

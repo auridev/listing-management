@@ -5,11 +5,11 @@ namespace Core.Application.Messages.Queries.GetMyMessageDetails
 {
     public sealed class GetMyMessageDetailsQuery : IGetMyMessageDetailsQuery
     {
-        private readonly IMessageQueryRepository _dataService;
-        public GetMyMessageDetailsQuery(IMessageQueryRepository dataService)
+        private readonly IMessageReadOnlyRepository _repository;
+        public GetMyMessageDetailsQuery(IMessageReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
         public Option<MyMessageDetailsModel> Execute(Guid userId, GetMyMessageDetailsQueryParams queryParams)
@@ -17,7 +17,7 @@ namespace Core.Application.Messages.Queries.GetMyMessageDetails
             if (queryParams == null)
                 return Option<MyMessageDetailsModel>.None;
 
-            return _dataService.Find(userId, queryParams);
+            return _repository.Find(userId, queryParams);
         }
     }
 }

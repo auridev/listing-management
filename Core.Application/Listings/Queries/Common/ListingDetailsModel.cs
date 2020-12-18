@@ -2,7 +2,7 @@
 
 namespace Core.Application.Listings.Queries.Common
 {
-    public class ListingDetailsModel
+    public abstract class ListingDetailsModel
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
@@ -22,5 +22,6 @@ namespace Core.Application.Listings.Queries.Common
         public string Address { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
     }
 }

@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Application.Helpers;
+using System;
 
 namespace Core.Application.Profiles.Queries.GetProfileList
 {
     public sealed class GetProfileListQuery : IGetProfileListQuery
     {
-        private readonly IProfileDataService _dataService;
+        private readonly IProfileReadOnlyRepository _repository;
 
-        public GetProfileListQuery(IProfileDataService dataService)
+        public GetProfileListQuery(IProfileReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
-        public ICollection<ProfileModel> Execute(Guid userId, GetProfileListQueryParams queryParams)
+        public PagedList<ProfileModel> Execute(GetProfileListQueryParams queryParams)
         {
             if (queryParams == null)
-                return new ProfileModel[0];
+                return PagedList<ProfileModel>.CreateEmpty();
 
-            return _dataService.Get(userId, queryParams);
+            return _repository.Get(queryParams);
         }
     }
 }

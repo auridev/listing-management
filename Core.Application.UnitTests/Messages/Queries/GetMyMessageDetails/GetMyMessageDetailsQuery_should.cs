@@ -36,7 +36,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
             };
 
             _mocker
-                .GetMock<IMessageQueryRepository>()
+                .GetMock<IMessageReadOnlyRepository>()
                 .Setup(s => s.Find(_userId, _queryParams))
                 .Returns(Option<MyMessageDetailsModel>.Some(_model));
 
@@ -49,7 +49,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
             Option<MyMessageDetailsModel> model = _sut.Execute(_userId, _queryParams);
 
             _mocker
-                .GetMock<IMessageQueryRepository>()
+                .GetMock<IMessageReadOnlyRepository>()
                 .Verify(s => s.Find(_userId, _queryParams), Times.Once);
         }
 
@@ -58,7 +58,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
         {
             // arrange
             _mocker
-                .GetMock<IMessageQueryRepository>()
+                .GetMock<IMessageReadOnlyRepository>()
                 .Setup(s => s.Find(_userId, _queryParams))
                 .Returns(Option<MyMessageDetailsModel>.None);
 

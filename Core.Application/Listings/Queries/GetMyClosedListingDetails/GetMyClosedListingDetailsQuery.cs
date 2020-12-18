@@ -5,20 +5,17 @@ namespace Core.Application.Listings.Queries.GetMyClosedListingDetails
 {
     public sealed class GetMyClosedListingDetailsQuery : IGetMyClosedListingDetailsQuery
     {
-        private readonly IListingDataService _dataService;
+        private readonly IListingReadOnlyRepository _repository;
 
-        public GetMyClosedListingDetailsQuery(IListingDataService dataService)
+        public GetMyClosedListingDetailsQuery(IListingReadOnlyRepository repository)
         {
-            _dataService = dataService ??
-                throw new ArgumentNullException(nameof(dataService));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
         }
 
-        public Option<MyClosedListingDetailsModel> Execute(Guid userId, GetMyClosedListingDetailsQueryParams queryParams)
+        public Option<MyClosedListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
-            if (queryParams == null)
-                return Option<MyClosedListingDetailsModel>.None;
-
-            return _dataService.FindMyClosed(userId, queryParams);
+            return _repository.FindMyClosed(userId, listingId);
         }
     }
 }

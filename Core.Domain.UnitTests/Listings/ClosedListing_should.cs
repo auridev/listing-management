@@ -27,6 +27,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                _contactDetails,
                _locationDetails,
                _geographicLocation,
+               _createdDate,
                DateTimeOffset.UtcNow.AddDays(-1),
                _acceptedOffer,
                _rejectedOffers);
@@ -55,6 +56,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails, 
                 _geographicLocation,
+                _createdDate,
                 closedOn,
                 acceptedOffer,
                 rejectedOffers);

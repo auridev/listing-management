@@ -35,8 +35,9 @@ namespace Core.Domain.Profiles
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
             UserPreferences userPreferences,
+            DateTimeOffset createdDate,
             Option<SeenDate> introductionSeenOn)
-            : base(id, userId, email, contactDetails, locationDetails, geographicLocation, userPreferences)
+            : base(id, userId, email, contactDetails, locationDetails, geographicLocation, userPreferences, createdDate)
         {
             IntroductionSeenOn = introductionSeenOn;
         }
@@ -61,6 +62,7 @@ namespace Core.Domain.Profiles
                 LocationDetails,
                 GeographicLocation,
                 UserPreferences,
+                CreatedDate,
                 deactivationDate,
                 reason);
         }

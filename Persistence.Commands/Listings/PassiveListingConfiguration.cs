@@ -18,6 +18,10 @@ namespace Persistence.Commands.Listings
                 .HasColumnName("id");
 
             builder
+                .HasIndex(p => p.Owner)
+                .HasDatabaseName("index_passive_listing_owner");
+
+            builder
                 .Property(p => p.Owner)
                 .HasColumnName("owner")
                 .HasConversion(domain => domain.UserId, db => Owner.Create(db))
@@ -148,6 +152,11 @@ namespace Persistence.Commands.Listings
                         .Property(pp => pp.Longitude)
                         .HasColumnName("longitude");
                 });
+
+            builder
+                .Property(p => p.CreatedDate)
+                .HasColumnName("created_date")
+                .IsRequired(true);
 
             builder
                 .Property(p => p.DeactivationDate)
