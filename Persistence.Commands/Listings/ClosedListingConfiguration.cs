@@ -40,7 +40,6 @@ namespace Persistence.Commands.Listings
                     listingDetails
                        .Property(p => p.MaterialType)
                        .HasColumnName("material_type_id")
-                       .HasMaxLength(2)
                        .HasConversion(domain => domain.Id, db => MaterialType.ById(db));
 
                     listingDetails.OwnsOne(

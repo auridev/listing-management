@@ -19,15 +19,13 @@ namespace Core.Application.Profiles.Commands.DeactivateProfile
         public void Execute(DeactivateProfileModel model)
         {
             // Prerequisties
-            var id = Guid.Parse(model.ActiveProfileId);
-
             var reason = TrimmedString.Create(model.Reason);
 
             var date = _dateTimeService.GetCurrentUtcDateTime();
 
             // Command
             _repository
-                 .Find(id)
+                 .Find(model.ActiveProfileId)
                  .IfSome(active =>
                  {
                      var passive = active.Deactivate(date, reason);

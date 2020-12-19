@@ -23,7 +23,7 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.DeactivatePr
             _mocker = new AutoMocker();
             _model = new DeactivateProfileModel()
             {
-                ActiveProfileId = "3b9a8b14-f0de-4740-a6b4-3cd6e52bd715",
+                ActiveProfileId = new Guid("3b9a8b14-f0de-4740-a6b4-3cd6e52bd715"),
                 Reason = "because I want all"
             };
 
