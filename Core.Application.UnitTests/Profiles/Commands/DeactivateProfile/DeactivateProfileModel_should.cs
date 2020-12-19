@@ -13,7 +13,7 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.DeactivatePr
         {
             _sut = new DeactivateProfileModel()
             {
-                ActiveProfileId = "adasdadadasd",
+                ActiveProfileId = Guid.NewGuid(),
                 Reason = "because reasons"
             };
         }

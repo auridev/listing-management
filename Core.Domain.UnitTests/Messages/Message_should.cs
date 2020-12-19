@@ -57,7 +57,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Messages
         [Fact]
         public void have_CreatedDate_property()
         {
-            _sut.CreatedDate.Should().BeCloseTo(DateTimeOffset.UtcNow, 5_000);
+            _sut.CreatedDate.Should().BeCloseTo(_createdDate);
         }
 
         public static IEnumerable<object[]> InvalidArguments => new List<object[]>
