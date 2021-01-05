@@ -1,5 +1,5 @@
 ﻿using Core.Application.Services;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
 using Xunit;

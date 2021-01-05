@@ -1,7 +1,7 @@
 ﻿using Common.ApplicationSettings;
 using Common.FileSystem;
 using Core.Application.Listings.Commands;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;

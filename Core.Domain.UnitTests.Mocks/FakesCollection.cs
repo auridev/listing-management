@@ -1,10 +1,11 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Core.Domain.Messages;
 using Core.Domain.Offers;
 using Core.Domain.Profiles;
 using LanguageExt;
 using System;
+using Common.Helpers;
 
 namespace Core.UnitTests.Mocks
 {
@@ -17,11 +18,11 @@ namespace Core.UnitTests.Mocks
                 Phone.Create("+111 222 33333"));
 
         public static LocationDetails LocationDetails => LocationDetails.Create(
-            Alpha2Code.Create("GB"),
+            Alpha2Code.Create("GB").ToUnsafeRight(),
             State.Create("London"),
-            City.Create("London"),
+            City.Create("London").ToUnsafeRight(),
             PostCode.Create("aaa1"),
-            Address.Create("some random place 12"));
+            Address.Create("some random place 12").ToUnsafeRight());
 
         public static GeographicLocation GeographicLocation => GeographicLocation.Create(10D, 10D);
 
@@ -60,7 +61,7 @@ namespace Core.UnitTests.Mocks
             GeographicLocation,
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow,
-            TrimmedString.Create("qwerty"));
+            TrimmedString.Create("qwerty").ToUnsafeRight());
 
         public static PassiveListing PassiveListing_1 => new PassiveListing(
             Guid.NewGuid(),
@@ -71,7 +72,7 @@ namespace Core.UnitTests.Mocks
             GeographicLocation,
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow,
-            TrimmedString.Create("too passive"));
+            TrimmedString.Create("too passive").ToUnsafeRight());
 
         public static ActiveListing ActiveListing_1 => new ActiveListing(
             Guid.NewGuid(),

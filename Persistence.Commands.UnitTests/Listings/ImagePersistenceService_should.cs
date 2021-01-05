@@ -1,6 +1,6 @@
 using Common.ApplicationSettings;
 using Common.FileSystem;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;

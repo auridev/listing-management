@@ -1,4 +1,4 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Common.Dates;
 using System;
 
@@ -18,21 +18,21 @@ namespace Core.Application.Profiles.Commands.DeactivateProfile
 
         public void Execute(DeactivateProfileModel model)
         {
-            // Prerequisties
-            var reason = TrimmedString.Create(model.Reason);
+            //// Prerequisties
+            //var reason = TrimmedString.Create(model.Reason);
 
-            var date = _dateTimeService.GetCurrentUtcDateTime();
+            //var date = _dateTimeService.GetCurrentUtcDateTime();
 
-            // Command
-            _repository
-                 .Find(model.ActiveProfileId)
-                 .IfSome(active =>
-                 {
-                     var passive = active.Deactivate(date, reason);
-                     _repository.Add(passive);
-                     _repository.Delete(active);
-                     _repository.Save();
-                 });
+            //// Command
+            //_repository
+            //     .Find(model.ActiveProfileId)
+            //     .IfSome(active =>
+            //     {
+            //         var passive = active.Deactivate(date, reason);
+            //         _repository.Add(passive);
+            //         _repository.Delete(active);
+            //         _repository.Save();
+            //     });
         }
     }
 }

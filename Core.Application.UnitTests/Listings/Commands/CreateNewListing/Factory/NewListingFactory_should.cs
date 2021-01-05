@@ -1,5 +1,5 @@
 ﻿using Core.Application.Listings.Commands.CreateNewListing.Factory;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Core.UnitTests.Mocks;
 using FluentAssertions;

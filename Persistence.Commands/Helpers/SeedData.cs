@@ -1,10 +1,11 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Core.Domain.Messages;
 using Core.Domain.Profiles;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
+using Common.Helpers;
 
 namespace Persistence.Commands.Helpers
 {
@@ -20,16 +21,16 @@ namespace Persistence.Commands.Helpers
                     => Email.Create("peter@peterson.com");
                 public static ContactDetails ContactDetails 
                     => ContactDetails.Create(
-                        PersonName.Create("Peter", "Peterson"),
-                        Company.Create("Google"),
-                        Phone.Create("+333 100 10001"));
+                        PersonName.Create("Peter", "Peterson").ToUnsafeRight(),
+                        Company.Create("Google").ToUnsafeRight(),
+                        Phone.Create("+333 100 10001").ToUnsafeRight());
                 public static LocationDetails LocationDetails 
                     => LocationDetails.Create(
-                        Alpha2Code.Create("LT"),
+                        Alpha2Code.Create("LT").ToUnsafeRight(),
                         Option<State>.None,
-                        City.Create("vilnius"),
+                        City.Create("vilnius").ToUnsafeRight(),
                         PostCode.Create("11200"),
-                        Address.Create("Mindaugo 9"));
+                        Address.Create("Mindaugo 9").ToUnsafeRight());
                 public static GeographicLocation GeographicLocation 
                     => GeographicLocation.Create(5.5D, 30.1D);
                 public static ActiveProfile ActiveProfile => 
@@ -56,16 +57,16 @@ namespace Persistence.Commands.Helpers
                     => Email.Create("john@johnson.com");
                 public static ContactDetails ContactDetails 
                     => ContactDetails.Create(
-                        PersonName.Create("John", "Johnson"),
+                        PersonName.Create("John", "Johnson").ToUnsafeRight(),
                         Option<Company>.None,
-                        Phone.Create("+333 100 20002"));
+                        Phone.Create("+333 100 20002").ToUnsafeRight());
                 public static LocationDetails LocationDetails 
                     => LocationDetails.Create(
-                        Alpha2Code.Create("LT"),
+                        Alpha2Code.Create("LT").ToUnsafeRight(),
                         Option<State>.None,
-                        City.Create("Kaunas"),
+                        City.Create("Kaunas").ToUnsafeRight(),
                         PostCode.Create("22200"),
-                        Address.Create("Savanoriu 23."));
+                        Address.Create("Savanoriu 23.").ToUnsafeRight());
                 public static GeographicLocation GeographicLocation 
                     => GeographicLocation.Create(10.5D, 45.1D);
                 public static ActiveProfile ActiveProfile 
@@ -92,16 +93,16 @@ namespace Persistence.Commands.Helpers
                     => Email.Create("alice@alison.com");
                 public static ContactDetails ContactDetails 
                     => ContactDetails.Create(
-                        PersonName.Create("Alice", "Alison"),
-                        Company.Create("Microsoft"),
-                        Phone.Create("+333 100 30003"));
+                        PersonName.Create("Alice", "Alison").ToUnsafeRight(),
+                        Company.Create("Microsoft").ToUnsafeRight(),
+                        Phone.Create("+333 100 30003").ToUnsafeRight());
                 public static LocationDetails LocationDetails 
                     => LocationDetails.Create(
-                        Alpha2Code.Create("LT"),
+                        Alpha2Code.Create("LT").ToUnsafeRight(),
                         State.Create("Klaipedos rajonas"),
-                        City.Create("Klaipeda"),
+                        City.Create("Klaipeda").ToUnsafeRight(),
                         PostCode.Create("33200"),
-                        Address.Create("Juros 18-45"));
+                        Address.Create("Juros 18-45").ToUnsafeRight());
                 public static GeographicLocation GeographicLocation 
                     => GeographicLocation.Create(3.5D, 58.1D);
                 public static ActiveProfile ActiveProfile 
@@ -128,16 +129,16 @@ namespace Persistence.Commands.Helpers
                     => Email.Create("mark@markeson.com");
                 public static ContactDetails ContactDetails 
                     => ContactDetails.Create(
-                        PersonName.Create("Mark", "Markeson"),
-                        Company.Create("Netflix"),
-                        Phone.Create("+333 100 40004"));
+                        PersonName.Create("Mark", "Markeson").ToUnsafeRight(),
+                        Company.Create("Netflix").ToUnsafeRight(),
+                        Phone.Create("+333 100 40004").ToUnsafeRight());
                 public static LocationDetails LocationDetails 
                     => LocationDetails.Create(
-                        Alpha2Code.Create("LT"),
+                        Alpha2Code.Create("LT").ToUnsafeRight(),
                         Option<State>.None,
-                        City.Create("Siauliai"),
+                        City.Create("Siauliai").ToUnsafeRight(),
                         PostCode.Create("33111"),
-                        Address.Create("Kareiviu 89"));
+                        Address.Create("Kareiviu 89").ToUnsafeRight());
                 public static GeographicLocation GeographicLocation 
                     => GeographicLocation.Create(10D, 20D);
                 public static PassiveProfile PassiveProfile 
@@ -154,7 +155,7 @@ namespace Persistence.Commands.Helpers
                             CurrencyCode.Create("USD")),
                         DateTimeOffset.UtcNow.AddDays(-50),
                         new DateTimeOffset(2020, 12, 1, 13, 30, 35, TimeSpan.FromMinutes(60)),
-                        TrimmedString.Create("Criminal activity found"));
+                        TrimmedString.Create("Criminal activity found").ToUnsafeRight());
             }
 
             public static class Philip
@@ -165,16 +166,16 @@ namespace Persistence.Commands.Helpers
                     => Email.Create("philip@philipson.com");
                 public static ContactDetails ContactDetails 
                     => ContactDetails.Create(
-                        PersonName.Create("Philip", "philipson"),
+                        PersonName.Create("Philip", "philipson").ToUnsafeRight(),
                         Option<Company>.None,
-                        Phone.Create("+333 100 50005"));
+                        Phone.Create("+333 100 50005").ToUnsafeRight());
                 public static LocationDetails LocationDetails 
                     => LocationDetails.Create(
-                        Alpha2Code.Create("LT"),
+                        Alpha2Code.Create("LT").ToUnsafeRight(),
                         Option<State>.None,
-                        City.Create("Vilnius"),
+                        City.Create("Vilnius").ToUnsafeRight(),
                         PostCode.Create("40000"),
-                        Address.Create("Gedimino prs 15"));
+                        Address.Create("Gedimino prs 15").ToUnsafeRight());
                 public static GeographicLocation GeographicLocation 
                     => GeographicLocation.Create(34D, 17D);
                 public static PassiveProfile PassiveProfile 
@@ -191,7 +192,7 @@ namespace Persistence.Commands.Helpers
                             CurrencyCode.Create("EUR")),
                         DateTimeOffset.UtcNow.AddDays(-60),
                         new DateTimeOffset(2018, 6, 23, 8, 34, 3, TimeSpan.FromMinutes(60)),
-                        TrimmedString.Create("No activity"));
+                        TrimmedString.Create("No activity").ToUnsafeRight());
             }
         }
 
@@ -353,7 +354,7 @@ namespace Persistence.Commands.Helpers
                 Personas.Peter.GeographicLocation,
                 DateTimeOffset.UtcNow.AddDays(-20),
                 new DateTimeOffset(2020, 4, 23, 0, 0, 0, TimeSpan.FromHours(0)),
-                TrimmedString.Create("Violates business rules. We don't allow junk to be posted in listings")),
+                TrimmedString.Create("Violates business rules. We don't allow junk to be posted in listings").ToUnsafeRight()),
 
             new PassiveListing(
                 Guid.Parse("b6ae4dd3-6325-4f8e-9c5e-2306450e4bc4"),
@@ -368,7 +369,7 @@ namespace Persistence.Commands.Helpers
                 Personas.Peter.GeographicLocation,
                 DateTimeOffset.UtcNow.AddDays(-21),
                 new DateTimeOffset(2020, 7, 2, 0, 0, 0, TimeSpan.FromHours(0)),
-                TrimmedString.Create("Violates business rules. User complaints received")),
+                TrimmedString.Create("Violates business rules. User complaints received").ToUnsafeRight()),
 
             new PassiveListing(
                 Guid.Parse("6d8e7a01-c9ab-421e-8530-66aea80bc0ee"),
@@ -383,7 +384,7 @@ namespace Persistence.Commands.Helpers
                 Personas.Alice.GeographicLocation,
                 DateTimeOffset.UtcNow.AddDays(-22),
                 new DateTimeOffset(2020, 11, 1, 0, 0, 0, TimeSpan.FromHours(0)),
-                TrimmedString.Create("Violates business rules. Can't sell this shit online"))
+                TrimmedString.Create("Violates business rules. Can't sell this shit online").ToUnsafeRight())
         };
     }
 }

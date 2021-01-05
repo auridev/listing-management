@@ -1,10 +1,11 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Core.UnitTests.Mocks;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Common.Helpers;
 
 namespace BusinessLine.Core.Domain.UnitTests.Listings
 {
@@ -15,15 +16,15 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 MaterialType.Plastic,
                 Weight.Create(2.5F, MassMeasurementUnit.Kilogram),
                 Description.Create("somethin nice to sell"));
-        protected static readonly ContactDetails _contactDetails = ContactDetails.Create(PersonName.Create("john", "doe"),
-                Company.Create("gariunai"),
-                Phone.Create("+333 111 22222"));
+        protected static readonly ContactDetails _contactDetails = ContactDetails.Create(PersonName.Create("john", "doe").ToUnsafeRight(),
+                Company.Create("gariunai").ToUnsafeRight(),
+                Phone.Create("+333 111 22222").ToUnsafeRight());
         protected static readonly LocationDetails _locationDetails = LocationDetails.Create(
-            Alpha2Code.Create("LT"),
+            Alpha2Code.Create("LT").ToUnsafeRight(),
             State.Create("staaaat"),
-            City.Create("polis"),
+            City.Create("polis").ToUnsafeRight(),
             PostCode.Create("aaa1"),
-            Address.Create("some random place 12"));
+            Address.Create("some random place 12").ToUnsafeRight());
         protected static readonly GeographicLocation _geographicLocation = GeographicLocation.Create(20D, 30D);
         protected static readonly DateTimeOffset _createdDate = DateTimeOffset.UtcNow;
 
