@@ -51,6 +51,7 @@ namespace Core.Domain.ValueObjects
                 from p in phone
                 select (pN, oC, p);
 
+            // my new changes
            return combined.Map((combined) => new ContactDetails(combined.personName, combined.optionalCompany, combined.phone));
         }
 

@@ -23,11 +23,6 @@ namespace Core.Domain.ValueObjects
                 ConvertInputValueToTrimmedString(name)
                     .Bind(name => CreateCompany(name));
 
-        public static Either<Error, Option<Company>> CreateOptional(string name)
-        {
-            
-        }
-
         private static Either<Error, TrimmedString> ConvertInputValueToTrimmedString(string value)
              =>
                 TrimmedString.Create(value);
