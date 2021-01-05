@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Profiles;
 using FluentAssertions;
 using LanguageExt;
 using System;
 using Xunit;
+using Common.Helpers;
 
 namespace BusinessLine.Core.Domain.UnitTests.Profiles
 {
@@ -28,14 +29,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         public void be_able_to_update_details()
         {
             // arrange
-            var newContactDetails = ContactDetails.Create(PersonName.Create("keanu", "reaves"),
-                Company.Create("matrix"),
-                Phone.Create("+555 111 22222"));
-            var newLocationDetails = LocationDetails.Create(Alpha2Code.Create("us"),
+            var newContactDetails = ContactDetails.Create(PersonName.Create("keanu", "reaves").ToUnsafeRight(),
+                Company.Create("matrix").ToUnsafeRight(),
+                Phone.Create("+555 111 22222").ToUnsafeRight());
+            var newLocationDetails = LocationDetails.Create(Alpha2Code.Create("us").ToUnsafeRight(),
                 State.Create("California"),
-                City.Create("LA"),
+                City.Create("LA").ToUnsafeRight(),
                 PostCode.Create("aaa1"),
-                Address.Create("some random place 12"));
+                Address.Create("some random place 12").ToUnsafeRight());
             var newGeographicLocation = GeographicLocation.Create(10D, 10D);
             var newUserPreferences = UserPreferences.Create(
                 DistanceMeasurementUnit.Mile,
@@ -56,7 +57,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Profiles
         public void be_deactivatable()
         {
             PassiveProfile passiveProfile = _sut.Deactivate(DateTimeOffset.UtcNow,
-                TrimmedString.Create("trial expired"));
+                TrimmedString.Create("trial expired").ToUnsafeRight());
 
             passiveProfile.DeactivationDate.Should().BeCloseTo(DateTimeOffset.UtcNow);
             passiveProfile.Reason.ToString().Should().Be("trial expired");

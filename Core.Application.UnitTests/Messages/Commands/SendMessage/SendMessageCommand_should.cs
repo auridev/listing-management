@@ -1,7 +1,7 @@
 ﻿using Core.Application.Messages.Commands;
 using Core.Application.Messages.Commands.SendMessage;
 using Core.Application.Messages.Commands.SendMessage.Factory;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using Core.Domain.Messages;
 using Core.UnitTests.Mocks;
 using Moq;

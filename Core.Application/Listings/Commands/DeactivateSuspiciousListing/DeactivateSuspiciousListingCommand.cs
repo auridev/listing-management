@@ -1,4 +1,4 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Common.Dates;
 using LanguageExt;
@@ -21,24 +21,24 @@ namespace Core.Application.Listings.Commands.DeactivateSuspiciousListing
 
         public void Execute(DeactivateSuspiciousListingModel model)
         {
-            // Pre-requisites
-            TrimmedString reason = TrimmedString.Create(model.Reason);
-            DateTimeOffset deactivationDate = _dateTimeService.GetCurrentUtcDateTime();
-            Option<SuspiciousListing> optionalSuspiciousListing = _repository.FindSuspicious(model.ListingId);
+            //// Pre-requisites
+            //TrimmedString reason = TrimmedString.Create(model.Reason);
+            //DateTimeOffset deactivationDate = _dateTimeService.GetCurrentUtcDateTime();
+            //Option<SuspiciousListing> optionalSuspiciousListing = _repository.FindSuspicious(model.ListingId);
 
-            // Command
-            optionalSuspiciousListing
-                .Some(suspiciousListing =>
-                {
-                    PassiveListing passiveListing = suspiciousListing.Deactivate(reason, deactivationDate);
+            //// Command
+            //optionalSuspiciousListing
+            //    .Some(suspiciousListing =>
+            //    {
+            //        PassiveListing passiveListing = suspiciousListing.Deactivate(reason, deactivationDate);
 
-                    _repository.Delete(suspiciousListing);
+            //        _repository.Delete(suspiciousListing);
 
-                    _repository.Add(passiveListing);
+            //        _repository.Add(passiveListing);
 
-                    _repository.Save();
-                })
-                .None(() => { });
+            //        _repository.Save();
+            //    })
+            //    .None(() => { });
         }
     }
 }

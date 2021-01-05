@@ -1,5 +1,6 @@
-﻿using Core.Application.Profiles.Commands.CreateProfile.Factory;
-using Core.Domain.Common;
+﻿using Common.Helpers;
+using Core.Application.Profiles.Commands.CreateProfile.Factory;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
 using System;
 using Xunit;
@@ -17,14 +18,14 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Commands.CreateProfil
         public ProfileFactory_should()
         {
             _email = Email.Create("aaa@bbbb.com");
-            _contactDetails = ContactDetails.Create(PersonName.Create("mike", "tyson"),
-                Company.Create("asd"),
-                Phone.Create("+333 111 22222"));
-            _locationDetails = LocationDetails.Create(Alpha2Code.Create("LT"),
+            _contactDetails = ContactDetails.Create(PersonName.Create("mike", "tyson").ToUnsafeRight(),
+                Company.Create("asd").ToUnsafeRight(),
+                Phone.Create("+333 111 22222").ToUnsafeRight());
+            _locationDetails = LocationDetails.Create(Alpha2Code.Create("LT").ToUnsafeRight(),
                 State.Create("staaaat"),
-                City.Create("vilnius"),
+                City.Create("vilnius").ToUnsafeRight(),
                 PostCode.Create("aaa1"),
-                Address.Create("some random place 12"));
+                Address.Create("some random place 12").ToUnsafeRight());
             _geographicLocation = GeographicLocation.Create(10D, 10D);
             _userPreferences = UserPreferences.Create(
                 DistanceMeasurementUnit.Kilometer,

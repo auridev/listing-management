@@ -1,5 +1,5 @@
 ﻿using Core.Application.Messages.Commands.SendMessage.Factory;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using Core.Domain.Messages;
 using System;
 

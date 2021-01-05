@@ -1,4 +1,4 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Offers;
 
 namespace Core.Application.Listings.Commands.ReceiveOffer.Factory

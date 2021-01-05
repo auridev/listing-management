@@ -20,4 +20,10 @@
     <ProjectReference Include="..\Persistence.Queries\Persistence.Queries.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Listings\" />
+    <Folder Include="Messages\" />
+    <Folder Include="Profiles\" />
+  </ItemGroup>
+
 </Project>

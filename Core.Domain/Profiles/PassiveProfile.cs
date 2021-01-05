@@ -1,4 +1,4 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using System;
 
 namespace Core.Domain.Profiles

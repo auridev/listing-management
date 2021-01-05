@@ -1,7 +1,8 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Profiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Common.Helpers;
 
 namespace Persistence.Commands.Profiles
 {
@@ -44,26 +45,26 @@ namespace Persistence.Commands.Profiles
                                 .Property(p => p.FirstName)
                                 .HasColumnName("first_name")
                                 .HasMaxLength(50)
-                                .HasConversion(domain => domain.Value, db => TrimmedString.Create(db));
+                                .HasConversion(domain => domain.Value, db => TrimmedString.Create(db).ToUnsafeRight());
 
                             personName
                                 .Property(p => p.LastName)
                                 .HasColumnName("last_name")
                                 .HasMaxLength(50)
-                                .HasConversion(domain => domain.Value, db => TrimmedString.Create(db));
+                                .HasConversion(domain => domain.Value, db => TrimmedString.Create(db).ToUnsafeRight());
                         });
 
                     contactDetails
                         .Property(p => p.Phone)
                         .HasColumnName("phone_number")
                         .HasMaxLength(25)
-                        .HasConversion(domain => domain.Number, db => Phone.Create(db));
+                        .HasConversion(domain => domain.Number, db => Phone.Create(db).ToUnsafeRight());
 
                     contactDetails
                         .Property(p => p.___efCoreCompany)
                         .HasColumnName("company")
                         .HasMaxLength(50)
-                        .HasConversion(domain => domain.Name.Value, db => Company.Create(db));
+                        .HasConversion(domain => domain.Name.Value, db => Company.Create(db).ToUnsafeRight());
                     contactDetails
                         .Ignore(cd => cd.Company);
                 });
@@ -76,13 +77,13 @@ namespace Persistence.Commands.Profiles
                         .Property(p => p.CountryCode)
                         .HasColumnName("country_code")
                         .HasMaxLength(5)
-                        .HasConversion(domain => domain.Value, db => Alpha2Code.Create(db));
+                        .HasConversion(domain => domain.Value, db => Alpha2Code.Create(db).ToUnsafeRight());
 
                      locationDetails
                         .Property(p => p.City)
                         .HasColumnName("city")
                         .HasMaxLength(50)
-                        .HasConversion(domain => domain.Name.Value, db => City.Create(db));
+                        .HasConversion(domain => domain.Name.Value, db => City.Create(db).ToUnsafeRight());
 
                      locationDetails
                         .Property(p => p.PostCode)
@@ -94,7 +95,7 @@ namespace Persistence.Commands.Profiles
                         .Property(p => p.Address)
                         .HasColumnName("address")
                         .HasMaxLength(250)
-                        .HasConversion(domain => domain.Value.Value, db => Address.Create(db));
+                        .HasConversion(domain => domain.Value.Value, db => Address.Create(db).ToUnsafeRight());
 
                      locationDetails
                         .Property(p => p.___efCoreState)
@@ -155,7 +156,7 @@ namespace Persistence.Commands.Profiles
                 .Property(p => p.Reason)
                 .HasColumnName("deactivation_reason")
                 .HasMaxLength(500)
-                .HasConversion(domain => domain.Value, db => TrimmedString.Create(db))
+                .HasConversion(domain => domain.Value, db => TrimmedString.Create(db).ToUnsafeRight())
                 .IsRequired(true);
         }
     }

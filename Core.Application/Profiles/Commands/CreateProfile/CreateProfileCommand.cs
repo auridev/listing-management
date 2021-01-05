@@ -1,7 +1,10 @@
 ﻿using Common.Dates;
+using Common.Helpers;
 using Core.Application.Profiles.Commands.CreateProfile.Factory;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using System;
+using LanguageExt;
+using static LanguageExt.Prelude;
 
 namespace Core.Application.Profiles.Commands.CreateProfile
 {
@@ -26,17 +29,23 @@ namespace Core.Application.Profiles.Commands.CreateProfile
             // Pre-requisites
             var email = Email.Create(model.Email);
 
+            // cia neteisingai
+            var optionalCompany = Company.Create(model.Company)
+                .Match(
+                    rightValue => Right(Option<Company>.Some(rightValue)),
+                    leftValue => Right(Option<Company>.None));
+
             var contactDetails = ContactDetails.Create(
                 PersonName.Create(model.FirstName, model.LastName),
-                Company.Create(model.Company),
+                optionalCompany,
                 Phone.Create(model.Phone));
 
             var locationDetails = LocationDetails.Create(
-                Alpha2Code.Create(model.CountryCode),
-                State.Create(model.State),
-                City.Create(model.City),
+                Alpha2Code.Create(model.CountryCode).ToUnsafeRight(),
+                Domain.ValueObjects.State.Create(model.State),
+                City.Create(model.City).ToUnsafeRight(),
                 PostCode.Create(model.PostCode),
-                Address.Create(model.Address));
+                Address.Create(model.Address).ToUnsafeRight());
 
             var geographicLocation = GeographicLocation.Create(
                 model.Latitude,
@@ -54,7 +63,7 @@ namespace Core.Application.Profiles.Commands.CreateProfile
                 Guid.NewGuid(),
                 userid,
                 email,
-                contactDetails,
+                contactDetails.ToUnsafeRight(),
                 locationDetails,
                 geographicLocation,
                 userPreferences,

@@ -1,25 +1,26 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Profiles;
 using Core.UnitTests.Mocks;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Common.Helpers;
 
 namespace BusinessLine.Core.Domain.UnitTests.Profiles
 {
     public abstract class Profile_should
     {
         protected static readonly Email _email = Email.Create("aaa@bbbb.com");
-        protected static readonly ContactDetails _contactDetails = ContactDetails.Create(PersonName.Create("mike", "tyson"),
-                Company.Create("asd"),
-                Phone.Create("+333 111 22222"));
+        protected static readonly ContactDetails _contactDetails = ContactDetails.Create(PersonName.Create("mike", "tyson").ToUnsafeRight(),
+                Company.Create("asd").ToUnsafeRight(),
+                Phone.Create("+333 111 22222").ToUnsafeRight());
         protected static readonly LocationDetails _locationDetails = LocationDetails.Create(
-            Alpha2Code.Create("LT"),
+            Alpha2Code.Create("LT").ToUnsafeRight(),
             State.Create("staaaat"),
-            City.Create("vilnius"),
+            City.Create("vilnius").ToUnsafeRight(),
             PostCode.Create("aaa1"),
-            Address.Create("some random place 12"));
+            Address.Create("some random place 12").ToUnsafeRight());
         protected static readonly GeographicLocation _geographicLocation = GeographicLocation.Create(10D, 10D);
         protected static readonly UserPreferences _userPreferences = UserPreferences.Create(
                 DistanceMeasurementUnit.Kilometer,

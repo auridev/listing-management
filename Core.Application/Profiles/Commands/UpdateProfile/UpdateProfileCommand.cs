@@ -1,7 +1,10 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Profiles;
 using LanguageExt;
 using System;
+using Common.Helpers;
+using LanguageExt;
+using static LanguageExt.Prelude;
 
 namespace Core.Application.Profiles.Commands.UpdateProfile
 {
@@ -17,17 +20,22 @@ namespace Core.Application.Profiles.Commands.UpdateProfile
         public void Execute(Guid profileId, UpdateProfileModel model)
         {
             // Prerequisites
+            var optionalCompany = Company.Create(model.Company)
+                    .Match(
+                        rightValue => Right(Option<Company>.Some(rightValue)),
+                        leftValue => Right(Option<Company>.None));
+
             var newContactDetails = ContactDetails.Create(
                 PersonName.Create(model.FirstName, model.LastName),
-                Company.Create(model.Company),
+                optionalCompany,
                 Phone.Create(model.Phone));
 
             var newLocationDetails = LocationDetails.Create(
-                Alpha2Code.Create(model.CountryCode),
-                State.Create(model.State),
-                City.Create(model.City),
+                Alpha2Code.Create(model.CountryCode).ToUnsafeRight(),
+                Domain.ValueObjects.State.Create(model.State),
+                City.Create(model.City).ToUnsafeRight(),
                 PostCode.Create(model.PostCode),
-                Address.Create(model.Address));
+                Address.Create(model.Address).ToUnsafeRight());
 
             var newGeographicLocation = GeographicLocation.Create(
                 model.Latitude,
@@ -45,7 +53,7 @@ namespace Core.Application.Profiles.Commands.UpdateProfile
             optionalProfile
                 .Some(profile =>
                 {
-                    profile.UpdateDetails(newContactDetails,
+                    profile.UpdateDetails(newContactDetails.ToUnsafeRight(),
                         newLocationDetails,
                         newGeographicLocation,
                         newUserPreferences);

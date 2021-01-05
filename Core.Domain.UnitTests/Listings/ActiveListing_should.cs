@@ -1,4 +1,4 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Core.Domain.Offers;
 using FluentAssertions;
@@ -6,6 +6,7 @@ using LanguageExt;
 using System;
 using System.Linq;
 using Xunit;
+using Common.Helpers;
 
 namespace BusinessLine.Core.Domain.UnitTests.Listings
 {
@@ -71,7 +72,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         public void be_deactivatable()
         {
             // act
-            PassiveListing passiveListing = _sut.Deactivate(TrimmedString.Create("wrong number"), DateTimeOffset.UtcNow);
+            PassiveListing passiveListing = _sut.Deactivate(TrimmedString.Create("wrong number").ToUnsafeRight(), DateTimeOffset.UtcNow);
 
             // assert
             passiveListing.Should().NotBeNull();

@@ -1,4 +1,4 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Common.Dates;
 using LanguageExt;
@@ -21,24 +21,24 @@ namespace Core.Application.Listings.Commands.DeactivateActiveListing
 
         public void Execute(DeactivateActiveListingModel model)
         {
-            // Pre-requisites
-            TrimmedString reason = TrimmedString.Create(model.Reason);
-            DateTimeOffset deactivationDate = _dateTimeService.GetCurrentUtcDateTime();
-            Option<ActiveListing> optionalActiveListing = _repository.FindActive(model.ListingId);
+            //// Pre-requisites
+            //TrimmedString reason = TrimmedString.Create(model.Reason);
+            //DateTimeOffset deactivationDate = _dateTimeService.GetCurrentUtcDateTime();
+            //Option<ActiveListing> optionalActiveListing = _repository.FindActive(model.ListingId);
 
-            // Command
-            optionalActiveListing
-                .Some(activeListing =>
-                {
-                    PassiveListing passiveListing = activeListing.Deactivate(reason, deactivationDate);
+            //// Command
+            //optionalActiveListing
+            //    .Some(activeListing =>
+            //    {
+            //        PassiveListing passiveListing = activeListing.Deactivate(reason, deactivationDate);
 
-                    _repository.Delete(activeListing);
+            //        _repository.Delete(activeListing);
 
-                    _repository.Add(passiveListing);
+            //        _repository.Add(passiveListing);
 
-                    _repository.Save();
-                })
-                .None(() => { });
+            //        _repository.Save();
+            //    })
+            //    .None(() => { });
         }
     }
 }

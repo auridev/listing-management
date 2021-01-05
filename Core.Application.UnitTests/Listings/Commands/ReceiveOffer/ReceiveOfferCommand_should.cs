@@ -1,7 +1,7 @@
 ﻿using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.ReceiveOffer;
 using Core.Application.Listings.Commands.ReceiveOffer.Factory;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Core.Domain.Offers;
 using Core.UnitTests.Mocks;

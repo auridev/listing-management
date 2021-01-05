@@ -1,8 +1,9 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using FluentAssertions;
 using System;
 using Xunit;
+using Common.Helpers;
 
 namespace BusinessLine.Core.Domain.UnitTests.Listings
 {
@@ -25,7 +26,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         public void be_deactivatble()
         {
             // act
-            PassiveListing passiveListing = _sut.Deactivate(TrimmedString.Create("somethings not right"), DateTimeOffset.UtcNow);
+            PassiveListing passiveListing = _sut.Deactivate(TrimmedString.Create("somethings not right").ToUnsafeRight(), DateTimeOffset.UtcNow);
 
             // assert
             passiveListing.Should().NotBeNull();
@@ -49,7 +50,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         public void be_markable_as_suspicious()
         {
             SuspiciousListing suspiciousListing = 
-                _sut.MarkAsSuspicious(DateTimeOffset.UtcNow, TrimmedString.Create("for test"));
+                _sut.MarkAsSuspicious(DateTimeOffset.UtcNow, TrimmedString.Create("for test").ToUnsafeRight());
 
             suspiciousListing.Should().NotBeNull();
             suspiciousListing.MarkedAsSuspiciousAt.Should().BeCloseTo(DateTimeOffset.UtcNow);

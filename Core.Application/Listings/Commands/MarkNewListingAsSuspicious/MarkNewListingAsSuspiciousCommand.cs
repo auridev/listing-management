@@ -1,4 +1,4 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Common.Dates;
 using LanguageExt;
@@ -21,24 +21,24 @@ namespace Core.Application.Listings.Commands.MarkNewListingAsSuspicious
 
         public void Execute(MarkNewListingAsSuspiciousModel model)
         {
-            // Pre-requisites
-            TrimmedString reason = TrimmedString.Create(model.Reason);
-            DateTimeOffset markedAtDate = _dateTimeService.GetCurrentUtcDateTime();
-            Option<NewListing> optionalNewListing = _repository.FindNew(model.ListingId);
+            //// Pre-requisites
+            //TrimmedString reason = TrimmedString.Create(model.Reason);
+            //DateTimeOffset markedAtDate = _dateTimeService.GetCurrentUtcDateTime();
+            //Option<NewListing> optionalNewListing = _repository.FindNew(model.ListingId);
 
-            // Command
-            optionalNewListing
-                .Some(newListing =>
-                {
-                    SuspiciousListing suspiciousListing = newListing.MarkAsSuspicious(markedAtDate, reason);
+            //// Command
+            //optionalNewListing
+            //    .Some(newListing =>
+            //    {
+            //        SuspiciousListing suspiciousListing = newListing.MarkAsSuspicious(markedAtDate, reason);
 
-                    _repository.Delete(newListing);
+            //        _repository.Delete(newListing);
 
-                    _repository.Add(suspiciousListing);
+            //        _repository.Add(suspiciousListing);
 
-                    _repository.Save();
-                })
-                .None(() => { });
+            //        _repository.Save();
+            //    })
+            //    .None(() => { });
         }
     }
 }

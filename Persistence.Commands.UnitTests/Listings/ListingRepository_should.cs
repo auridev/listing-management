@@ -1,4 +1,4 @@
-﻿using Core.Domain.Common;
+﻿using Core.Domain.ValueObjects;
 using Core.Domain.Listings;
 using Core.UnitTests.Mocks;
 using FluentAssertions;
@@ -9,6 +9,7 @@ using Persistence.Commands.Listings;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Common.Helpers;
 
 namespace Persistence.Commands.Listings.UnitTests
 {
@@ -321,7 +322,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
-                    TrimmedString.Create("too passive")),
+                    TrimmedString.Create("too passive").ToUnsafeRight()),
                 "d63be5b2-a70d-4cd9-b5e9-8cb390152a76",
                 true
             },
@@ -336,7 +337,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
-                    TrimmedString.Create("too passive")),
+                    TrimmedString.Create("too passive").ToUnsafeRight()),
                 "22222222-2222-2222-2222-222222222222",
                 false
             }
@@ -381,7 +382,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
-                    TrimmedString.Create("qwerty")),
+                    TrimmedString.Create("qwerty").ToUnsafeRight()),
                 "25fbbb10-ddec-4d48-adbc-4c5f4aed84a4",
                 true
             },
@@ -396,7 +397,7 @@ namespace Persistence.Commands.Listings.UnitTests
                     FakesCollection.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
-                    TrimmedString.Create("qwerty")),
+                    TrimmedString.Create("qwerty").ToUnsafeRight()),
                 "22222222-2222-2222-2222-222222222222",
                 false
             }

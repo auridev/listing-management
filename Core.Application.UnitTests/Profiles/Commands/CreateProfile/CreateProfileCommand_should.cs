@@ -1,7 +1,7 @@
 ﻿using Core.Application.Profiles.Commands;
 using Core.Application.Profiles.Commands.CreateProfile;
 using Core.Application.Profiles.Commands.CreateProfile.Factory;
-using Core.Domain.Common;
+using Core.Domain.ValueObjects;
 using Core.Domain.Profiles;
 using Core.UnitTests.Mocks;
 using Moq;
