@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Application.Helpers;
+using System;
 
 namespace Core.Application.Listings.Queries.GetMyListings
 {
@@ -12,10 +12,10 @@ namespace Core.Application.Listings.Queries.GetMyListings
                 throw new ArgumentNullException(nameof(repository));
         }
 
-        public ICollection<MyListingModel> Execute(Guid userId, GetMyListingsQueryParams queryParams)
+        public PagedList<MyListingModel> Execute(Guid userId, GetMyListingsQueryParams queryParams)
         {
-            if (queryParams == null)
-                return new MyListingModel[0];
+            if ((queryParams == null) || (userId == default))
+                return PagedList<MyListingModel>.CreateEmpty();
 
             return _repository.GetMy(userId, queryParams);
         }

@@ -1,26 +1,45 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
 using Core.Domain.Listings;
+using Core.Domain.ValueObjects;
+using LanguageExt;
 using System;
-using System.Collections.Generic;
+using static Common.Helpers.Result;
 
 namespace Core.Application.Listings.Commands.CreateNewListing.Factory
 {
     public class NewListingFactory : INewListingFactory
     {
-        public NewListing Create(Owner owner,
+        public Either<Error, NewListing> Create(
+            Owner owner,
             ListingDetails listingDetails,
             ContactDetails contactDetails,
-            LocationDetails locationDetail,
+            LocationDetails locationDetails,
             GeographicLocation geographicLocation,
             DateTimeOffset createdDate)
         {
-            return new NewListing(Guid.NewGuid(),
+            if (owner == null)
+                return Invalid<NewListing>(nameof(owner));
+            if (listingDetails == null)
+                return Invalid<NewListing>(nameof(listingDetails));
+            if (contactDetails == null)
+                return Invalid<NewListing>(nameof(contactDetails));
+            if (locationDetails == null)
+                return Invalid<NewListing>(nameof(locationDetails));
+            if (geographicLocation == null)
+                return Invalid<NewListing>(nameof(geographicLocation));
+            if (createdDate == default)
+                return Invalid<NewListing>(nameof(createdDate));
+
+            var listing = new NewListing(
+                Guid.NewGuid(),
                 owner,
                 listingDetails,
                 contactDetails,
-                locationDetail,
+                locationDetails,
                 geographicLocation,
                 createdDate);
+
+            return Success(listing);
         }
     }
 }

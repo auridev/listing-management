@@ -1,12 +1,12 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
 using Core.Domain.Messages;
+using Core.Domain.ValueObjects;
 using LanguageExt;
-using System;
 
 namespace Core.Application.Messages.Commands.SendMessage.Factory
 {
     public interface IMessageFactory
     {
-        Message Create(Recipient recipient, Subject subject, MessageBody messageBody);
+        Either<Error, Message> Create(Recipient recipient, Subject subject, MessageBody messageBody);
     }
 }

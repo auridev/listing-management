@@ -1,7 +1,10 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
+using LanguageExt;
 using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -11,18 +14,22 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void have_UserId_property()
         {
-            var recipient = Recipient.Create(Guid.NewGuid());
-
-            recipient.UserId.Should().NotBeEmpty();
+            Recipient
+                .Create(Guid.NewGuid())
+                .Right(recipient => recipient.UserId.Should().NotBeEmpty())
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(InvalidArguments))]
-        public void thrown_an_exception_during_creation_if_argument_is_not_valid(Guid value)
+        public void return_EiherLeft_with_proper_error_during_creation_if_arguments_are_not_valid(Guid value)
         {
-            Action action = () => Recipient.Create(value);
+            Either<Error, Recipient> eitherRecipient = Recipient.Create(value);
 
-            action.Should().Throw<ArgumentException>();
+            eitherRecipient.IsLeft.Should().BeTrue();
+            eitherRecipient
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> InvalidArguments => new List<object[]>

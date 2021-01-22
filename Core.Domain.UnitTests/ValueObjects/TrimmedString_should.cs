@@ -2,8 +2,8 @@
 using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
-using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -11,44 +11,13 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class TrimmedString_should
     {
         [Fact]
-        public void have_a_Value_property()
-        {
-            Either<Error, TrimmedString> eitherTrimmedString = TrimmedString.Create("valio");
-
-            eitherTrimmedString.IsRight.Should().BeTrue();
-            eitherTrimmedString
-                .Right(trimmedString => trimmedString.Value.Should().Be("valio"))
-                .Left(_ => throw new InvalidOperationException());
-        }
-
-        [Theory]
-        [MemberData(nameof(Data))]
-        public void return_Eiher_in_Left_state_with_proper_error_during_creation_if_value_is_not_valid(string value)
-        {
-            Either<Error, TrimmedString> eitherTrimmedString = TrimmedString.Create(value);
-
-            eitherTrimmedString.IsLeft.Should().BeTrue();
-            eitherTrimmedString
-                .Right(_ => throw new InvalidOperationException("shouldn't reach this code"))
-                .Left(error => error.Should().BeOfType<Error.Invalid>());
-        }
-
-        public static IEnumerable<object[]> Data => new List<object[]>
-        {
-            new object[] { null },
-            new object[] { string.Empty },
-            new object[] { "" },
-            new object[] { default }
-        };
-
-        [Fact]
         public void not_have_any_leading_or_trailing_whitespaces_in_Name_property()
         {
             Either<Error, TrimmedString> eitherTrimmedString = TrimmedString.Create("  qwerty     qwerty   ");
 
             eitherTrimmedString
                 .Right(trimmedString => trimmedString.Value.Should().Be("qwerty     qwerty"))
-                .Left(_ => throw new InvalidOperationException());
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
@@ -62,8 +31,28 @@ namespace Core.Domain.UnitTests.ValueObjects
                     string str = trimmedString;
                     str.Should().Be("a");
                 })
-                .Left(_ => throw new InvalidOperationException());
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
+
+        [Theory]
+        [MemberData(nameof(Data))]
+        public void return_EiherLeft_with_proper_error_during_creation_if_value_is_not_valid(string value)
+        {
+            Either<Error, TrimmedString> eitherTrimmedString = TrimmedString.Create(value);
+
+            eitherTrimmedString.IsLeft.Should().BeTrue();
+            eitherTrimmedString
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error => error.Should().BeOfType<Error.Invalid>());
+        }
+
+        public static IEnumerable<object[]> Data => new List<object[]>
+        {
+            new object[] { null },
+            new object[] { string.Empty },
+            new object[] { "" },
+            new object[] { default }
+        };
 
         [Fact]
         public void be_treated_as_equal_using_generic_Equals_method_if_Values_match()

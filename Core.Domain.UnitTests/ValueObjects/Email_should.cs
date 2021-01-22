@@ -1,7 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
-using System;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -9,19 +11,24 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class Email_should
     {
         [Fact]
-        public void have_a_Value_property()
+        public void not_have_any_leading_or_trailing_whitespaces_in_Name_property()
         {
-            var email = Email.Create("a@aa.com");
-            email.Value.Should().Be("a@aa.com");
+            Email
+                .Create("  qqq@aaa.lt   ")
+                .Right(email => email.Value.Should().Be("qqq@aaa.lt"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(Data))]
-        public void throw_an_exception_during_creation_if_value_is_not_valid(string value)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(string value)
         {
-            Action createAction = () => Email.Create(value);
+            Either<Error, Email> eitherEmail = Email.Create(value);
 
-            createAction.Should().Throw<ArgumentException>();
+            eitherEmail.IsLeft.Should().BeTrue();
+            eitherEmail
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> Data => new List<object[]>
@@ -40,15 +47,7 @@ namespace Core.Domain.UnitTests.ValueObjects
         };
 
         [Fact]
-        public void not_have_any_leading_or_trailing_whitespaces_in_Name_property()
-        {
-            var email = Email.Create("  qqq@aaa.lt   ");
-
-            email.Value.Should().Be("qqq@aaa.lt");
-        }
-
-        [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_Values_match()
+        public void be_treated_as_equal_using_generic_Equals_method_if_Values_match()
         {
             var first = Email.Create("aaa@google.com");
             var second = Email.Create("aaa@google.com");
@@ -59,7 +58,19 @@ namespace Core.Domain.UnitTests.ValueObjects
         }
 
         [Fact]
-        public void be_treated_as_equal_using_the_equals_operator_if_Values_match()
+        public void be_treated_as_equal_using_object_Equals_method_if_Values_match()
+        {
+            var first = (object)Email.Create("aaa@google.com");
+            var second = (object)Email.Create("aaa@google.com");
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
+        }
+
+
+        [Fact]
+        public void be_treated_as_equal_using_equals_operator_if_Values_match()
         {
             var first = Email.Create("we@microsoft.org");
             var second = Email.Create("we@microsoft.org");

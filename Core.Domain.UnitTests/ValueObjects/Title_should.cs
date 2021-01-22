@@ -1,5 +1,6 @@
 ﻿using Core.Domain.ValueObjects;
 using FluentAssertions;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -9,16 +10,28 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void have_non_default_string_Value_property()
         {
-            var title = Title.Create("my title");
-
-            title.Value.ToString().Should().Be("my title");
+            Title
+                .Create("my title")
+                .Right(title => title.Value.ToString().Should().Be("my title"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_Values_match()
+        public void be_treated_as_equal_using_generic_Equals_method_if_Values_match()
         {
             var first = Title.Create("metal for sale");
             var second = Title.Create("metal for sale");
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
+        }
+
+        [Fact]
+        public void be_treated_as_equal_using_object_Equals_method_if_Values_match()
+        {
+            var first = (object)Title.Create("metal for sale");
+            var second = (object)Title.Create("metal for sale");
 
             var equals = first.Equals(second);
 

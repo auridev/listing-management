@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.MarkNewListingAsSuspicious
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.MarkNewListingAsSuspicious
 {
     public interface IMarkNewListingAsSuspiciousCommand
     {
-        void Execute(MarkNewListingAsSuspiciousModel model);
+        Either<Error, Unit> Execute(MarkNewListingAsSuspiciousModel model);
     }
 }

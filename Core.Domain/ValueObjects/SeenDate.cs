@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
-
     public class SeenDate : IEquatable<SeenDate>
     {
-        private static DateTimeOffset _minValue = new DateTimeOffset(DateTime.MinValue, TimeSpan.Zero);
-
         public virtual DateTimeOffset Value { get; }
 
         protected SeenDate() { }
@@ -18,29 +18,33 @@ namespace Core.Domain.ValueObjects
             Value = value;
         }
 
-        public static SeenDate Create(DateTimeOffset? value)
-        {
-            if (!value.HasValue)
-                throw new ArgumentNullException(nameof(value));
-            if(value.Value == _minValue)
-                throw new ArgumentException(nameof(value));
+        public static Either<Error, SeenDate> Create(DateTimeOffset value)
+            =>
+                EnsureNonDefault(value)
+                    .Bind(value => CreateSeenDate(value));
 
-            return new SeenDate(value.Value);
-        }
+        private static Either<Error, SeenDate> CreateSeenDate(Either<Error, DateTimeOffset> value)
+            =>
+                value.Map(value => new SeenDate(value));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<SeenDate>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<SeenDate>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] SeenDate other)
-            => ValueObjectComparer<SeenDate>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<SeenDate>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<SeenDate>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<SeenDate>.Instance.GetHashCode();
 
         public static bool operator ==(SeenDate left, SeenDate right)
-            => ValueObjectComparer<SeenDate>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<SeenDate>.Instance.Equals(left, right);
 
         public static bool operator !=(SeenDate left, SeenDate right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
@@ -15,27 +18,29 @@ namespace Core.Domain.ValueObjects
             UserId = userId;
         }
 
-        public static Recipient Create(Guid userId)
-        {
-            if (userId == default)
-                throw new ArgumentException(nameof(userId));
-
-            return new Recipient(userId);
-        }
+        public static Either<Error, Recipient> Create(Guid userId)
+            =>
+                EnsureNonDefault(userId)
+                    .Map(userId => new Recipient(userId));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<Recipient>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<Recipient>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Recipient other)
-            => ValueObjectComparer<Recipient>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<Recipient>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<Recipient>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<Recipient>.Instance.GetHashCode();
 
         public static bool operator ==(Recipient left, Recipient right)
-            => ValueObjectComparer<Recipient>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<Recipient>.Instance.Equals(left, right);
 
         public static bool operator !=(Recipient left, Recipient right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

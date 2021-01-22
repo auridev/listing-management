@@ -1,33 +1,26 @@
-﻿using Core.Domain.ValueObjects;
-using Core.Domain.Listings;
-using Core.UnitTests.Mocks;
+﻿using Core.Domain.Listings;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
-using Common.Helpers;
 
 namespace BusinessLine.Core.Domain.UnitTests.Listings
 {
     public abstract class Listing_should
     {
-        protected static readonly Owner _owner = Owner.Create(Guid.NewGuid());
-        protected static readonly ListingDetails _listingDetails = ListingDetails.Create(Title.Create("my title"),
-                MaterialType.Plastic,
-                Weight.Create(2.5F, MassMeasurementUnit.Kilogram),
-                Description.Create("somethin nice to sell"));
-        protected static readonly ContactDetails _contactDetails = ContactDetails.Create(PersonName.Create("john", "doe").ToUnsafeRight(),
-                Company.Create("gariunai").ToUnsafeRight(),
-                Phone.Create("+333 111 22222").ToUnsafeRight());
-        protected static readonly LocationDetails _locationDetails = LocationDetails.Create(
-            Alpha2Code.Create("LT").ToUnsafeRight(),
-            State.Create("staaaat"),
-            City.Create("polis").ToUnsafeRight(),
-            PostCode.Create("aaa1"),
-            Address.Create("some random place 12").ToUnsafeRight());
-        protected static readonly GeographicLocation _geographicLocation = GeographicLocation.Create(20D, 30D);
+        protected static readonly Owner _owner =
+            TestValueObjectFactory.CreateOwner(Guid.NewGuid());
+        protected static readonly ListingDetails _listingDetails =
+            TestValueObjectFactory.CreateListingDetails("my title", 40, 2.5F, "kg", "somethin nice to sell");
+        protected static readonly ContactDetails _contactDetails =
+            TestValueObjectFactory.CreateContactDetails("john", "doe", "gariunai", "+333 111 22222");
+        protected static readonly LocationDetails _locationDetails =
+            TestValueObjectFactory.CreateLocationDetails("LT", "staaaat", "polis", "aaa1", "some random place 12");
+        protected static readonly GeographicLocation _geographicLocation =
+            TestValueObjectFactory.CreateGeographicLocation(20D, 30D);
         protected static readonly DateTimeOffset _createdDate = DateTimeOffset.UtcNow;
-
 
         private readonly Listing _sut;
 

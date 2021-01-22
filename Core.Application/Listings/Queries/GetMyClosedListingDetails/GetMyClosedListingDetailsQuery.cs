@@ -15,6 +15,9 @@ namespace Core.Application.Listings.Queries.GetMyClosedListingDetails
 
         public Option<MyClosedListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
+            if ((userId == default) || (listingId == default))
+                return Option<MyClosedListingDetailsModel>.None;
+
             return _repository.FindMyClosed(userId, listingId);
         }
     }

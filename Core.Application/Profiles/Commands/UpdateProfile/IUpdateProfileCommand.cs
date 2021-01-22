@@ -1,9 +1,12 @@
 ﻿using System;
+using Common.Helpers;
+using LanguageExt;
+
 
 namespace Core.Application.Profiles.Commands.UpdateProfile
 {
     public interface IUpdateProfileCommand
     {
-        void Execute(Guid profileId, UpdateProfileModel model);
+        Either<Error, Unit> Execute(Guid profileId, UpdateProfileModel model);
     }
 }

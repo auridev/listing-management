@@ -1,25 +1,23 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
+using LanguageExt;
 using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
 {
     public class MessageBody_should
     {
-        private readonly MessageBody _sut;
-
-
-        public MessageBody_should()
-        {
-            _sut = MessageBody.Create("I want to dance with somebody");
-        }
-
         [Fact]
         public void have_Content_property()
         {
-            _sut.Content.Should().Be("I want to dance with somebody");
+            MessageBody
+                .Create("I want to dance with somebody")
+                .Right(body => body.Content.Should().Be("I want to dance with somebody"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
@@ -68,11 +66,14 @@ namespace Core.Domain.UnitTests.ValueObjects
 
         [Theory]
         [MemberData(nameof(InvalidArguments))]
-        public void throw_an_exception_during_creation_if_value_is_not_valid(string content)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(string content)
         {
-            Action createAction = () => MessageBody.Create(content);
+            Either<Error, MessageBody> eitherMessageBody = MessageBody.Create(content);
 
-            createAction.Should().Throw<ArgumentException>();
+            eitherMessageBody.IsLeft.Should().BeTrue();
+            eitherMessageBody
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> InvalidArguments => new List<object[]>

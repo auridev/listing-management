@@ -44,7 +44,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveLi
                 Longitude = 2.2D,
                 CreatedDate = DateTimeOffset.UtcNow.AddDays(-10),
                 ExpirationDate = DateTimeOffset.UtcNow.AddDays(10),
-                ReceivedOffers = new List<OfferDetailsModel> 
+                ReceivedOffers = new List<OfferDetailsModel>
                 {
                     new OfferDetailsModel()
                     {
@@ -91,6 +91,23 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyActiveLi
 
             // act
             Option<MyActiveListingDetailsModel> model = _sut.Execute(_userId, _listingId);
+
+            // assert
+            model.IsNone.Should().BeTrue();
+        }
+
+        public static IEnumerable<object[]> InvalidArguments => new List<object[]>
+        {
+            new object[] { Guid.NewGuid(), default },
+            new object[] { default, Guid.NewGuid() }
+        };
+
+        [Theory]
+        [MemberData(nameof(InvalidArguments))]
+        public void reject_none_if_arguments_are_not_valid(Guid userId, Guid listingId)
+        {
+            // act
+            Option<MyActiveListingDetailsModel> model = _sut.Execute(userId, listingId);
 
             // assert
             model.IsNone.Should().BeTrue();

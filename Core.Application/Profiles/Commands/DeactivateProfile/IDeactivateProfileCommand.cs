@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Profiles.Commands.DeactivateProfile
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Profiles.Commands.DeactivateProfile
 {
     public interface IDeactivateProfileCommand
     {
-        void Execute(DeactivateProfileModel model);
+        Either<Error, Unit> Execute(DeactivateProfileModel model);
     }
 }

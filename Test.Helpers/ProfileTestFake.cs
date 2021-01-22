@@ -1,8 +1,8 @@
-﻿using Core.Domain.ValueObjects;
-using Core.Domain.Profiles;
+﻿using Core.Domain.Profiles;
+using Core.Domain.ValueObjects;
 using System;
 
-namespace Core.UnitTests.Mocks
+namespace Test.Helpers
 {
     public class ProfileTestFake : Profile
     {

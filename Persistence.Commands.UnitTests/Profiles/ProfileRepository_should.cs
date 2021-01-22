@@ -1,6 +1,6 @@
 ﻿using Core.Domain.ValueObjects;
 using Core.Domain.Profiles;
-using Core.UnitTests.Mocks;
+using Test.Helpers;
 using FluentAssertions;
 using LanguageExt;
 using Microsoft.Data.Sqlite;
@@ -16,13 +16,12 @@ namespace Persistence.Commands.Profiles.UnitTests
         private readonly ActiveProfile _fakeActiveProfile = new ActiveProfile(
             new Guid("4413c264-b7f5-4b0b-a50c-23523c7a61d1"),
             Guid.NewGuid(),
-            FakesCollection.Email,
-            FakesCollection.ContactDetails,
-            FakesCollection.LocationDetails,
-            FakesCollection.GeographicLocation,
-            FakesCollection.UserPreferences,
-            DateTimeOffset.UtcNow,
-            Option<SeenDate>.None);
+            DummyData.Email,
+            DummyData.ContactDetails,
+            DummyData.LocationDetails,
+            DummyData.GeographicLocation,
+            DummyData.UserPreferences,
+            DateTimeOffset.UtcNow);
 
         public ProfileRepository_should()
         {

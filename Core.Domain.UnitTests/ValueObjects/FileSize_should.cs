@@ -1,7 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
-using System;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -11,17 +13,22 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void have_Bytes_property()
         {
-            var fileSize = FileSize.Create(20L);
-            fileSize.Bytes.Should().Be(20L);
+            FileSize
+                .Create(20L)
+                .Right(fileSize => fileSize.Bytes.Should().Be(20L))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(InvalidArgument))]
-        public void throw_an_exception_if_argument_is_not_valid(long size)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(long size)
         {
-            Action create = () => FileSize.Create(size);
+            Either<Error, FileSize> eitherFileSize = FileSize.Create(size);
 
-            create.Should().Throw<ArgumentException>();
+            eitherFileSize.IsLeft.Should().BeTrue();
+            eitherFileSize
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> InvalidArgument => new List<object[]>
@@ -45,8 +52,8 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void be_treated_as_equal_using_object_equals_method_if_values_match()
         {
-            var first = (object) FileSize.Create(1L);
-            var second = (object) FileSize.Create(1L);
+            var first = (object)FileSize.Create(1L);
+            var second = (object)FileSize.Create(1L);
 
             var equals = first.Equals(second);
 

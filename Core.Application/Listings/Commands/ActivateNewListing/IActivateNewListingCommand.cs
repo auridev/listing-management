@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.ActivateNewListing
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.ActivateNewListing
 {
     public interface IActivateNewListingCommand
     {
-        void Execute(ActivateNewListingModel model);
+        Either<Error, Unit> Execute(ActivateNewListingModel model);
     }
 }

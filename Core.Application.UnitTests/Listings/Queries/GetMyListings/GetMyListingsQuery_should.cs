@@ -40,7 +40,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyListings
         [Fact]
         public void return_model_collection()
         {
-            ICollection<MyListingModel> result = _sut.Execute(_userId, _queryParams);
+            PagedList<MyListingModel> result = _sut.Execute(_userId, _queryParams);
 
             result.Should().NotBeNull();
         }
@@ -48,18 +48,27 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyListings
         [Fact]
         public void retrieve_collection_from_data_access_service()
         {
-            ICollection<MyListingModel> result = _sut.Execute(_userId, _queryParams);
+            PagedList<MyListingModel> result = _sut.Execute(_userId, _queryParams);
 
             _mocker
                 .GetMock<IListingReadOnlyRepository>()
                 .Verify(s => s.GetMy(_userId, _queryParams), Times.Once);
         }
 
-        [Fact]
-        public void return_empty_collection_if_queryParams_is_not_valid()
+        public static IEnumerable<object[]> InvalidArguments => new List<object[]>
         {
-            ICollection<MyListingModel> result = _sut.Execute(_userId, null);
+            new object[] { Guid.NewGuid(), null },
+            new object[] { default, new GetMyListingsQueryParams() { PageNumber = 1, PageSize = 11 } }
+        };
 
+        [Theory]
+        [MemberData(nameof(InvalidArguments))]
+        public void reject_empty_list_if_arguments_are_not_valid(Guid userId, GetMyListingsQueryParams queryParams)
+        {
+            // act
+            PagedList<MyListingModel> result = _sut.Execute(userId, queryParams);
+
+            // assert
             result.Should().NotBeNull();
             result.Count.Should().Be(0);
         }

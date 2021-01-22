@@ -3,6 +3,7 @@ using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
 using System;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -10,23 +11,13 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class City_should
     {
         [Fact]
-        public void have_a_Name_property()
-        {
-            Either<Error, City> eitherCity = City.Create("vilnius");
-
-            eitherCity
-                .Right(city => city.Name.ToString().Should().Be("Vilnius"))
-                .Left(_ => throw new InvalidOperationException());
-        }
-
-        [Fact]
         public void have_capitalized_first_letter_in_each_Name_word()
         {
             Either<Error, City> eitherCity = City.Create("new york city");
 
             eitherCity
                 .Right(city => city.Name.ToString().Should().Be("New York City"))
-                .Left(_ => throw new InvalidOperationException());
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]

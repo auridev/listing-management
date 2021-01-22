@@ -1,16 +1,16 @@
 ﻿using Core.Domain.ValueObjects;
-using Core.UnitTests.Mocks;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace BusinessLine.Core.Domain.UnitTests.Offers
 {
     public abstract class Offer_should
     {
-        private static readonly Owner _owner = Owner.Create(Guid.NewGuid());
-        private static readonly MonetaryValue _monetaryValue = MonetaryValue.Create(12.5M, CurrencyCode.Create("123"));
+        private static readonly Owner _owner = TestValueObjectFactory.CreateOwner(Guid.NewGuid());
+        private static readonly MonetaryValue _monetaryValue = TestValueObjectFactory.CreateMonetaryValue(12.5M, "123");
 
         [Fact]
         public void have_an_Id_property()
@@ -18,14 +18,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Offers
             var offer = new OfferTestFake(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
             offer.Id.Should().NotBeEmpty();
-        }
-
-        [Fact]
-        public void thrown_an_exception_during_creation_if_Id_is_not_valid()
-        {
-            Action createAction = () => new OfferTestFake(Guid.Empty, _owner, _monetaryValue, DateTimeOffset.UtcNow);
-
-            createAction.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]

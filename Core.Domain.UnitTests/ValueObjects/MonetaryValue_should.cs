@@ -1,41 +1,45 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
-using System;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
 {
     public class MonetaryValue_should
     {
-        private readonly CurrencyCode _currencyCode;
+        private readonly string _currencyCode = "AAA";
 
-        public MonetaryValue_should()
+        [Fact]
+        public void have_Value_property()
         {
-            _currencyCode = CurrencyCode.Create("AAA");
+            MonetaryValue
+                .Create(20M, _currencyCode)
+                .Right(value => value.Value.Should().Be(20M))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void have_a_Value_property()
+        public void have_CurrencyCode_property()
         {
-            var monetaryValue = MonetaryValue.Create(20M, _currencyCode);
-            monetaryValue.Value.Should().Be(20M);
-        }
-
-        [Fact]
-        public void have_a_CurrencyCode_property()
-        {
-            var monetaryValue = MonetaryValue.Create(1000M, _currencyCode);
-            monetaryValue.CurrencyCode.Should().Be(_currencyCode);
+            MonetaryValue
+                .Create(1000M, _currencyCode)
+                .Right(value => value.CurrencyCode.Value.Should().Be(_currencyCode))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(Data))]
-        public void throw_an_exception_during_creation_if_values_are_not_valid(decimal value)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(decimal value)
         {
-            Action createAction = () => MonetaryValue.Create(value, _currencyCode);
+            Either<Error, MonetaryValue> eitherMonetaryValue = MonetaryValue.Create(value, _currencyCode);
 
-            createAction.Should().Throw<ArgumentException>();
+            eitherMonetaryValue.IsLeft.Should().BeTrue();
+            eitherMonetaryValue
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> Data => new List<object[]>
@@ -45,14 +49,23 @@ namespace Core.Domain.UnitTests.ValueObjects
             new object[] { -1000M },
             new object[] { -1.2M }
         };
-        
+
         [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_Values_and_Currencies_match()
+        public void be_treated_as_equal_using_generic_Equals_method_if_Values_and_Currencies_match()
         {
-            var first = MonetaryValue.Create(2.3M, 
-                CurrencyCode.Create("USD"));
-            var second = MonetaryValue.Create(2.3M, 
-                CurrencyCode.Create("USD"));
+            var first = MonetaryValue.Create(2.3M, "USD");
+            var second = MonetaryValue.Create(2.3M, "USD");
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
+        }
+
+        [Fact]
+        public void be_treated_as_equal_using_object_Equals_method_if_Values_and_Currencies_match()
+        {
+            var first = (object)MonetaryValue.Create(2.3M, "USD");
+            var second = (object)MonetaryValue.Create(2.3M, "USD");
 
             var equals = first.Equals(second);
 
@@ -62,10 +75,8 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void be_treated_as_equal_using_the_equals_operator_if_Values_and_Currencies_match()
         {
-            var first = MonetaryValue.Create(8M, 
-                CurrencyCode.Create("EUR"));
-            var second = MonetaryValue.Create(8M, 
-                CurrencyCode.Create("EUR"));
+            var first = MonetaryValue.Create(8M, "EUR");
+            var second = MonetaryValue.Create(8M, "EUR");
 
             var equals = (first == second);
 
@@ -80,10 +91,8 @@ namespace Core.Domain.UnitTests.ValueObjects
             decimal secondValue,
             string secondCurrencyCode)
         {
-            var first = MonetaryValue.Create(firstValue, 
-                CurrencyCode.Create(firstCurrencyCode));
-            var second = MonetaryValue.Create(secondValue, 
-                CurrencyCode.Create(secondCurrencyCode));
+            var first = MonetaryValue.Create(firstValue, firstCurrencyCode);
+            var second = MonetaryValue.Create(secondValue, secondCurrencyCode);
 
             var nonEquals = (first != second);
 

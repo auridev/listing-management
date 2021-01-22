@@ -1,8 +1,8 @@
+﻿using Core.Domain.Listings;
 using Core.Domain.ValueObjects;
-using Core.Domain.Listings;
 using System;
 
-namespace Core.UnitTests.Mocks
+namespace Test.Helpers
 {
     public class ListingTestFake : Listing
     {

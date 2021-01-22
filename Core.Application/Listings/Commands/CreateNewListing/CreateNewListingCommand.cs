@@ -1,34 +1,37 @@
-﻿using Core.Application.Listings.Commands.CreateNewListing.Factory;
-using Core.Domain.ValueObjects;
+﻿using Common.Dates;
+using Common.Helpers;
+using Core.Application.Listings.Commands.CreateNewListing.Factory;
 using Core.Domain.Listings;
-using Common.Dates;
+using Core.Domain.ValueObjects;
+using LanguageExt;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Common.Helpers;
-using LanguageExt;
+using static Common.Helpers.Result;
 using static LanguageExt.Prelude;
+using static Common.Helpers.Functions;
 
 namespace Core.Application.Listings.Commands.CreateNewListing
 {
     public sealed class CreateNewListingCommand : ICreateNewListingCommand
     {
         private readonly IListingRepository _listingRepository;
-        private readonly INewListingFactory _factory;
+        private readonly INewListingFactory _listingFactory;
         private readonly IDateTimeService _dateTimeService;
         private readonly IImagePersistenceService _imageRepository;
         private readonly IListingImageReferenceFactory _listingImageReferenceFactory;
 
         public CreateNewListingCommand(IListingRepository listingRepository,
-            INewListingFactory factory,
+            INewListingFactory listingFactory,
             IDateTimeService dateTimeService,
             IImagePersistenceService imageRepository,
             IListingImageReferenceFactory listingImageReferenceFactory)
         {
             _listingRepository = listingRepository ??
                 throw new ArgumentNullException(nameof(listingRepository));
-            _factory = factory ??
-                throw new ArgumentNullException(nameof(factory)); ;
+            _listingFactory = listingFactory ??
+                throw new ArgumentNullException(nameof(listingFactory));
             _dateTimeService = dateTimeService ??
                 throw new ArgumentNullException(nameof(dateTimeService));
             _imageRepository = imageRepository ??
@@ -37,108 +40,111 @@ namespace Core.Application.Listings.Commands.CreateNewListing
                 throw new ArgumentNullException(nameof(listingImageReferenceFactory));
         }
 
-        public void Execute(Guid userId, CreateNewListingModel model)
+        private Either<Error, NewListing> CreateListing(
+            Either<Error, Owner> eitherOwner,
+            Either<Error, ListingDetails> eitherListingDetails,
+            Either<Error, ContactDetails> eitherContactDetails,
+            Either<Error, LocationDetails> eitherLocationDetails,
+            Either<Error, GeographicLocation> eitherGeographicLocation,
+            DateTimeOffset creationDate)
+           =>
+                (
+                    from owner in eitherOwner
+                    from listingDetails in eitherListingDetails
+                    from contactDetails in eitherContactDetails
+                    from locationDetails in eitherLocationDetails
+                    from geographicLocation in eitherGeographicLocation
+                    select
+                        (owner, listingDetails, contactDetails, locationDetails, geographicLocation)
+                )
+                .Bind(
+                    context =>
+                        _listingFactory.Create(
+                            context.owner,
+                            context.listingDetails,
+                            context.contactDetails,
+                            context.locationDetails,
+                            context.geographicLocation,
+                            creationDate));
+
+        public Either<Error, Unit> Execute(Guid userId, CreateNewListingModel model)
         {
-            // Pre-requisties
-            var owner = Owner.Create(userId);
+            Either<Error, Guid> eitherUserId = EnsureNonDefault(userId);
+            Either<Error, CreateNewListingModel> eitherModel = EnsureNotNull(model);
 
-            var creationDate = _dateTimeService.GetCurrentUtcDateTime();
-            var dateTag = DateTag.Create(creationDate);
+            // Value objects
+            DateTimeOffset creationDate = _dateTimeService.GetCurrentUtcDateTime();
+            Either<Error, Owner> eitherOwner = Owner.Create(userId);
+            Either<Error, DateTag> eitherDateTag = DateTag.Create(creationDate);
+            Either<Error, ListingDetails> eitherListingDetails =
+                ListingDetails
+                    .Create(model.Title, model.MaterialTypeId, model.Weight, model.MassUnit, model.Description);
+            Either<Error, ContactDetails> eitherContactDetails =
+                ContactDetails
+                    .Create(model.FirstName, model.LastName, model.Company, model.Phone);
+            Either<Error, LocationDetails> eitherLocationDetails =
+                LocationDetails
+                    .Create(model.CountryCode, model.State, model.City, model.PostCode, model.Address);
+            Either<Error, GeographicLocation> eitherGeographicLocation =
+                GeographicLocation
+                    .Create(model.Latitude, model.Longitude);
 
-            var listingDetails = ListingDetails.Create(
-                Title.Create(model.Title),
-                MaterialType.ById(model.MaterialTypeId),
-                Weight.Create(model.Weight, MassMeasurementUnit.BySymbol(model.MassUnit)),
-                Description.Create(model.Description));
+            // Listing
+            Either<Error, NewListing> eitherListing =
+                CreateListing(
+                    eitherOwner,
+                    eitherListingDetails,
+                    eitherContactDetails,
+                    eitherLocationDetails,
+                    eitherGeographicLocation,
+                    creationDate);
 
-            var optionalCompany = Company.Create(model.Company)
-                    .Match(
-                        rightValue => Right(Option<Company>.Some(rightValue)),
-                        leftValue => Right(Option<Company>.None)
-                );
+            Either<Error, (NewListing listing, CreateNewListingModel model)> combined =
+                from l in eitherListing
+                from m in eitherModel
+                select (l, m);
 
-            var contactDetails = ContactDetails.Create(
-                PersonName.Create(model.FirstName, model.LastName),
-                optionalCompany,
-                Phone.Create(model.Phone));
 
-            var locationDetails = LocationDetails.Create(
-                Alpha2Code.Create(model.CountryCode).ToUnsafeRight(),
-                Domain.ValueObjects.State.Create(model.State),
-                City.Create(model.City).ToUnsafeRight(),
-                PostCode.Create(model.PostCode),
-                Address.Create(model.Address).ToUnsafeRight());
-
-            var geographicLocation = GeographicLocation.Create(
-                model.Latitude,
-                model.Longitude);
-
-            // Create all the entities
-            NewListing newListing = _factory.Create(owner,
-                listingDetails,
-                contactDetails.ToUnsafeRight(),
-                locationDetails,
-                geographicLocation,
-                creationDate);
-
-            NewImageModel[] validImageModels =
-                GetValidImageModels(model.Images);
-
-            (FileName FileName, NewImageModel Model)[] fileNameModelMap =
-                CreateFileNameModelMap(validImageModels);
-
-            ListingImageReference[] imageReferences =
-                CreateImageReferences(newListing.Id, fileNameModelMap);
-
-            ImageContent[] imageContents =
-                CreateImageContents(fileNameModelMap);
-
-            // Save all
-            _listingRepository.Add(newListing, imageReferences);
-
-            _imageRepository.AddAndSave(newListing.Id, imageContents, dateTag);
-
-            _listingRepository.Save();
-        }
-
-        private NewImageModel[] GetValidImageModels(NewImageModel[] imageModels)
-        {
-            return imageModels
-                .Filter(m => m.Content.Length > 0)
-                .ToArray();
-        }
-
-        private (FileName FileName, NewImageModel Model)[] CreateFileNameModelMap(NewImageModel[] imageModels)
-        {
-            (FileName FileName, NewImageModel Model)[] map = imageModels
-                .Map<NewImageModel, (FileName FileName, NewImageModel)>(model =>
+            Either<Error, List<Either<Error, ImageContext>>> eitherImageContexts = combined.Map(x =>
+            {
+                return x.model.Images.Select(imageModel =>
                 {
-                    var fileInfo = new FileInfo(model.Name);
-                    var uniqueFileName = $"{ Guid.NewGuid()}.{fileInfo.Extension }";
-                    var fileName = FileName.Create(uniqueFileName);
-                    return (fileName, model);
+                    var id = Guid.NewGuid();
+                    var fileInfo = new FileInfo(imageModel.Name);
+                    var fileName = $"{ Guid.NewGuid()}{fileInfo.Extension }";
+
+                    return ImageContext.Create(id, x.listing.Id, fileName, imageModel.Content);
                 })
-                .ToArray();
+                .ToList();
+            });
 
-            return map;
-        }
 
-        private ListingImageReference[] CreateImageReferences(Guid parentReference, (FileName FileName, NewImageModel Model)[] fileNameModelMap)
-        {
-            ListingImageReference[] references = fileNameModelMap
-                .Map(mapEntry => _listingImageReferenceFactory.Create(parentReference, mapEntry.FileName, FileSize.Create(mapEntry.Model.Content.Length)))
-                .ToArray();
+            Either<Error, Unit> aaa =
+                (
+                    from l in eitherListing
+                    from ic in eitherImageContexts
+                    select(l, ic)
+                )
+                .Bind<Unit>(context =>
+                {
+                    var imageContexts = context.ic.Freeze();
 
-            return references;
-        }
+                    IEnumerable<ImageContext> contexts = imageContexts.Rights();
+                    var contents = contexts.Select(c => c.Content).ToList();
+                    var references = contexts.Select(c => c.Reference).ToList();
 
-        private ImageContent[] CreateImageContents((FileName FileName, NewImageModel Model)[] fileNameModelMap)
-        {
-            ImageContent[] contents = fileNameModelMap
-                .Map(mapEntry => ImageContent.Create(mapEntry.FileName, mapEntry.Model.Content))
-                .ToArray();
 
-            return contents;
+
+                    _imageRepository.AddAndSave(context.l.Id, contents, (DateTag)eitherDateTag);
+                    _listingRepository.Add(context.l, references);
+                    _listingRepository.Save();
+
+
+                    return unit;
+                });
+
+            return aaa;
+
         }
     }
 }

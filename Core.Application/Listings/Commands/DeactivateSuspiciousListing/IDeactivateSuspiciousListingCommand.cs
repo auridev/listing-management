@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.DeactivateSuspiciousListing
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.DeactivateSuspiciousListing
 {
     public interface IDeactivateSuspiciousListingCommand
     {
-        void Execute(DeactivateSuspiciousListingModel model);
+        Either<Error, Unit> Execute(DeactivateSuspiciousListingModel model);
     }
 }

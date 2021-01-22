@@ -1,7 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
-using System;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -9,27 +11,24 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class FileName_should
     {
         [Fact]
-        public void have_a_Value_property()
-        {
-            var fileName = FileName.Create("aaa");
-            fileName.Value.ToString().Should().Be("aaa");
-        }
-
-        [Fact]
         public void have_all_Value_characters_in_lowercase()
         {
-            var fileName = FileName.Create( "BBB");
-            fileName.Value.ToString().Should().Be("bbb");
+            FileName
+                .Create("BBB")
+                .Right(fileName => fileName.Value.ToString().Should().Be("bbb"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
-
 
         [Theory]
         [MemberData(nameof(InvalidArguments))]
-        public void throw_an_exception_if_arguments_are_not_valid(string extension)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(string extension)
         {
-            Action action = () => FileName.Create(extension);
+            Either<Error, FileName> eitherFileName = FileName.Create(extension);
 
-            action.Should().Throw<ArgumentNullException>();
+            eitherFileName.IsLeft.Should().BeTrue();
+            eitherFileName
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> InvalidArguments => new List<object[]>

@@ -1,9 +1,10 @@
-﻿using Common.Dates;
-using Common.Helpers;
+﻿using Common.Helpers;
 using Core.Application.Profiles.Commands.CreateProfile.Factory;
+using Core.Domain.Profiles;
 using Core.Domain.ValueObjects;
-using System;
 using LanguageExt;
+using System;
+using static Common.Helpers.Functions;
 using static LanguageExt.Prelude;
 
 namespace Core.Application.Profiles.Commands.CreateProfile
@@ -12,66 +13,118 @@ namespace Core.Application.Profiles.Commands.CreateProfile
     {
         private readonly IProfileRepository _repository;
         private readonly IProfileFactory _factory;
-        private readonly IDateTimeService _dateTimeService;
 
-        public CreateProfileCommand(IProfileRepository repository, IProfileFactory factory, IDateTimeService dateTimeService)
+        public CreateProfileCommand(IProfileRepository repository, IProfileFactory factory)
         {
             _repository = repository ??
                 throw new ArgumentNullException(nameof(repository));
             _factory = factory ??
                 throw new ArgumentNullException(nameof(factory));
-            _dateTimeService = dateTimeService ??
-                throw new ArgumentNullException(nameof(dateTimeService));
         }
 
-        public void Execute(Guid userid, CreateProfileModel model)
+        public Either<Error, Unit> Execute(Guid userid, CreateProfileModel model)
         {
-            // Pre-requisites
-            var email = Email.Create(model.Email);
+            Either<Error, Guid> eitherUserId = EnsureNonDefault(userid);
+            Either<Error, CreateProfileModel> eitherModel = EnsureNotNull(model);
+            Either<Error, Email> eitherEmail = CreateEmail(eitherModel);
+            Either<Error, ContactDetails> eitherContactDetails = CreateContactDetails(eitherModel);
+            Either<Error, LocationDetails> eitherLocationDetails = CreateLocationDetails(eitherModel);
+            Either<Error, GeographicLocation> eitherGeographicLocation = CreateGeographicLocation(eitherModel);
+            Either<Error, UserPreferences> eitherUserPreferences = CreateUserPreferences(eitherModel);
 
-            // cia neteisingai
-            var optionalCompany = Company.Create(model.Company)
-                .Match(
-                    rightValue => Right(Option<Company>.Some(rightValue)),
-                    leftValue => Right(Option<Company>.None));
+            Either<Error, Unit> result =
+                CreateActiveProfile(
+                    eitherUserId,
+                    eitherEmail,
+                    eitherContactDetails,
+                    eitherLocationDetails,
+                    eitherGeographicLocation,
+                    eitherUserPreferences)
+                .Bind(
+                    profile => PersistChanges(profile));
 
-            var contactDetails = ContactDetails.Create(
-                PersonName.Create(model.FirstName, model.LastName),
-                optionalCompany,
-                Phone.Create(model.Phone));
-
-            var locationDetails = LocationDetails.Create(
-                Alpha2Code.Create(model.CountryCode).ToUnsafeRight(),
-                Domain.ValueObjects.State.Create(model.State),
-                City.Create(model.City).ToUnsafeRight(),
-                PostCode.Create(model.PostCode),
-                Address.Create(model.Address).ToUnsafeRight());
-
-            var geographicLocation = GeographicLocation.Create(
-                model.Latitude,
-                model.Longitude);
-
-            var userPreferences = UserPreferences.Create(
-                DistanceMeasurementUnit.BySymbol(model.DistanceUnit),
-                MassMeasurementUnit.BySymbol(model.MassUnit),
-                CurrencyCode.Create(model.CurrencyCode));
-
-            var createdDate = _dateTimeService.GetCurrentUtcDateTime();
-
-            // Command
-            var activeProfile = _factory.CreateActive(
-                Guid.NewGuid(),
-                userid,
-                email,
-                contactDetails.ToUnsafeRight(),
-                locationDetails,
-                geographicLocation,
-                userPreferences,
-                createdDate);
-
-            _repository.Add(activeProfile);
-
-            _repository.Save();
+            return result;
         }
+
+        private Either<Error, Email> CreateEmail(Either<Error, CreateProfileModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        Email.Create(model.Email));
+
+        private Either<Error, ContactDetails> CreateContactDetails(Either<Error, CreateProfileModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        ContactDetails.Create(
+                            model.FirstName,
+                            model.LastName,
+                            model.Company,
+                            model.Phone));
+
+        private Either<Error, LocationDetails> CreateLocationDetails(Either<Error, CreateProfileModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        LocationDetails.Create(
+                            model.CountryCode,
+                            model.State,
+                            model.City,
+                            model.PostCode,
+                            model.Address));
+
+        private Either<Error, GeographicLocation> CreateGeographicLocation(Either<Error, CreateProfileModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        GeographicLocation.Create(model.Latitude, model.Longitude));
+
+        private Either<Error, UserPreferences> CreateUserPreferences(Either<Error, CreateProfileModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        UserPreferences.Create(
+                            model.DistanceUnit,
+                            model.MassUnit,
+                            model.CurrencyCode));
+
+        private Either<Error, ActiveProfile> CreateActiveProfile(
+            Either<Error, Guid> eitherUserId,
+            Either<Error, Email> eitherEmail,
+            Either<Error, ContactDetails> eitherContactDetails,
+            Either<Error, LocationDetails> eitherLocationDetails,
+            Either<Error, GeographicLocation> eitherGeographicLocation,
+            Either<Error, UserPreferences> eitherUserPreferences)
+            =>
+                (
+                    from userId in eitherUserId
+                    from email in eitherEmail
+                    from contactDetails in eitherContactDetails
+                    from locationDetails in eitherLocationDetails
+                    from geographicLocation in eitherGeographicLocation
+                    from userPreferences in eitherUserPreferences
+                    select
+                        (userId, email, contactDetails, locationDetails, geographicLocation, userPreferences)
+                )
+                .Bind(
+                    context =>
+                        _factory.CreateActive(
+                            context.userId,
+                            context.email,
+                            context.contactDetails,
+                            context.locationDetails,
+                            context.geographicLocation,
+                            context.userPreferences));
+
+        private Either<Error, Unit> PersistChanges(Either<Error, ActiveProfile> eitherActiveProfile)
+            =>
+                eitherActiveProfile
+                    .Map(profile =>
+                    {
+                        _repository.Add(profile);
+                        _repository.Save();
+
+                        return unit;
+                    });
     }
 }

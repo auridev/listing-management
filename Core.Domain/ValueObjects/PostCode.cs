@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
@@ -14,29 +16,37 @@ namespace Core.Domain.ValueObjects
             Value = value;
         }
 
-        public static PostCode Create(string value)
-        {
-            return TrimmedString
-              .Create(value)
-              .Match(
-                  success => new PostCode(success),
-                  error => null);
-        }
-        // => new PostCode((TrimmedString)value);
+        public static Either<Error, PostCode> Create(string value)
+            =>
+                ConvertToTrimmedString(value)
+                    .Bind(value => CreatePostCode(value));
+
+        private static Either<Error, TrimmedString> ConvertToTrimmedString(string value)
+            =>
+                TrimmedString.Create(value);
+
+        private static Either<Error, PostCode> CreatePostCode(Either<Error, TrimmedString> value)
+            =>
+                value.Map(value => new PostCode(value));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<PostCode>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<PostCode>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] PostCode other)
-            => ValueObjectComparer<PostCode>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<PostCode>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<PostCode>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<PostCode>.Instance.GetHashCode();
 
         public static bool operator ==(PostCode left, PostCode right)
-            => ValueObjectComparer<PostCode>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<PostCode>.Instance.Equals(left, right);
 
         public static bool operator !=(PostCode left, PostCode right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

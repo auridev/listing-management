@@ -1,8 +1,10 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -47,7 +49,7 @@ namespace Core.Domain.UnitTests.ValueObjects
         };
 
         [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_predefined_values_match()
+        public void be_treated_as_equal_using_generic_Equals_method_if_predefined_values_match()
         {
             var first = MaterialType.NonFerrous;
             var second = MaterialType.NonFerrous;
@@ -58,7 +60,18 @@ namespace Core.Domain.UnitTests.ValueObjects
         }
 
         [Fact]
-        public void be_treated_as_equal_using_the_equals_operator_if_predefined_values_match()
+        public void be_treated_as_equal_using_object_Equals_method_if_predefined_values_match()
+        {
+            var first = (object) MaterialType.NonFerrous;
+            var second = (object) MaterialType.NonFerrous;
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
+        }
+
+        [Fact]
+        public void be_treated_as_equal_using_equals_operator_if_predefined_values_match()
         {
             var first = MaterialType.Wood;
             var second = MaterialType.Wood;
@@ -80,19 +93,14 @@ namespace Core.Domain.UnitTests.ValueObjects
         }
 
         [Fact]
-        public void return_optional_material_type_by_id()
+        public void return_EiherLeft_if_arguments_are_not_valid()
         {
-            MaterialType optionalMaterialType = MaterialType.ById(20);
+            Either<Error, MaterialType> eitherMaterialType = MaterialType.ById(15);
 
-            optionalMaterialType.Should().Be(MaterialType.Ferrous);
-        }
-
-        [Fact]
-        public void throw_an_exception_if_material_type_does_not_exist()
-        {
-            Action action = () => MaterialType.ById(15);
-
-            action.Should().Throw<Exception>();
+            eitherMaterialType.IsLeft.Should().BeTrue();
+            eitherMaterialType
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
     }
 }

@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.DeactivateNewListing
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.DeactivateNewListing
 {
     public interface IDeactivateNewListingCommand
     {
-        void Execute(DeactivateNewListingModel model);
+        Either<Error, Unit> Execute(DeactivateNewListingModel model);
     }
 }

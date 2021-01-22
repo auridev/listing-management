@@ -1,8 +1,11 @@
-﻿using LanguageExt;
+﻿using Common.Helpers;
+using LanguageExt;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Result;
+using static LanguageExt.Prelude;
 
 namespace Core.Domain.ValueObjects
 {
@@ -22,47 +25,49 @@ namespace Core.Domain.ValueObjects
         public int Id { get; }
 
         private MaterialType() { }
-
         private MaterialType(int id, string name)
         {
             Id = id;
             Name = name;
         }
 
-        private static readonly MaterialType[] _allMaterialTypes = new MaterialType[]
+        private static readonly Dictionary<int, MaterialType> _allMaterialTypes = new Dictionary<int, MaterialType>
         {
-            NonFerrous,
-            Ferrous,
-            Paper,
-            Plastic,
-            Glass,
-            Electronics,
-            TyresAndRubber,
-            Textiles,
-            Wood
+            { NonFerrous.Id, NonFerrous },
+            { Ferrous.Id, Ferrous },
+            { Paper.Id, Paper},
+            { Plastic.Id, Plastic},
+            { Glass.Id, Glass},
+            { Electronics.Id, Electronics},
+            { TyresAndRubber.Id, TyresAndRubber},
+            { Textiles.Id, Textiles},
+            { Wood.Id, Wood}
         };
 
-        public static MaterialType ById(int id)
-        {
-            // dont know how to handle this properly without exception
-            return _allMaterialTypes.First(mt => mt.Id == id);
-        }
+        public static Either<Error, MaterialType> ById(int id)
+            =>
+                (_allMaterialTypes.ContainsKey(id))
+                    ? Right(_allMaterialTypes[id])
+                    : Left(Invalid<MaterialType>("unknown material type"));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<MaterialType>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<MaterialType>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] MaterialType other)
-            => ValueObjectComparer<MaterialType>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<MaterialType>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<MaterialType>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<MaterialType>.Instance.GetHashCode();
 
         public static bool operator ==(MaterialType left, MaterialType right)
-            => ValueObjectComparer<MaterialType>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<MaterialType>.Instance.Equals(left, right);
 
         public static bool operator !=(MaterialType left, MaterialType right)
-            => !(left == right);
-
-
+            =>
+                !(left == right);
     }
 }

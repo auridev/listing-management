@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.MarkOfferAsSeen
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.MarkOfferAsSeen
 {
     public interface IMarkOfferAsSeenCommand
     {
-        void Execute(MarkOfferAsSeenModel model);
+        Either<Error, Unit> Execute(MarkOfferAsSeenModel model);
     }
 }

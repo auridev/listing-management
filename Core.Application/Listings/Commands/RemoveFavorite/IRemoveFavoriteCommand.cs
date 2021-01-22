@@ -1,9 +1,11 @@
 ﻿using System;
+using Common.Helpers;
+using LanguageExt;
 
 namespace Core.Application.Listings.Commands.RemoveFavorite
 {
     public interface IRemoveFavoriteCommand
     {
-        void Execute(Guid userId, RemoveFavoriteModel model);
+        Either<Error, Unit> Execute(Guid userId, RemoveFavoriteModel model);
     }
 }

@@ -54,11 +54,20 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessages
                 .Verify(s => s.Get(_userId, _queryParams), Times.Once);
         }
 
-        [Fact]
-        public void return_empty_paged_list_if_queryParams_is_not_valid()
+        public static IEnumerable<object[]> InvalidArguments => new List<object[]>
         {
-            PagedList<MyMessageModel> result = _sut.Execute(_userId, null);
+            new object[] { Guid.NewGuid(), null },
+            new object[] { default, new GetMyMessagesQueryParams() { PageNumber = 1, PageSize = 11 } }
+        };
 
+        [Theory]
+        [MemberData(nameof(InvalidArguments))]
+        public void reject_empty_list_if_arguments_are_not_valid(Guid userId, GetMyMessagesQueryParams queryParams)
+        {
+            // act
+            PagedList<MyMessageModel> result = _sut.Execute(userId, queryParams);
+
+            // assert
             result.Should().NotBeNull();
             result.Count.Should().Be(0);
         }

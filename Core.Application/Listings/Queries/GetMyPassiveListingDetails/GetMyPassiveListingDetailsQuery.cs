@@ -15,6 +15,9 @@ namespace Core.Application.Listings.Queries.GetMyPassiveListingDetails
 
         public Option<MyPassiveListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
+            if ((userId == default) || (listingId == default))
+                return Option<MyPassiveListingDetailsModel>.None;
+
             return _repository.FindMyPassive(userId, listingId);
         }
     }

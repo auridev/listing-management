@@ -1,7 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
-using System;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -11,9 +13,10 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void have_Value_property()
         {
-            var template = Template.Create("hello form the other side");
-
-            template.Value.Should().Be("hello form the other side");
+            Template
+                .Create("hello form the other side")
+                .Right(template => template.Value.Should().Be("hello form the other side"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
@@ -62,11 +65,14 @@ namespace Core.Domain.UnitTests.ValueObjects
 
         [Theory]
         [MemberData(nameof(InvalidArguments))]
-        public void throw_an_exception_during_creation_if_value_is_not_valid(string value)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(string value)
         {
-            Action createAction = () => Template.Create(value);
+            Either<Error, Template> eitherTemplate = Template.Create(value);
 
-            createAction.Should().Throw<ArgumentException>();
+            eitherTemplate.IsLeft.Should().BeTrue();
+            eitherTemplate
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> InvalidArguments => new List<object[]>

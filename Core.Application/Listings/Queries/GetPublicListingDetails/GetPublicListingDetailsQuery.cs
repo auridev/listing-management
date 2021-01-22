@@ -15,6 +15,9 @@ namespace Core.Application.Listings.Queries.GetPublicListingDetails
 
         public Option<PublicListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
+            if ((userId == default) || (listingId == default))
+                return Option<PublicListingDetailsModel>.None;
+
             return _repository.FindPublic(userId, listingId);
         }
     }

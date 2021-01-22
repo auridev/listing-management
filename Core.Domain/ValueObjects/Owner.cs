@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
@@ -14,27 +17,29 @@ namespace Core.Domain.ValueObjects
             UserId = userId;
         }
 
-        public static Owner Create(Guid userId)
-        {
-            if (userId == default)
-                throw new ArgumentException(nameof(userId));
-
-            return new Owner(userId);
-        }
+        public static Either<Error, Owner> Create(Guid userId)
+            =>
+                EnsureNonDefault(userId)
+                    .Map(userId => new Owner(userId));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<Owner>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<Owner>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Owner other)
-            => ValueObjectComparer<Owner>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<Owner>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<Owner>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<Owner>.Instance.GetHashCode();
 
         public static bool operator ==(Owner left, Owner right)
-            => ValueObjectComparer<Owner>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<Owner>.Instance.Equals(left, right);
 
         public static bool operator !=(Owner left, Owner right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

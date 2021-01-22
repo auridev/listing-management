@@ -3,7 +3,7 @@ using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
-using static Common.Helpers.StringHelpers;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
@@ -29,24 +29,31 @@ namespace Core.Domain.ValueObjects
                 input.Map(value => new TrimmedString(value));
 
         public override string ToString()
-            => Value;
+            =>
+                Value;
 
         public static implicit operator string(TrimmedString trimmedString)
-            => trimmedString.Value;
+            =>
+                trimmedString.Value;
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<TrimmedString>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<TrimmedString>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] TrimmedString other)
-            => ValueObjectComparer<TrimmedString>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<TrimmedString>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<TrimmedString>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<TrimmedString>.Instance.GetHashCode();
 
         public static bool operator ==(TrimmedString left, TrimmedString right)
-            => ValueObjectComparer<TrimmedString>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<TrimmedString>.Instance.Equals(left, right);
 
         public static bool operator !=(TrimmedString left, TrimmedString right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

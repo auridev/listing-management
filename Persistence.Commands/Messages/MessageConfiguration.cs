@@ -2,6 +2,8 @@
 using Core.Domain.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Common.Helpers;
+using Persistence.Commands.Helpers;
 
 namespace Persistence.Commands.Messages
 {
@@ -24,27 +26,27 @@ namespace Persistence.Commands.Messages
             builder
                 .Property(p => p.Recipient)
                 .HasColumnName("recipient")
-                .HasConversion(domain => domain.UserId, db => Recipient.Create(db))
+                .HasConversion(domain => domain.UserId, db => Recipient.Create(db).ToUnsafeRight())
                 .IsRequired(true);
 
             builder
                 .Property(p => p.Subject)
                 .HasColumnName("subject")
                 .HasMaxLength(200)
-                .HasConversion(domain => domain.Value.Value, db => Subject.Create(db))
+                .HasConversion(domain => domain.Value.Value, db => Subject.Create(db).ToUnsafeRight())
                 .IsRequired(true);
 
             builder
                 .Property(p => p.Body)
                 .HasColumnName("body")
                 .HasMaxLength(1000)
-                .HasConversion(domain => domain.Content, db => MessageBody.Create(db))
+                .HasConversion(domain => domain.Content, db => MessageBody.Create(db).ToUnsafeRight())
                 .IsRequired(true);
 
             builder
                 .Property(p => p.___efCoreSeenDate)
                 .HasColumnName("seen_date")
-                .HasConversion(domain => domain.Value, db => SeenDate.Create(db))
+                .HasConversion(domain => domain.Value, db => SeenDate.Create(db).ToUnsafeRight())
                 .IsRequired(false);
             builder
                 .Ignore(b => b.SeenDate);

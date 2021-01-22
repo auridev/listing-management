@@ -12,12 +12,12 @@ namespace Core.Application.Messages.Queries.GetMyMessageDetails
                 throw new ArgumentNullException(nameof(repository));
         }
 
-        public Option<MyMessageDetailsModel> Execute(Guid userId, GetMyMessageDetailsQueryParams queryParams)
+        public Option<MyMessageDetailsModel> Execute(Guid userId, Guid messageId)
         {
-            if (queryParams == null)
+            if ((userId == default) || (messageId == default))
                 return Option<MyMessageDetailsModel>.None;
 
-            return _repository.Find(userId, queryParams);
+            return _repository.Find(userId, messageId);
         }
     }
 }

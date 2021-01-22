@@ -1,8 +1,11 @@
 ﻿using Common.Dates;
-using Core.Domain.ValueObjects;
+using Common.Helpers;
 using Core.Domain.Listings;
+using Core.Domain.ValueObjects;
 using LanguageExt;
 using System;
+using static Common.Helpers.Functions;
+using static LanguageExt.Prelude;
 
 namespace Core.Application.Listings.Commands.MarkOfferAsSeen
 {
@@ -19,26 +22,57 @@ namespace Core.Application.Listings.Commands.MarkOfferAsSeen
                 throw new ArgumentNullException(nameof(dateTimeService));
         }
 
-        public void Execute(MarkOfferAsSeenModel model)
+        public Either<Error, Unit> Execute(MarkOfferAsSeenModel model)
         {
-            // Pre-requisites
-            DateTimeOffset dateTimeOffset = 
-                _dateTimeService.GetCurrentUtcDateTime();
-            SeenDate seenDate = 
-                SeenDate.Create(dateTimeOffset);
-            Option<ActiveListing> optionalActiveListing =
-                _listingRepository.FindActive(model.ListingId);
+            Either<Error, MarkOfferAsSeenModel> eitherModel = EnsureNotNull(model);
+            Either<Error, ActiveListing> activeListing = FindActiveListing(eitherModel);
+            Either<Error, SeenDate> seenDate = CreateSeenDate(_dateTimeService.GetCurrentUtcDateTime());
 
-            // Command
-            optionalActiveListing
-                .IfSome(l =>
-                {
-                    l.MarkOfferAsSeen(model.OfferId, seenDate);
+            Either<Error, Unit> markOfferAsSeenResult =
+                MarkOfferAsSeen(activeListing, eitherModel, seenDate);
+            Either<Error, Unit> persistChangesResult =
+                PersistChanges(markOfferAsSeenResult, activeListing);
 
-                    _listingRepository.Update(l);
-
-                    _listingRepository.Save();
-                });
+            return persistChangesResult;
         }
+
+        private Either<Error, ActiveListing> FindActiveListing(Either<Error, MarkOfferAsSeenModel> eitherModel)
+           =>
+                eitherModel
+                    .Map(model => _listingRepository.FindActive(model.ListingId))
+                    .Bind(option => option.ToEither<Error>(new Error.NotFound("active listing not found")));
+
+        private Either<Error, SeenDate> CreateSeenDate(DateTimeOffset seenDate)
+            =>
+               SeenDate.Create(seenDate);
+
+        private Either<Error, Unit> MarkOfferAsSeen(Either<Error, ActiveListing> eitherActiveListing, Either<Error, MarkOfferAsSeenModel> eitherModel, Either<Error, SeenDate> eitherSeenDate)
+            =>
+                (
+                    from activeListing in eitherActiveListing
+                    from model in eitherModel
+                    from seenDate in eitherSeenDate
+                    select (activeListing, model, seenDate)
+                )
+                .Bind(
+                    context =>
+                        context.activeListing.MarkOfferAsSeen(
+                            context.model.OfferId, 
+                            context.seenDate));
+
+        private Either<Error, Unit> PersistChanges(Either<Error, Unit> eitherMarkOfferAsSeen, Either<Error, ActiveListing> eitherActiveListing)
+            =>
+                (
+                    from markOfferAsSeen in eitherMarkOfferAsSeen
+                    from activeListing in eitherActiveListing
+                    select (markOfferAsSeen, activeListing)
+                )
+                .Map(context =>
+                {
+                    _listingRepository.Update(context.activeListing);
+                    _listingRepository.Save();
+
+                    return unit;
+                });
     }
 }

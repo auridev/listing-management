@@ -1,8 +1,10 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Dates;
+using Common.Helpers;
 using Core.Domain.Messages;
-using Common.Dates;
+using Core.Domain.ValueObjects;
 using LanguageExt;
 using System;
+using static Common.Helpers.Result;
 
 namespace Core.Application.Messages.Commands.SendMessage.Factory
 {
@@ -15,12 +17,23 @@ namespace Core.Application.Messages.Commands.SendMessage.Factory
             _dateTimeService = dateTimeService ??
                 throw new ArgumentNullException(nameof(dateTimeService));
         }
-        public Message Create(Recipient recipient, Subject subject, MessageBody messageBody)
+        public Either<Error, Message> Create(Recipient recipient, Subject subject, MessageBody messageBody)
         {
-            var id = Guid.NewGuid();
-            var createdDate = _dateTimeService.GetCurrentUtcDateTime();
+            if (recipient == null)
+                return Invalid<Message>(nameof(recipient));
+            if (subject == null)
+                return Invalid<Message>(nameof(subject));
+            if (messageBody == null)
+                return Invalid<Message>(nameof(messageBody));
 
-            return new Message(id, recipient, subject, messageBody, Option<SeenDate>.None, createdDate);
+            var message = new Message(
+                Guid.NewGuid(),
+                recipient,
+                subject,
+                messageBody,
+                _dateTimeService.GetCurrentUtcDateTime());
+
+            return Success(message);
         }
     }
 }

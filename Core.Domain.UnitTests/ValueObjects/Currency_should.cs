@@ -1,7 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
-using System;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -9,39 +11,78 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class Currency_should
     {
         [Fact]
+        public void not_have_any_leading_or_trailing_whitespaces_in_Symbol_property()
+        {
+            Currency
+                .Create("132", " e ", "sss")
+                .Right(currency => currency.Symbol.Should().Be("e"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
+        }
+
+        [Fact]
+        public void not_have_any_leading_or_trailing_whitespaces_in_Name_property()
+        {
+            Currency
+                .Create("wer", "T", "   fddd ")
+                .Right(currency => currency.Name.Should().Be("fddd"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
+        }
+
+        [Fact]
         public void have_a_Code_property()
         {
-            var currency = Currency.Create(CurrencyCode.Create("cod"), "symbol", "name");
-            currency.Code.Value.Should().Be("COD");
+            Currency
+                .Create("cod", "symbol", "name")
+                .Right(currency => currency.Code.Value.Should().Be("COD"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void have_a_Symbol_property()
+        public void have_a_predefined_Euro_property_matching_Euro_currency()
         {
-            var currency = Currency.Create(CurrencyCode.Create("aaa"), "S", "asdasdads");
-            currency.Symbol.Should().Be("S");
+            Currency
+                .Create("EUR", "€", "Euro")
+                .Right(currency => currency.Should().Be(Currency.Euro))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void have_a_Name_property()
+        public void have_a_predefined_USDollar_property_matching_US_dollar_currency()
         {
-            var currency = Currency.Create(CurrencyCode.Create("aaa"), "S", "pinigai");
-            currency.Name.Should().Be("Pinigai");
+            Currency
+                .Create("USD", "$", "US Dollar")
+                .Right(currency => currency.Should().Be(Currency.USDollar))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void have_a_predefined_Euro_property()
+        public void have_a_predefined_PolishZloty_property_matching_Polish_zloty_currency()
         {
-            Currency.Euro.Should().Be(Currency.Create(CurrencyCode.Create("EUR"), "€", "Euro"));
+            Currency
+                .Create("PLN", "zł", "PZloty")
+                .Right(currency => currency.Should().Be(Currency.PolishZloty))
+                .Left(_ => throw InvalidExecutionPath.Exception);
+        }
+
+        [Fact]
+        public void have_a_predefined_PoundSterling_property_matching_Pound_Sterling_currency()
+        {
+            Currency
+                .Create("GBP", "£", "Pound Sterling")
+                .Right(currency => currency.Should().Be(Currency.PoundSterling))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(Data))]
-        public void throw_an_exception_during_creation_if_values_are_not_valid(CurrencyCode code, string symbol, string name)
+        public void return_EiherLeft_with_proper_error_during_creation_if_value_is_not_valid(string code, string symbol, string name)
         {
-            Action createAction = () => Currency.Create(code, symbol, name);
+            Either<Error, Currency> eitherCurrency = Currency.Create(code, symbol, name);
 
-            createAction.Should().Throw<ArgumentException>();
+            eitherCurrency.IsLeft.Should().BeTrue();
+            eitherCurrency
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> Data => new List<object[]>
@@ -51,36 +92,26 @@ namespace Core.Domain.UnitTests.ValueObjects
             new object[] { null, "", "" },
             new object[] { default, default, default },
             new object[] { default, "asdasd", null },
-            new object[] { CurrencyCode.Create("asd"), null, null },
+            new object[] { "asd", null, null },
             new object[] { null, null, "khjkjhj" }
         };
 
         [Fact]
-        public void not_have_any_leading_or_trailing_whitespaces_in_Symbol_property()
+        public void be_treated_as_equal_using_generic_Equals_method_if_Codes_and_Symbols_match()
         {
-            var currency = Currency.Create(CurrencyCode.Create("132"), " e ", "sss");
-            currency.Symbol.Should().Be("e");
+            var first = Currency.Create("eur", "c", "euro");
+            var second = Currency.Create("eur", "c", "euro");
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
         }
 
         [Fact]
-        public void not_have_any_leading_or_trailing_whitespaces_in_Name_property()
+        public void be_treated_as_equal_using_object_Equals_method_if_Names_match()
         {
-            var currency = Currency.Create(CurrencyCode.Create("wer"), "T", "   fddd ");
-            currency.Name.Should().Be("Fddd");
-        }
-
-        [Fact]
-        public void have_Name_with_first_capital_letter()
-        {
-            var currency = Currency.Create(CurrencyCode.Create("ccc"), "s", "name");
-            currency.Name.Should().Be("Name");
-        }
-
-        [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_Codes_and_Symbols_match()
-        {
-            var first = Currency.Create(CurrencyCode.Create("eur"), "c", "euro");
-            var second = Currency.Create(CurrencyCode.Create("eur"), "c", "euro");
+            var first = (object)Currency.Create("eur", "c", "euro");
+            var second = (object)Currency.Create("eur", "c", "euro");
 
             var equals = first.Equals(second);
 
@@ -90,8 +121,8 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void be_treated_as_equal_using_the_equals_operator_if_Codes_and_Symbols_match()
         {
-            var first = Currency.Create(CurrencyCode.Create("usd"), "s", "dollar");
-            var second = Currency.Create(CurrencyCode.Create("usd"), "s", "dollar");
+            var first = Currency.Create("usd", "s", "dollar");
+            var second = Currency.Create("usd", "s", "dollar");
 
             var equals = (first == second);
 
@@ -102,15 +133,15 @@ namespace Core.Domain.UnitTests.ValueObjects
         [InlineData("USD", "S", "Dollar", "EUR", "C", "Euro")]
         [InlineData("USD", "S", "Dollar", "USD", "C", "Euro")]
         [InlineData("USD", "C", "Dollar", "EUR", "C", "Dollar")]
-        public void be_treated_as_not_equal_using_the_not_equals_operator_if_either_Codes_or_Symbols_dont_match(string firstCode, 
-            string firstSymbol, 
-            string firstName, 
-            string secondCode, 
-            string secondSymbol, 
+        public void be_treated_as_not_equal_using_the_not_equals_operator_if_either_Codes_or_Symbols_dont_match(string firstCode,
+            string firstSymbol,
+            string firstName,
+            string secondCode,
+            string secondSymbol,
             string secondName)
         {
-            var first = Currency.Create(CurrencyCode.Create(firstCode), firstSymbol, firstName);
-            var second = Currency.Create(CurrencyCode.Create(secondCode), secondSymbol, secondName);
+            var first = Currency.Create(firstCode, firstSymbol, firstName);
+            var second = Currency.Create(secondCode, secondSymbol, secondName);
 
             var nonEquals = (first != second);
 

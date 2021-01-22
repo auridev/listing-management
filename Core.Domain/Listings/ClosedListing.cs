@@ -1,5 +1,5 @@
-﻿using Core.Domain.ValueObjects;
-using Core.Domain.Offers;
+﻿using Core.Domain.Offers;
+using Core.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;

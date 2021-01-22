@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Messages.Commands.MarkMessageAsSeen
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Messages.Commands.MarkMessageAsSeen
 {
     public interface IMarkMessageAsSeenCommand
     {
-        void Execute(MarkMessageAsSeenModel model);
+        Either<Error, Unit> Execute(MarkMessageAsSeenModel model);
     }
 }

@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Result;
+using static LanguageExt.Prelude;
 
 namespace Core.Domain.ValueObjects
 {
@@ -17,29 +21,46 @@ namespace Core.Domain.ValueObjects
             CurrencyCode = currencyCode;
         }
 
-        public static MonetaryValue Create(decimal value, CurrencyCode currencyCode)
+        public static Either<Error, MonetaryValue> Create(decimal value, string currencyCode)
         {
-            if (value <= 0)
-                throw new ArgumentException(nameof(value));
-            if (currencyCode == null)
-                throw new ArgumentNullException(nameof(currencyCode));
+            Either<Error, decimal> eitherValue = EnsureValidDecimal(value);
+            Either<Error, CurrencyCode> eitherCurrencyCode = CurrencyCode.Create(currencyCode);
 
-            return new MonetaryValue(value, currencyCode);
+            Either<Error, (decimal value, CurrencyCode currencyCode)> combined =
+                from v in eitherValue
+                from cc in eitherCurrencyCode
+                select (v, cc);
+
+            return
+                combined.Map(
+                    combined =>
+                        new MonetaryValue(combined.value, combined.currencyCode));
         }
 
+        private static Either<Error, decimal> EnsureValidDecimal(decimal value)
+            =>
+                (value > 0)
+                    ? Right(value)
+                    : Left(Invalid<decimal>("invalid monetary value"));
+
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<MonetaryValue>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<MonetaryValue>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] MonetaryValue other)
-            => ValueObjectComparer<MonetaryValue>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<MonetaryValue>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<MonetaryValue>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<MonetaryValue>.Instance.GetHashCode();
 
         public static bool operator ==(MonetaryValue left, MonetaryValue right)
-            => ValueObjectComparer<MonetaryValue>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<MonetaryValue>.Instance.Equals(left, right);
 
         public static bool operator !=(MonetaryValue left, MonetaryValue right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

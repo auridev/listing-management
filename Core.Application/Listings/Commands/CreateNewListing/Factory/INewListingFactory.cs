@@ -1,16 +1,17 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
 using Core.Domain.Listings;
+using Core.Domain.ValueObjects;
+using LanguageExt;
 using System;
-using System.Collections.Generic;
 
 namespace Core.Application.Listings.Commands.CreateNewListing.Factory
 {
     public interface INewListingFactory
     {
-        NewListing Create(Owner owner, 
-            ListingDetails listingDetails, 
-            ContactDetails contactDetails, 
-            LocationDetails locationDetail, 
+        Either<Error, NewListing> Create(Owner owner,
+            ListingDetails listingDetails,
+            ContactDetails contactDetails,
+            LocationDetails locationDetail,
             GeographicLocation geographicLocation,
             DateTimeOffset createdDate);
     }

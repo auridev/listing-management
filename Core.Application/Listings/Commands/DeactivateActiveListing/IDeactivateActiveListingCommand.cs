@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.DeactivateActiveListing
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.DeactivateActiveListing
 {
     public interface IDeactivateActiveListingCommand
     {
-        void Execute(DeactivateActiveListingModel model);
+        Either<Error, Unit> Execute(DeactivateActiveListingModel model);
     }
 }

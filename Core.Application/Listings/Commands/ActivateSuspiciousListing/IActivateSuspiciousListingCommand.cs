@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.ActivateSuspiciousListing
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.ActivateSuspiciousListing
 {
     public interface IActivateSuspiciousListingCommand
     {
-        void Execute(ActivateSuspiciousListingModel model);
+        Either<Error, Unit> Execute(ActivateSuspiciousListingModel model);
     }
 }

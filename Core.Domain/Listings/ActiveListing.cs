@@ -1,9 +1,12 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
 using Core.Domain.Offers;
+using Core.Domain.ValueObjects;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Common.Helpers.Result;
+using static LanguageExt.Prelude;
 
 namespace Core.Domain.Listings
 {
@@ -38,9 +41,15 @@ namespace Core.Domain.Listings
             ExpirationDate = expirationDate;
         }
 
-        public PassiveListing Deactivate(TrimmedString trimmedString, DateTimeOffset deactivationDate)
+        public Either<Error, PassiveListing> Deactivate(TrimmedString reason, DateTimeOffset deactivationDate)
         {
-            return new PassiveListing(Id,
+            if (reason == null)
+                return Invalid<PassiveListing>(nameof(reason));
+            if (deactivationDate == default)
+                return Invalid<PassiveListing>(nameof(deactivationDate));
+
+            var passiveListing = new PassiveListing(
+                Id,
                 Owner,
                 ListingDetails,
                 ContactDetails,
@@ -48,38 +57,46 @@ namespace Core.Domain.Listings
                 GeographicLocation,
                 CreatedDate,
                 deactivationDate,
-                trimmedString);
+                reason);
+
+            return Success(passiveListing);
         }
 
-        public void ReceiveOffer(ReceivedOffer offer)
+        public Either<Error, Unit> ReceiveOffer(ReceivedOffer offer)
         {
             if (offer == null)
-                throw new ArgumentNullException(nameof(offer));
-
-            if (Owner == offer.Owner) // ignore offers from owner of the listing 
-                return;
+                return Invalid<Unit>("invalid offer");
+            if (Owner == offer.Owner)
+                return Invalid<Unit>("cannot accept offers from the listing owner");
 
             _offers // remove existing offers from the same owner
                 .Find<ReceivedOffer>(o => o.Owner == offer.Owner)
                 .IfSome(o => _offers.Remove(o));
 
             _offers.Add(offer);
+
+            return Success(unit);
         }
 
-        public Option<ClosedListing> AcceptOffer(Guid receivedOfferId, DateTimeOffset closedOn)
+        public Either<Error, ClosedListing> AcceptOffer(Guid receivedOfferId, DateTimeOffset closedOn)
         {
+            if (receivedOfferId == default)
+                return Invalid<ClosedListing>(nameof(receivedOfferId));
+            if (closedOn == default)
+                return Invalid<ClosedListing>(nameof(closedOn));
+
+
             // find the matching offer
-            Option<ReceivedOffer> offer = 
-                FindReceivedOfferById(receivedOfferId);
+            Option<ReceivedOffer> offer = FindReceivedOfferById(receivedOfferId);
             if (offer.IsNone)
-                return Option<ClosedListing>.None;
+                return NotFound<ClosedListing>("offer not found");
 
             // prerequisites
             AcceptedOffer acceptedOffer = null;
             List<RejectedOffer> rejectedOffers = new List<RejectedOffer>();
 
             // find accepted and rejected offers
-            _offers.ForEach(o => 
+            _offers.ForEach(o =>
             {
                 if (o == offer)
                     acceptedOffer = new AcceptedOffer(o.Id, o.Owner, o.MonetaryValue, o.CreatedDate);
@@ -88,9 +105,9 @@ namespace Core.Domain.Listings
             });
 
             if (acceptedOffer != null)
-                return new ClosedListing(Id, Owner, ListingDetails, ContactDetails, LocationDetails, GeographicLocation, CreatedDate, closedOn, acceptedOffer, rejectedOffers);
+                return Success(new ClosedListing(Id, Owner, ListingDetails, ContactDetails, LocationDetails, GeographicLocation, CreatedDate, closedOn, acceptedOffer, rejectedOffers));
             else
-                return Option<ClosedListing>.None;
+                return NotFound<ClosedListing>("offer not found");
         }
 
         private Option<ReceivedOffer> FindReceivedOfferById(Guid receivedOfferId)
@@ -98,47 +115,75 @@ namespace Core.Domain.Listings
             return _offers.Find<ReceivedOffer>(o => o.Id == receivedOfferId);
         }
 
-        public void AddLead(Lead lead)
+        public Either<Error, Unit> AddLead(Lead lead)
         {
             if (lead == null)
-                throw new ArgumentNullException(nameof(lead));
+                return Invalid<Unit>("invalid lead");
+            if (Owner == lead.UserInterested)
+                return Invalid<Unit>("cannot accept leads from the listing owner");
 
-            if (Owner == lead.UserInterested) // ignore leads from owner of the listing 
-                return;
+            Option<Lead> leadFromUser = _leads
+                .Find<Lead>(l => l.UserInterested == lead.UserInterested);
 
-            _leads
-                .Find<Lead>(l => l.UserInterested == lead.UserInterested)
-                .IfNone(() => _leads.Add(lead));
+            if (leadFromUser.IsSome)
+                return Invalid<Unit>("lead from this user already exists");
+
+            _leads.Add(lead);
+
+            return Success(unit);
         }
 
-        public void MarkAsFavorite(FavoriteMark favorite)
+        public Either<Error, Unit> MarkAsFavorite(FavoriteMark favorite)
         {
             if (favorite == null)
-                throw new ArgumentNullException(nameof(favorite));
+                return Invalid<Unit>("invalid favorite");
+            if (Owner == favorite.FavoredBy)
+                return Invalid<Unit>("cannot accept favorites from the listing owner");
 
-            if (Owner == favorite.FavoredBy) // ignore favorite marks from owner of the listing 
-                return;
+            Option<FavoriteMark> existingFavoriteFromUser = _favorites
+                .Find<FavoriteMark>(f => f.FavoredBy == favorite.FavoredBy);
 
-            _favorites
-                .Find<FavoriteMark>(f => f.FavoredBy == favorite.FavoredBy)
-                .IfNone(() => _favorites.Add(favorite));
+            if (existingFavoriteFromUser.IsSome)
+                return Invalid<Unit>("favorite from this user already exists");
+
+            _favorites.Add(favorite);
+
+            return Success(unit);
         }
 
-        public void RemoveFavorite(Owner favoredBy)
+        public Either<Error, Unit> RemoveFavorite(Owner favoredBy)
         {
             if (favoredBy == null)
-                throw new ArgumentNullException(nameof(favoredBy));
+                return Invalid<Unit>(nameof(favoredBy));
 
-            _favorites
-               .Find<FavoriteMark>(f => f.FavoredBy == favoredBy)
-               .IfSome(f => _favorites.Remove(f));
+            Option<FavoriteMark> existingFavoriteFromUser = _favorites
+                .Find<FavoriteMark>(f => f.FavoredBy == favoredBy);
+
+            if (existingFavoriteFromUser.IsNone)
+                return NotFound<Unit>(nameof(favoredBy));
+
+            existingFavoriteFromUser
+                .IfSome(f => _favorites.Remove(f));
+
+            return Success(unit);
         }
 
-        public void MarkOfferAsSeen(Guid offerId, SeenDate seenDate)
+        public Either<Error, Unit> MarkOfferAsSeen(Guid offerId, SeenDate seenDate)
         {
-            _offers
-                .Find<ReceivedOffer>(o => o.Id == offerId)
-                .IfSome(o => o.HasBeenSeen(seenDate));
+            if (offerId == default)
+                return Invalid<Unit>(nameof(offerId));
+            if (seenDate == null)
+                return Invalid<Unit>(nameof(seenDate));
+
+            Option<ReceivedOffer> offer = _offers
+                .Find<ReceivedOffer>(o => o.Id == offerId);
+
+            if (offer.IsNone)
+                return NotFound<Unit>(nameof(offerId));
+
+            offer.IfSome(o => o.HasBeenSeen(seenDate));
+
+            return Success(unit);
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Core.Application.Listings.Commands;
 using Core.Domain.Listings;
+using Core.Domain.ValueObjects;
 using LanguageExt;
 using System;
+using System.Collections.Generic;
 
 namespace Persistence.Commands.Listings
 {
@@ -17,7 +19,7 @@ namespace Persistence.Commands.Listings
                 throw new ArgumentNullException(nameof(context));
         }
 
-        public void Add(NewListing newListing, ListingImageReference[] references)
+        public void Add(NewListing newListing, List<ImageReference> references)
         {
             if(newListing == null)
                 throw new ArgumentNullException(nameof(newListing));
@@ -26,7 +28,7 @@ namespace Persistence.Commands.Listings
 
 
             _context.NewListings.Add(newListing);
-            _context.ListingImageReferences.AddRange(references);
+            _context.ImageReferences.AddRange(references);
         }
 
         public void Add(ActiveListing activeListing)

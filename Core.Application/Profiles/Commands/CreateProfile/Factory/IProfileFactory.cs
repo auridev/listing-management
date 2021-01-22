@@ -1,18 +1,19 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
 using Core.Domain.Profiles;
+using Core.Domain.ValueObjects;
+using LanguageExt;
 using System;
 
 namespace Core.Application.Profiles.Commands.CreateProfile.Factory
 {
     public interface IProfileFactory
     {
-        ActiveProfile CreateActive(Guid id, 
-            Guid userid, 
-            Email email, 
-            ContactDetails contactDetails, 
-            LocationDetails locationDetails, 
-            GeographicLocation geographicLocation, 
-            UserPreferences userPreferences,
-            DateTimeOffset createdDate);
+        Either<Error, ActiveProfile> CreateActive(
+            Guid userid,
+            Email email,
+            ContactDetails contactDetails,
+            LocationDetails locationDetails,
+            GeographicLocation geographicLocation,
+            UserPreferences userPreferences);
     }
 }

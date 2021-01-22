@@ -1,9 +1,11 @@
 ﻿using System;
+using Common.Helpers;
+using LanguageExt;
 
 namespace Core.Application.Listings.Commands.AddFavorite
 {
     public interface IAddFavoriteCommand
     {
-        void Execute(Guid userId, AddFavoriteModel model);
+        Either<Error, Unit> Execute(Guid userId, AddFavoriteModel model);
     }
 }

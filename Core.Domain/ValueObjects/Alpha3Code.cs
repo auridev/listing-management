@@ -3,7 +3,7 @@ using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
-using static Common.Helpers.StringHelpers;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
@@ -32,18 +32,23 @@ namespace Core.Domain.ValueObjects
                 input.Map(value => new Alpha3Code(value));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<Alpha3Code>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<Alpha3Code>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Alpha3Code other)
-            => ValueObjectComparer<Alpha3Code>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<Alpha3Code>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<Alpha3Code>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<Alpha3Code>.Instance.GetHashCode();
 
         public static bool operator ==(Alpha3Code left, Alpha3Code right)
-            => ValueObjectComparer<Alpha3Code>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<Alpha3Code>.Instance.Equals(left, right);
 
         public static bool operator !=(Alpha3Code left, Alpha3Code right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

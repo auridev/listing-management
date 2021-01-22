@@ -2,8 +2,8 @@
 using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
-using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -11,24 +11,24 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class Phone_should
     {
         [Fact]
-        public void have_a_Number_property()
+        public void not_have_any_leading_or_trailing_whitespaces_in_Number_property()
         {
-            Either<Error, Phone> eitherPhone = Phone.Create("+333 111 22222");
+            Either<Error, Phone> eitherPhone = Phone.Create("   +333 (11) 444 555 666      ");
 
             eitherPhone
-                .Right(phone => phone.Number.Should().Be("+333 111 22222"))
-                .Left(_ => throw new InvalidOperationException());
+               .Right(phone => phone.Number.Should().Be("+333 (11) 444 555 666"))
+               .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(InvalidNumbers))]
-        public void return_Eiher_in_Left_state_with_proper_error_during_creation_if_argument_is_not_valid(string value)
+        public void return_EiheLeft_with_proper_error_during_creation_if_argument_is_not_valid(string value)
         {
             Either<Error, Phone> eitherPhone = Phone.Create(value);
 
             eitherPhone.IsLeft.Should().BeTrue();
             eitherPhone
-                .Right(_ => throw new InvalidOperationException())
+                .Right(_ => throw InvalidExecutionPath.Exception)
                 .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
@@ -54,7 +54,7 @@ namespace Core.Domain.UnitTests.ValueObjects
 
             eitherPhone
                .Right(phone => phone.Number.Should().Be(number))
-               .Left(_ => throw new InvalidOperationException());
+               .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         public static IEnumerable<object[]> ValidNumbers => new List<object[]>
@@ -67,16 +67,6 @@ namespace Core.Domain.UnitTests.ValueObjects
             new object[] { "33311444555666" },
             new object[] { "333-11-444-555-666" }
         };
-
-        [Fact]
-        public void not_have_any_leading_or_trailing_whitespaces_in_Number_property()
-        {
-            Either<Error, Phone> eitherPhone = Phone.Create("   +333 (11) 444 555 666      ");
-
-            eitherPhone
-               .Right(phone => phone.Number.Should().Be("+333 (11) 444 555 666"))
-               .Left(_ => throw new InvalidOperationException());
-        }
 
         [Fact]
         public void be_treated_as_equal_using_generic_Equals_method_if_Numbers_match()

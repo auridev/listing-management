@@ -1,5 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
+using LanguageExt;
 using System;
+using static Common.Helpers.Result;
+using static LanguageExt.Prelude;
 
 namespace Core.Domain.Listings
 {
@@ -30,9 +34,14 @@ namespace Core.Domain.Listings
             Reason = reason;
         }
 
-        public PassiveListing Deactivate(TrimmedString trimmedString, DateTimeOffset deactivationDate)
+        public Either<Error, PassiveListing> Deactivate(TrimmedString reason, DateTimeOffset deactivationDate)
         {
-            return new PassiveListing(Id,
+            if (reason == null)
+                return Invalid<PassiveListing>(nameof(reason));
+            if (deactivationDate == default)
+                return Invalid<PassiveListing>(nameof(deactivationDate));
+
+            var passiveListing = new PassiveListing(Id,
                 Owner,
                 ListingDetails,
                 ContactDetails,
@@ -40,12 +49,17 @@ namespace Core.Domain.Listings
                 GeographicLocation,
                 CreatedDate,
                 deactivationDate,
-                trimmedString);
+                reason);
+
+            return Success(passiveListing);
         }
 
-        public ActiveListing Activate(DateTimeOffset expirationDate)
+        public Either<Error, ActiveListing> Activate(DateTimeOffset expirationDate)
         {
-            return new ActiveListing(
+            if (expirationDate == default)
+                return Invalid<ActiveListing>(nameof(expirationDate));
+
+            var activeListing = new ActiveListing(
                 Id,
                 Owner,
                 ListingDetails,
@@ -54,6 +68,8 @@ namespace Core.Domain.Listings
                 GeographicLocation,
                 CreatedDate,
                 expirationDate);
+
+            return Success(activeListing);
         }
     }
 }

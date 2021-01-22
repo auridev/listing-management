@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
-
     public class DateTag : IEquatable<DateTag>
     {
         public int Year { get; }
@@ -22,24 +24,29 @@ namespace Core.Domain.ValueObjects
             Day = day;
         }
 
-        public static DateTag Create(DateTimeOffset dateTimeOffset)
-        {
-            return new DateTag(dateTimeOffset.Year, dateTimeOffset.Month, dateTimeOffset.Day);
-        }
+        public static Either<Error, DateTag> Create(DateTimeOffset value)
+            =>
+                EnsureNonDefault(value)
+                    .Map(value => new DateTag(value.Year, value.Month, value.Day));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<DateTag>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<DateTag>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] DateTag other)
-            => ValueObjectComparer<DateTag>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<DateTag>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<DateTag>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<DateTag>.Instance.GetHashCode();
 
         public static bool operator ==(DateTag left, DateTag right)
-            => ValueObjectComparer<DateTag>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<DateTag>.Instance.Equals(left, right);
 
         public static bool operator !=(DateTag left, DateTag right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

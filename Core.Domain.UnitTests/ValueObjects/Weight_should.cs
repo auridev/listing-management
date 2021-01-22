@@ -1,7 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
-using System;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -11,24 +13,31 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void have_Value_property()
         {
-            var weight = Weight.Create(20F, MassMeasurementUnit.Pound);
-            weight.Value.Should().Be(20F);
+            Weight
+                .Create(20F, "lb")
+                .Right(weight => weight.Value.Should().Be(20F))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
         public void have_unit_property()
         {
-            var weight = Weight.Create(1F, MassMeasurementUnit.Kilogram);
-            weight.Unit.Should().Be(MassMeasurementUnit.Kilogram);
+            Weight
+                .Create(1F, "kg")
+                .Right(weight => weight.Unit.Should().Be(MassMeasurementUnit.Kilogram))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(Data))]
-        public void throw_an_exception_during_creation_if_value_is_not_valid(float value)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(float value)
         {
-            Action create = () =>Weight.Create(value, MassMeasurementUnit.Pound);
+            Either<Error, Weight> eitherWeight = Weight.Create(value, "lb");
 
-            create.Should().Throw<ArgumentException>();
+            eitherWeight.IsLeft.Should().BeTrue();
+            eitherWeight
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> Data => new List<object[]>
@@ -40,10 +49,21 @@ namespace Core.Domain.UnitTests.ValueObjects
         };
 
         [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_Values_and_Units_match()
+        public void be_treated_as_equal_using_generic_Equals_method_if_Values_and_Units_match()
         {
-            var first = Weight.Create(58F, MassMeasurementUnit.Kilogram);
-            var second = Weight.Create(58F, MassMeasurementUnit.Kilogram);
+            var first = Weight.Create(58F, "kg");
+            var second = Weight.Create(58F, "kg");
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
+        }
+
+        [Fact]
+        public void be_treated_as_equal_using_object_Equals_method_if_Values_and_Units_match()
+        {
+            var first = (object)Weight.Create(58F, "kg");
+            var second = (object)Weight.Create(58F, "kg");
 
             var equals = first.Equals(second);
 
@@ -53,8 +73,8 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void be_treated_as_equal_using_the_equals_operator_if_Values_and_Units_match()
         {
-            var first = Weight.Create(0.555F, MassMeasurementUnit.Pound);
-            var second = Weight.Create(0.555F, MassMeasurementUnit.Pound);
+            var first = Weight.Create(0.555F, "lb");
+            var second = Weight.Create(0.555F, "lb");
 
             var equals = (first == second);
 
@@ -66,9 +86,9 @@ namespace Core.Domain.UnitTests.ValueObjects
         public void be_treated_as_not_equal_using_the_not_equals_operator_if_either_Values_or_Units_dont_match
         (
             float firstValue,
-            MassMeasurementUnit firstUnit,
+            string firstUnit,
             float secondValue,
-            MassMeasurementUnit secondUnit
+            string secondUnit
         )
         {
             var first = Weight.Create(firstValue, firstUnit);
@@ -81,9 +101,9 @@ namespace Core.Domain.UnitTests.ValueObjects
 
         public static IEnumerable<object[]> ValuesAndUnits => new List<object[]>
         {
-            new object[] { 1.01F, MassMeasurementUnit.Pound, 2.02F, MassMeasurementUnit.Kilogram },
-            new object[] { 1.01F, MassMeasurementUnit.Pound, 1.01F, MassMeasurementUnit.Kilogram },
-            new object[] { 1.01F, MassMeasurementUnit.Kilogram, 2.02F, MassMeasurementUnit.Kilogram }
+            new object[] { 1.01F, "lb", 2.02F, "kg" },
+            new object[] { 1.01F, "lb", 1.01F, "kg" },
+            new object[] { 1.01F, "kg", 2.02F, "kg" }
         };
     }
 }
