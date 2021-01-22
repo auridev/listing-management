@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
@@ -12,13 +13,12 @@ namespace Core.Domain.ValueObjects
         public static readonly ImageType GIF = new ImageType(30, "gif");
         public static readonly ImageType BMP = new ImageType(40, "bmp");
 
-        private static readonly ImageType[] _allTypes = new ImageType[]
+        private static readonly Dictionary<string, ImageType> _types = new Dictionary<string, ImageType>
         {
-            Unknown,
-            JPEG,
-            PNG,
-            GIF,
-            BMP
+            { JPEG.Value, JPEG },
+            { PNG.Value, PNG },
+            { GIF.Value, GIF },
+            { BMP.Value, BMP }
         };
 
         public string Value { get; }
@@ -37,26 +37,30 @@ namespace Core.Domain.ValueObjects
             if (string.IsNullOrWhiteSpace(value))
                 return Unknown;
 
-            var type = _allTypes.Find(t => t.Value.ToLower() == value.ToLower());
-
-            return type
-                .Some(t => t)
-                .None(() => Unknown);
+            if (_types.ContainsKey(value))
+                return _types[value];
+            else
+                return Unknown;
         }
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<ImageType>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<ImageType>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] ImageType other)
-            => ValueObjectComparer<ImageType>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<ImageType>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<ImageType>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<ImageType>.Instance.GetHashCode();
 
         public static bool operator ==(ImageType left, ImageType right)
-            => ValueObjectComparer<ImageType>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<ImageType>.Instance.Equals(left, right);
 
         public static bool operator !=(ImageType left, ImageType right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

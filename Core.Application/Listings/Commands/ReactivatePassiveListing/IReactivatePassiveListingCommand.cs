@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.ReactivatePassiveListing
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.ReactivatePassiveListing
 {
     public interface IReactivatePassiveListingCommand
     {
-        void Execute(ReactivatePassiveListingModel model);
+        Either<Error, Unit> Execute(ReactivatePassiveListingModel model);
     }
 }

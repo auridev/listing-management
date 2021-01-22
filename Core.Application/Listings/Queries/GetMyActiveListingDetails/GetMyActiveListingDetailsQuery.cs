@@ -15,6 +15,9 @@ namespace Core.Application.Listings.Queries.GetMyActiveListingDetails
 
         public Option<MyActiveListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
+            if ((userId == default) || (listingId == default))
+                return Option<MyActiveListingDetailsModel>.None;
+            
             return _repository.FindMyActive(userId, listingId);
         }
     }

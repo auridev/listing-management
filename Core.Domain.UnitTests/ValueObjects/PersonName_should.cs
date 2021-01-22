@@ -3,6 +3,7 @@ using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
 using System;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -10,33 +11,13 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class PersonName_should
     {
         [Fact]
-        public void have_a_FirstName_property()
-        {
-            Either<Error, PersonName> eitherPersonName = PersonName.Create("John", "Smith");
-
-            eitherPersonName
-                .Right(personName => personName.FirstName.ToString().Should().Be("John"))
-                .Left(_ => throw new InvalidOperationException());
-        }
-
-        [Fact]
         public void have_capitalized_FirstName_property()
         {
             Either<Error, PersonName> eitherPersonName = PersonName.Create("jane", "doe");
 
             eitherPersonName
                 .Right(personName => personName.FirstName.ToString().Should().Be("Jane"))
-                .Left(_ => throw new InvalidOperationException());
-        }
-
-        [Fact]
-        public void have_a_LastName_property()
-        {
-            Either<Error, PersonName> eitherPersonName = PersonName.Create("Harry", "Potter");
-
-            eitherPersonName
-                .Right(personName => personName.LastName.ToString().Should().Be("Potter"))
-                .Left(_ => throw new InvalidOperationException());
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
@@ -46,7 +27,7 @@ namespace Core.Domain.UnitTests.ValueObjects
 
             eitherPersonName
                 .Right(personName => personName.LastName.ToString().Should().Be("Smith"))
-                .Left(_ => throw new InvalidOperationException());
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
@@ -56,7 +37,7 @@ namespace Core.Domain.UnitTests.ValueObjects
 
             eitherPersonName
                .Right(personName => personName.FullName.ToString().Should().Be("Ddd Eee"))
-               .Left(_ => throw new InvalidOperationException());
+               .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]

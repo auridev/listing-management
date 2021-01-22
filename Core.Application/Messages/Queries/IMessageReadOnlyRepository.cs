@@ -8,7 +8,7 @@ namespace Core.Application.Messages.Queries
 {
     public interface IMessageReadOnlyRepository
     {
-        Option<MyMessageDetailsModel> Find(Guid userId, GetMyMessageDetailsQueryParams queryParams);
+        Option<MyMessageDetailsModel> Find(Guid userId, Guid messageId);
         PagedList<MyMessageModel> Get(Guid userId, GetMyMessagesQueryParams queryParams);
     }
 }

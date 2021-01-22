@@ -1,29 +1,33 @@
 ﻿using Common.Dates;
+using Common.Helpers;
 using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.DeactivateSuspiciousListing;
 using Core.Domain.Listings;
-using Core.UnitTests.Mocks;
+using FluentAssertions;
 using LanguageExt;
 using Moq;
 using Moq.AutoMock;
 using System;
+using Test.Helpers;
 using Xunit;
 
 namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.DeactivateSuspiciousListing
 {
     public class DeactivateSuspiciousListingCommand_should
     {
-        private readonly DeactivateSuspiciousListingCommand _sut;
-        private readonly DeactivateSuspiciousListingModel _model;
-        private readonly SuspiciousListing _suspiciousListing;
-        private readonly AutoMocker _mocker;
-        private readonly Guid _listingId = Guid.NewGuid();
-        private readonly DateTimeOffset _deactivationDate = DateTimeOffset.UtcNow.AddDays(1);
+        private DeactivateSuspiciousListingCommand _sut;
+        private DeactivateSuspiciousListingModel _model;
+        private SuspiciousListing _suspiciousListing;
+        private Guid _listingId = Guid.NewGuid();
+        private DateTimeOffset _deactivationDate = DateTimeOffset.UtcNow.AddDays(1);
+
+        private AutoMocker _mocker;
+        private Either<Error, Unit> _executionResult;
 
         public DeactivateSuspiciousListingCommand_should()
         {
             _mocker = new AutoMocker();
-            _suspiciousListing = FakesCollection.SuspiciousListing_1;
+            _suspiciousListing = DummyData.SuspiciousListing_1;
             _model = new DeactivateSuspiciousListingModel()
             {
                 ListingId = _listingId,
@@ -43,59 +47,42 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.DeactivateSu
             _sut = _mocker.CreateInstance<DeactivateSuspiciousListingCommand>();
         }
 
-        [Fact(Skip = "while refactoring")]
-        public void retrieve_the_new_listing_from_repository()
+        private void Execute_Successfully()
         {
-            _sut.Execute(_model);
-
-            _mocker
-                .GetMock<IListingRepository>()
-                .Verify(r => r.FindSuspicious(_listingId), Times.Once);
+            _executionResult = _sut.Execute(_model);
         }
 
-        [Fact(Skip = "while refactoring")]
-        public void add_passive_listing_to_the_repo()
+        private void Execute_WithNonExistingListing()
         {
-            _sut.Execute(_model);
-
-            _mocker
-                .GetMock<IListingRepository>()
-                .Verify(r => r.Add(It.Is<PassiveListing>(l => l.Id == _suspiciousListing.Id)), Times.Once);
-        }
-
-        [Fact(Skip = "while refactoring")]
-        public void remove_suspicious_listing_from_the_repo()
-        {
-            _sut.Execute(_model);
-
-            _mocker
-                .GetMock<IListingRepository>()
-                .Verify(r => r.Delete(_suspiciousListing), Times.Once);
-        }
-
-        [Fact(Skip = "while refactoring")]
-        public void save_repository_changes()
-        {
-            _sut.Execute(_model);
-
-            _mocker
-                .GetMock<IListingRepository>()
-                .Verify(r => r.Save(), Times.Once);
-        }
-
-        [Fact(Skip = "while refactoring")]
-        public void do_nothing_if_listing_is_not_found()
-        {
-            // arrange
             _mocker
                 .GetMock<IListingRepository>()
                 .Setup(r => r.FindSuspicious(It.IsAny<Guid>()))
                 .Returns(Option<SuspiciousListing>.None);
 
-            // act
-            _sut.Execute(_model);
+            _executionResult = _sut.Execute(_model);
+        }
 
-            // assert
+        private void Execute_WithFailedDeacticationReasonCreation()
+        {
+            _executionResult = _sut.Execute(new DeactivateSuspiciousListingModel()
+            {
+                ListingId = _listingId,
+                Reason = string.Empty
+            });
+        }
+
+        private void Execute_WithFailedDeactivate()
+        {
+            _mocker
+                .GetMock<IDateTimeService>()
+                .Setup(s => s.GetCurrentUtcDateTime())
+                .Returns((DateTimeOffset)default);
+
+            _executionResult = _sut.Execute(_model);
+        }
+
+        private void VerifyChangesNotPersisted()
+        {
             _mocker
                 .GetMock<IListingRepository>()
                 .Verify(r => r.Delete(It.IsAny<SuspiciousListing>()), Times.Never);
@@ -107,6 +94,147 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.DeactivateSu
             _mocker
                 .GetMock<IListingRepository>()
                 .Verify(r => r.Save(), Times.Never);
+        }
+
+        [Fact]
+        public void return_EitherRight_on_success()
+        {
+            // act
+            Execute_Successfully();
+
+            // assert
+            _executionResult
+                .Right(u => u.Should().NotBeNull())
+                .Left(_ => throw InvalidExecutionPath.Exception);
+        }
+
+        [Fact]
+        public void persist_changes_on_success()
+        {
+            // act
+            Execute_Successfully();
+
+            // assert
+            _mocker
+                .GetMock<IListingRepository>()
+                .Verify(r => r.Delete(It.IsAny<SuspiciousListing>()), Times.Once);
+
+            _mocker
+                .GetMock<IListingRepository>()
+                .Verify(r => r.Add(It.IsAny<PassiveListing>()), Times.Once);
+
+            _mocker
+                .GetMock<IListingRepository>()
+                .Verify(r => r.Save(), Times.Once);
+        }
+
+        [Fact]
+        public void return_EitherLeft_with_proper_error_when_suspicious_listing_does_not_exist()
+        {
+            // act
+            Execute_WithNonExistingListing();
+
+            // assert
+            _executionResult
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Should().BeOfType<Error.NotFound>();
+                    error.Message.Should().Be("suspicious listing not found");
+                });
+        }
+
+        [Fact]
+        public void not_persist_changes_when_suspicious_listing_does_not_exist()
+        {
+            // act
+            Execute_WithNonExistingListing();
+
+            // assert
+            VerifyChangesNotPersisted();
+        }
+
+        [Fact]
+        public void return_EitherLeft_with_proper_error_when_deactivation_reason_creation_failed()
+        {
+            // act
+            Execute_WithFailedDeacticationReasonCreation();
+
+            // assert
+            _executionResult
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Should().BeOfType<Error.Invalid>();
+                    error.Message.Should().Be("value cannot be empty");
+                });
+        }
+
+        [Fact]
+        public void not_persist_changes_when_deactivation_reason_creation_failed()
+        {
+            // act
+            Execute_WithFailedDeacticationReasonCreation();
+
+            // assert
+            VerifyChangesNotPersisted();
+        }
+
+        [Fact]
+        public void return_EitherLeft_with_proper_error_when_deactivation_failed()
+        {
+            // act
+            Execute_WithFailedDeactivate();
+
+            // assert
+            _executionResult
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Should().BeOfType<Error.Invalid>();
+                    error.Message.Should().Be("deactivationDate");
+                });
+        }
+
+        [Fact]
+        public void not_persist_changes_when_deactivation_failed()
+        {
+            // act
+            Execute_WithFailedDeactivate();
+
+            // assert
+            VerifyChangesNotPersisted();
+        }
+
+        private void ExecuteWith_NullModel()
+        {
+            _executionResult = _sut.Execute(null);
+        }
+
+        [Fact]
+        public void return_EitherLeft_with_proper_error_when_model_is_null()
+        {
+            // act
+            ExecuteWith_NullModel();
+
+            // assert
+            _executionResult
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Should().BeOfType<Error.Invalid>();
+                    error.Message.Should().Be("cannot be null");
+                });
+        }
+
+        [Fact]
+        public void not_persist_changes_when_model_is_null()
+        {
+            // act
+            ExecuteWith_NullModel();
+
+            // assert
+            VerifyChangesNotPersisted();
         }
     }
 }

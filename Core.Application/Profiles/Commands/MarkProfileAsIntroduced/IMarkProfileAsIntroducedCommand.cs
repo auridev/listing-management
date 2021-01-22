@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Profiles.Commands.MarkProfileAsIntroduced
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Profiles.Commands.MarkProfileAsIntroduced
 {
     public interface IMarkProfileAsIntroducedCommand
     {
-        void Execute(MarkProfileAsIntroducedModel model);
+        Either<Error, Unit> Execute(MarkProfileAsIntroducedModel model);
     }
 }

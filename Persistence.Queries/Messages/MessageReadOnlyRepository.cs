@@ -24,7 +24,7 @@ namespace Persistence.Queries.Messages
             _connectionString = connectionStrings.Value.BusinessLine;
         }
 
-        public Option<MyMessageDetailsModel> Find(Guid userId, GetMyMessageDetailsQueryParams queryParams)
+        public Option<MyMessageDetailsModel> Find(Guid userId, Guid messageId)
         {
             var sql =
                 @"select 
@@ -42,7 +42,7 @@ namespace Persistence.Queries.Messages
                     [id] = @id 
                     and [recipient] = @recipient";
 
-            var parameters = new { id = queryParams.MessageId, recipient = userId };
+            var parameters = new { id = messageId, recipient = userId };
 
             using (var connection = new SqlConnection(_connectionString))
             {

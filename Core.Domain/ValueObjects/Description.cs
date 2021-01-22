@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
@@ -14,32 +16,29 @@ namespace Core.Domain.ValueObjects
             Value = value;
         }
 
-        public static Description Create(string value)
-        {
-            return TrimmedString
-              .Create(value)
-              .Match(
-                  success => new Description(success),
-                  error => null);
-
-            //.Right(value => new Company(value))
-            //.Left(error => null); 
-        }
-        // => new Description((TrimmedString)value);
+        public static Either<Error, Description> Create(string value)
+            =>
+                TrimmedString.Create(value)
+                    .Map(value => new Description(value));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<Description>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<Description>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Description other)
-            => ValueObjectComparer<Description>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<Description>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<Description>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<Description>.Instance.GetHashCode();
 
         public static bool operator ==(Description left, Description right)
-            => ValueObjectComparer<Description>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<Description>.Instance.Equals(left, right);
 
         public static bool operator !=(Description left, Description right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

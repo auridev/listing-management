@@ -1,6 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using LanguageExt;
 using System;
+using static Common.Helpers.Result;
+using static LanguageExt.Prelude;
 
 namespace Core.Domain.Offers
 {
@@ -32,16 +35,20 @@ namespace Core.Domain.Offers
         public ReceivedOffer(Guid id,
             Owner owner,
             MonetaryValue monetaryValue,
-            DateTimeOffset createdDate,
-            Option<SeenDate> seenDate)
+            DateTimeOffset createdDate)
             : base(id, owner, monetaryValue, createdDate)
         {
-            SeenDate = seenDate;
+            SeenDate = Option<SeenDate>.None;
         }
 
-        public void HasBeenSeen(SeenDate seenDate)
+        public Either<Error, Unit> HasBeenSeen(SeenDate seenDate)
         {
+            if (seenDate == null)
+                return Invalid<Unit>(nameof(seenDate));
+
             SeenDate = seenDate;
+
+            return Success(unit);
         }
     }
 }

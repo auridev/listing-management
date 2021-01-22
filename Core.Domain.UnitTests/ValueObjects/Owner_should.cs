@@ -1,8 +1,11 @@
-﻿using Core.Domain.ValueObjects;
-using System;
-using Xunit;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
+using LanguageExt;
+using System;
 using System.Collections.Generic;
+using Test.Helpers;
+using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
 {
@@ -11,29 +14,44 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void have_UserId_property()
         {
-            var owner = Owner.Create(Guid.NewGuid());
-
-            owner.UserId.Should().NotBeEmpty();
+            Owner
+                .Create(Guid.NewGuid())
+                .Right(owner => owner.UserId.Should().NotBeEmpty())
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(InvalidValueData))]
-        public void thrown_an_exception_during_creation_if_value_is_not_valid(Guid value)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(Guid value)
         {
-            Action action = () => Owner.Create(value);
+            Either<Error, Owner> eitherOwner = Owner.Create(value);
 
-            action.Should().Throw<ArgumentException>();
+            eitherOwner.IsLeft.Should().BeTrue();
+            eitherOwner
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> InvalidValueData => new List<object[]>
-        { 
+        {
             new object[] { new Guid() },
             new object[] { default(Guid) },
             new object[] { Guid.Empty }
         };
 
         [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_Values_match()
+        public void be_treated_as_equal_using_generic_Equals_method_if_Values_match()
+        {
+            var first = Owner.Create(new Guid("36b310ce-8c17-46d0-990c-f5cf4f85f307"));
+            var second = Owner.Create(new Guid("36b310ce-8c17-46d0-990c-f5cf4f85f307"));
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
+        }
+
+        [Fact]
+        public void be_treated_as_equal_using_object_Equals_method_if_Values_match()
         {
             var first = Owner.Create(new Guid("36b310ce-8c17-46d0-990c-f5cf4f85f307"));
             var second = Owner.Create(new Guid("36b310ce-8c17-46d0-990c-f5cf4f85f307"));

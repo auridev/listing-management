@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Result;
+using static LanguageExt.Prelude;
 
 namespace Core.Domain.ValueObjects
 {
@@ -23,29 +27,54 @@ namespace Core.Domain.ValueObjects
             Longitude = longitude;
         }
 
-        public static GeographicLocation Create(double latitude, double longitude)
+        public static Either<Error, GeographicLocation> Create(double latitude, double longitude)
         {
-            if ((latitude < _minValidLatitude) || (latitude > _maxValidLatitude))
-                throw new ArgumentException(nameof(latitude));
-            if ((longitude < _minValidLongitude) || (longitude > _maxValidLongitude))
-                throw new ArgumentException(nameof(longitude));
+            Either<Error, double> eitherLatitude = EnsureLatitudeValid(latitude);
+            Either<Error, double> eitherLongitude = EnsureLongitudeValid(longitude);
 
-            return new GeographicLocation(latitude, longitude);
+            Either<Error, (double latitude, double longitude)> combined =
+                from lat in eitherLatitude
+                from lon in eitherLongitude
+                select (lat, lon);
+
+            return
+                combined.Map(
+                    combined =>
+                        new GeographicLocation(
+                            combined.latitude,
+                            combined.longitude));
         }
 
+        private static Either<Error, double> EnsureLatitudeValid(double latitude)
+            =>
+                ((latitude < _minValidLatitude) || (latitude > _maxValidLatitude))
+                    ? Left(Invalid<double>("latitude out of range"))
+                    : Right(latitude);
+
+        private static Either<Error, double> EnsureLongitudeValid(double longitude)
+            =>
+                ((longitude < _minValidLongitude) || (longitude > _maxValidLongitude))
+                    ? Left(Invalid<double>("longitude out of range"))
+                    : Right(longitude);
+
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<GeographicLocation>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<GeographicLocation>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] GeographicLocation other)
-            => ValueObjectComparer<GeographicLocation>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<GeographicLocation>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<GeographicLocation>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<GeographicLocation>.Instance.GetHashCode();
 
         public static bool operator ==(GeographicLocation left, GeographicLocation right)
-            => ValueObjectComparer<GeographicLocation>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<GeographicLocation>.Instance.Equals(left, right);
 
         public static bool operator !=(GeographicLocation left, GeographicLocation right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

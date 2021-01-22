@@ -1,8 +1,10 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Dates;
+using Common.Helpers;
 using Core.Domain.Offers;
-using Common.Dates;
+using Core.Domain.ValueObjects;
 using LanguageExt;
 using System;
+using static Common.Helpers.Result;
 
 namespace Core.Application.Listings.Commands.ReceiveOffer.Factory
 {
@@ -16,12 +18,19 @@ namespace Core.Application.Listings.Commands.ReceiveOffer.Factory
                 throw new ArgumentNullException(nameof(dateTimeService));
         }
 
-        public ReceivedOffer Create(Owner owner, MonetaryValue monetaryValue)
+        public Either<Error, ReceivedOffer> Create(Owner owner, MonetaryValue monetaryValue)
         {
+            if (owner == null)
+                return Invalid<ReceivedOffer>(nameof(owner));
+            if (monetaryValue == null)
+                return Invalid<ReceivedOffer>(nameof(monetaryValue));
+
             DateTimeOffset nowInUtc =
                 _dateTimeService.GetCurrentUtcDateTime();
 
-            return new ReceivedOffer(Guid.NewGuid(), owner, monetaryValue, nowInUtc, Option<SeenDate>.None);
+            var receivedOffer = new ReceivedOffer(Guid.NewGuid(), owner, monetaryValue, nowInUtc);
+
+            return Success(receivedOffer);
         }
     }
 }

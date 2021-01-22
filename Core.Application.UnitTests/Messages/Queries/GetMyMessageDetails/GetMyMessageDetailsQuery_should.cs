@@ -13,7 +13,6 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
     public class GetMyMessageDetailsQuery_should
     {
         private readonly GetMyMessageDetailsQuery _sut;
-        private readonly GetMyMessageDetailsQueryParams _queryParams;
         private readonly MyMessageDetailsModel _model;
         private readonly AutoMocker _mocker;
         private readonly Guid _userId = Guid.NewGuid();
@@ -22,10 +21,6 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
         public GetMyMessageDetailsQuery_should()
         {
             _mocker = new AutoMocker();
-            _queryParams = new GetMyMessageDetailsQueryParams()
-            {
-                MessageId = _messageId
-            };
             _model = new MyMessageDetailsModel()
             {
                 Id = Guid.NewGuid(),
@@ -37,7 +32,7 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
 
             _mocker
                 .GetMock<IMessageReadOnlyRepository>()
-                .Setup(s => s.Find(_userId, _queryParams))
+                .Setup(s => s.Find(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .Returns(Option<MyMessageDetailsModel>.Some(_model));
 
             _sut = _mocker.CreateInstance<GetMyMessageDetailsQuery>();
@@ -46,11 +41,11 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
         [Fact]
         public void retrieve_message_from_repository()
         {
-            Option<MyMessageDetailsModel> model = _sut.Execute(_userId, _queryParams);
+            Option<MyMessageDetailsModel> model = _sut.Execute(_userId, _messageId);
 
             _mocker
                 .GetMock<IMessageReadOnlyRepository>()
-                .Verify(s => s.Find(_userId, _queryParams), Times.Once);
+                .Verify(s => s.Find(_userId, _messageId), Times.Once);
         }
 
         [Fact]
@@ -59,21 +54,28 @@ namespace BusinessLine.Core.Application.UnitTests.Messages.Queries.GetMyMessageD
             // arrange
             _mocker
                 .GetMock<IMessageReadOnlyRepository>()
-                .Setup(s => s.Find(_userId, _queryParams))
+                .Setup(s => s.Find(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .Returns(Option<MyMessageDetailsModel>.None);
 
             // act
-            Option<MyMessageDetailsModel> model = _sut.Execute(_userId, _queryParams);
+            Option<MyMessageDetailsModel> model = _sut.Execute(_userId, _messageId);
 
             // assert
             model.IsNone.Should().BeTrue();
         }
 
-        [Fact]
-        public void return_none_if_query_params_is_not_valid()
+        public static IEnumerable<object[]> InvalidArguments => new List<object[]>
+        {
+            new object[] { Guid.NewGuid(), default },
+            new object[] { default, Guid.NewGuid() }
+        };
+
+        [Theory]
+        [MemberData(nameof(InvalidArguments))]
+        public void reject_none_if_arguments_are_not_valid(Guid userId, Guid _messageId)
         {
             // act
-            Option<MyMessageDetailsModel> model = _sut.Execute(_userId, null);
+            Option<MyMessageDetailsModel> model = _sut.Execute(userId, _messageId);
 
             // assert
             model.IsNone.Should().BeTrue();

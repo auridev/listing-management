@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
@@ -15,27 +18,29 @@ namespace Core.Domain.ValueObjects
             Value = value;
         }
 
-        public static Template Create(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentNullException(nameof(value));
-
-            return new Template(value);
-        }
+        public static Either<Error, Template> Create(string value)
+            =>
+                EnsureNonEmpty(value)
+                    .Map(value => new Template(value));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<Template>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<Template>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Template other)
-            => ValueObjectComparer<Template>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<Template>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<Template>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<Template>.Instance.GetHashCode();
 
         public static bool operator ==(Template left, Template right)
-            => ValueObjectComparer<Template>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<Template>.Instance.Equals(left, right);
 
         public static bool operator !=(Template left, Template right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

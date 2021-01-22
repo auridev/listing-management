@@ -14,7 +14,7 @@ namespace Core.Application.Messages.Queries.GetMyMessages
 
         public PagedList<MyMessageModel> Execute(Guid userId, GetMyMessagesQueryParams queryParams)
         {
-            if (queryParams == null)
+            if ((userId == default) || (queryParams == null))
                 return PagedList<MyMessageModel>.CreateEmpty();
 
             return _repository.Get(userId, queryParams);

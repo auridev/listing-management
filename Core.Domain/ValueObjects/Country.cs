@@ -1,7 +1,9 @@
 ﻿using Common.Helpers;
+using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
@@ -14,7 +16,11 @@ namespace Core.Domain.ValueObjects
 
         private Country() { }
 
-        private Country(string name, Alpha2Code alpha2Code, Alpha3Code alpha3Code, Currency currency)
+        private Country(
+            string name,
+            Alpha2Code alpha2Code,
+            Alpha3Code alpha3Code,
+            Currency currency)
         {
             Name = name;
             Alpha2Code = alpha2Code;
@@ -22,35 +28,58 @@ namespace Core.Domain.ValueObjects
             Currency = currency;
         }
 
-        public static Country Create(string name, Alpha2Code alpha2Code, Alpha3Code alpha3Code, Currency currency)
+        public static Either<Error, Country> Create(
+            string name,
+            string alpha2Code,
+            string alpha3Code,
+            string currencyCode,
+            string currencySymbol,
+            string currencyName)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException(nameof(name));
-            if (alpha2Code == null)
-                throw new ArgumentException(nameof(alpha2Code));
-            if (alpha3Code == null)
-                throw new ArgumentException(nameof(alpha3Code));
-            if (currency == null)
-                throw new ArgumentException(nameof(currency));
+            Either<Error, TrimmedString> eitherName =
+                EnsureNonEmpty(name)
+                    .Bind(name => CapitalizeAllWords(name))
+                    .Bind(name => Trim(name))
+                    .Bind(name => TrimmedString.Create(name));
+            Either<Error, Alpha2Code> eitherAlpha2Code = Alpha2Code.Create(alpha2Code);
+            Either<Error, Alpha3Code> eitherAlpha3Code = Alpha3Code.Create(alpha3Code);
+            Either<Error, Currency> eitherCurrency = Currency.Create(currencyCode, currencySymbol, currencyName);
 
-            name = name.Trim().CapitalizeWords();
+            Either<Error, (TrimmedString name, Alpha2Code alpha2Code, Alpha3Code alpha3Code, Currency currency)> combined =
+                from n in eitherName
+                from a2c in eitherAlpha2Code
+                from a3c in eitherAlpha3Code
+                from c in eitherCurrency
+                select (n, a2c, a3c, c);
 
-            return new Country(name, alpha2Code, alpha3Code, currency);
+            return
+                combined.Map(
+                    combined =>
+                        new Country(
+                            combined.name,
+                            combined.alpha2Code,
+                            combined.alpha3Code,
+                            combined.currency));
         }
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<Country>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<Country>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Country other)
-            => ValueObjectComparer<Country>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<Country>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<Country>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<Country>.Instance.GetHashCode();
 
         public static bool operator ==(Country left, Country right)
-            => ValueObjectComparer<Country>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<Country>.Instance.Equals(left, right);
 
         public static bool operator !=(Country left, Country right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

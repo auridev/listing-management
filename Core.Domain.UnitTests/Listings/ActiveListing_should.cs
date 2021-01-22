@@ -1,12 +1,15 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
 using Core.Domain.Listings;
 using Core.Domain.Offers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Test.Helpers;
 using Xunit;
-using Common.Helpers;
+using static LanguageExt.Prelude;
 
 namespace BusinessLine.Core.Domain.UnitTests.Listings
 {
@@ -30,12 +33,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         public void have_an_ExpirationDate_property()
         {
             _sut.ExpirationDate.Should().BeCloseTo(DateTimeOffset.UtcNow.AddDays(90));
-        }
-
-        [Fact]
-        public void have_an_Offers_property()
-        {
-            _sut.Offers.Should().NotBeNull();
         }
 
         [Fact(Skip = "this should be in command logic")]
@@ -71,103 +68,148 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         [Fact]
         public void be_deactivatable()
         {
-            // act
-            PassiveListing passiveListing = _sut.Deactivate(TrimmedString.Create("wrong number").ToUnsafeRight(), DateTimeOffset.UtcNow);
+            // arrange
+            Either<Error, TrimmedString> eitherReason = TrimmedString.Create("wrong number");
+            DateTimeOffset deactivationDate = DateTimeOffset.UtcNow;
 
-            // assert
-            passiveListing.Should().NotBeNull();
-            passiveListing.DeactivationDate.Should().BeCloseTo(DateTimeOffset.UtcNow);
-            passiveListing.Reason.Value.Should().Be("wrong number");
+            // act
+            eitherReason
+                .Bind(reason => _sut.Deactivate(reason, deactivationDate))
+                .Right(passiveListing =>
+                {
+                    // assert
+                    passiveListing.Should().NotBeNull();
+                    passiveListing.DeactivationDate.Should().BeCloseTo(DateTimeOffset.UtcNow);
+                    passiveListing.Reason.Value.Should().Be("wrong number");
+                })
+                .Left(_ => throw InvalidExecutionPath.Exception);
+        }
+
+        public static IEnumerable<object[]> ArgumentsForDeactivate => new List<object[]>
+        {
+            new object[] { TestValueObjectFactory.CreateTrimmedString("labas"), default },
+            new object[] { null, DateTimeOffset.UtcNow }
+        };
+
+        [Theory]
+        [MemberData(nameof(ArgumentsForDeactivate))]
+        public void reject_to_deactivate_if_arguments_are_not_valid(TrimmedString reason, DateTimeOffset date)
+        {
+            Either<Error, PassiveListing> action = _sut.Deactivate(reason, date);
+
+            action
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         [Fact]
         public void be_able_to_receive_offers()
         {
-            var offer = new ReceivedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, 
-                    CurrencyCode.Create("usd")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-
-            _sut.ReceiveOffer(offer);
-
-            _sut.Offers.Count.Should().Be(1);
-        }
-
-        [Fact]
-        public void not_receive_null_offers()
-        {
-            Action action = () => _sut.ReceiveOffer(null);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void ignore_offers_from_the_owner_of_the_listing()
-        {
-            // arrange
-            Owner sameOwner = Owner.Create(Guid.NewGuid());
-            var listing = new ActiveListing(Guid.NewGuid(),
-                sameOwner,
-                _listingDetails,
-                _contactDetails,
-                _locationDetails,
-                _geographicLocation,
-                _createdDate,
-                DateTimeOffset.UtcNow.AddDays(24));
-            var offer = new ReceivedOffer(Guid.NewGuid(),
-                sameOwner,
-                MonetaryValue.Create(34.89M, CurrencyCode.Create("usd")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
+            // arrange 
+            var offerId = Guid.NewGuid();
+            var createdDate = DateTimeOffset.UtcNow;
+            Either<Error, (Owner owner, MonetaryValue monetaryValue)> combined =
+                from o in Owner.Create(Guid.NewGuid())
+                from mn in MonetaryValue.Create(1M, "usd")
+                select (o, mn);
 
             // act
-            listing.ReceiveOffer(offer);
+            Either<Error, Unit> action = combined
+                .Map(combined => new ReceivedOffer(offerId, combined.owner, combined.monetaryValue, createdDate))
+                .Bind(offer => _sut.ReceiveOffer(offer));
 
             // assert
-            listing.Offers.Count.Should().Be(0);
+            action
+                .Right(_ => _sut.Offers.Count.Should().Be(1))
+                .Left(_ => throw InvalidExecutionPath.Exception);
+        }
+
+        [Fact]
+        public void reject_null_offers()
+        {
+            // act
+            Either<Error, Unit> action = _sut.ReceiveOffer(null);
+
+            //assert
+            action
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error => error.Message.Should().Be("invalid offer"));
+        }
+
+        [Fact]
+        public void reject_offers_from_the_owner_of_the_listing()
+        {
+            // arrange
+            var ownerId = Guid.NewGuid();
+            var createdDate = DateTimeOffset.UtcNow;
+            Either<Error, (Owner owner, MonetaryValue monetaryValue)> combined =
+                from o in Owner.Create(ownerId)
+                from mn in MonetaryValue.Create(34.89M, "usd")
+                select (o, mn);
+
+            // act
+            Either<Error, Unit> action = combined
+                .Bind(combined =>
+                {
+                    // create listing and offer with the same owner
+                    var listing = new ActiveListing(Guid.NewGuid(),
+                        combined.owner,
+                        _listingDetails,
+                        _contactDetails,
+                        _locationDetails,
+                        _geographicLocation,
+                        _createdDate,
+                        DateTimeOffset.UtcNow.AddDays(24));
+
+                    var offer = new ReceivedOffer(Guid.NewGuid(), combined.owner, combined.monetaryValue, createdDate);
+
+                    return listing.ReceiveOffer(offer);
+                });
+
+            //assert
+            action
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error => error.Message.Should().Be("cannot accept offers from the listing owner"));
         }
 
         [Fact]
         public void replace_previous_offer_of_an_owner_if_another_one_is_received()
         {
             // arrange
-            Owner listingOwner = Owner.Create(Guid.NewGuid());
-            Owner offerOwner = Owner.Create(Guid.NewGuid());
-            var listing = new ActiveListing(Guid.NewGuid(),
-                listingOwner,
-                _listingDetails,
-                _contactDetails,
-                _locationDetails,
-                _geographicLocation,
-                _createdDate,
-                DateTimeOffset.UtcNow.AddDays(24));
-            var dymmyOffer = new ReceivedOffer(Guid.NewGuid(), // just an offer from some owner to increase the count
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer1 = new ReceivedOffer(Guid.NewGuid(), // two offers by the same owner
-                offerOwner,
-                MonetaryValue.Create(6M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer2 = new ReceivedOffer(Guid.NewGuid(),
-                offerOwner,
-                MonetaryValue.Create(3M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
+            Guid offerOwnerId = Guid.NewGuid();
+
+            Either<Error, ReceivedOffer> dummyOffer =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(1M, "eur")
+                select
+                    new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow); // just an offer from some owner to increase the count
+
+            Either<Error, ReceivedOffer> offer1 =
+                from owner in Owner.Create(offerOwnerId) // same owner
+                from value in MonetaryValue.Create(6M, "eur")
+                select
+                    new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
+
+            Either<Error, ReceivedOffer> offer2 =
+                from owner in Owner.Create(offerOwnerId) // same owner
+                from value in MonetaryValue.Create(3M, "eur")
+                select
+                   new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
 
             // act
-            _sut.ReceiveOffer(dymmyOffer);
-            _sut.ReceiveOffer(offer1);
-            _sut.ReceiveOffer(offer2);
+            Either<Error, Unit> addDummyOfferAction = dummyOffer
+                .Bind(dummy => _sut.ReceiveOffer(dummy));
+
+            Either<Error, Unit> addFirstOfferAction = offer1
+                .Bind(offer1 => _sut.ReceiveOffer(offer1));
+
+            Either<Error, Unit> addSecondOfferAction = offer2
+                .Bind(offer2 => _sut.ReceiveOffer(offer2));
 
             // assert
             _sut.Offers.Count.Should().Be(2); // two offers in total
-            _sut.Offers.Where(o => o.Owner == offerOwner).Count().Should().Be(1); // only 1 offer by the owner who submitted two offer
-            _sut.Offers.Where(o => o.Owner == offerOwner).First().MonetaryValue.Value.Should().Be(3M); // last offer overides the previous one
+            _sut.Offers.Where(o => o.Owner.UserId == offerOwnerId).Count().Should().Be(1); // only 1 offer by the owner who submitted two offer
+            _sut.Offers.Where(o => o.Owner.UserId == offerOwnerId).First().MonetaryValue.Value.Should().Be(3M); // last offer overides the previous one
         }
 
         [Fact]
@@ -175,254 +217,401 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         {
             // arrange
             var offerId = Guid.NewGuid();
+            Either<Error, ReceivedOffer> offer1 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(1M, "eur")
+                select
+                    new ReceivedOffer(offerId, owner, value, DateTimeOffset.UtcNow);
+            Either<Error, ReceivedOffer> offer2 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(2M, "eur")
+                select
+                   new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
 
-            var offer1 = new ReceivedOffer(offerId,
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer2 = new ReceivedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            _sut.ReceiveOffer(offer1);
-            _sut.ReceiveOffer(offer2);
+            Either<Error, Unit> addFirstOfferAction = offer1
+                .Bind(offer1 => _sut.ReceiveOffer(offer1));
+            Either<Error, Unit> addSecondOfferAction = offer2
+                .Bind(offer2 => _sut.ReceiveOffer(offer2));
 
             // act
-            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(offerId, DateTimeOffset.Now);
+            Either<Error, ClosedListing> eitherClosedListing = _sut.AcceptOffer(offerId, DateTimeOffset.Now);
 
             // assert
-            optionalClosedListing.IsSome.Should().BeTrue();
-            optionalClosedListing.IfSome(l => l.AcceptedOffer.Id.Should().Be(offer1.Id));
+            eitherClosedListing
+                .Right(l => l.AcceptedOffer.Id.Should().Be(offerId))
+                .Left(_ => throw InvalidExecutionPath.Exception);
+        }
+
+        public static IEnumerable<object[]> ArgumentsForAcceptOffer => new List<object[]>
+        {
+            new object[] { default, DateTimeOffset.UtcNow },
+            new object[] { Guid.NewGuid(), default }
+        };
+
+        [Theory]
+        [MemberData(nameof(ArgumentsForAcceptOffer))]
+        public void reject_to_accept_offer_if_arguments_are_not_valid(Guid offerId, DateTimeOffset date)
+        {
+            Either<Error, ClosedListing> action = _sut.AcceptOffer(offerId, date);
+
+            action
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         [Fact]
         public void not_accept_non_existing_offers()
         {
             // arrange
-            var offer1 = new ReceivedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer2 = new ReceivedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            _sut.ReceiveOffer(offer1);
-            _sut.ReceiveOffer(offer2);
+            Either<Error, ReceivedOffer> offer1 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(1M, "eur")
+                select
+                    new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
+
+            Either<Error, ReceivedOffer> offer2 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(2M, "eur")
+                select
+                   new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
+
+            Either<Error, Unit> addFirstOfferAction = offer1
+                .Bind(offer1 => _sut.ReceiveOffer(offer1));
+
+            Either<Error, Unit> addSecondOfferAction = offer2
+                .Bind(offer2 => _sut.ReceiveOffer(offer2));
 
             // act
-            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(Guid.NewGuid(), DateTimeOffset.Now);
+            Either<Error, ClosedListing> eitherClosedListing = _sut.AcceptOffer(Guid.NewGuid(), DateTimeOffset.Now);
 
             // assert
-            optionalClosedListing.IsSome.Should().BeFalse();
+            eitherClosedListing
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error => error.Message.Should().Be("offer not found"));
         }
 
         [Fact]
         public void mark_other_offers_as_rejected()
         {
             // arrange
-            var offerId = Guid.NewGuid();
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
 
-            var offer1 = new ReceivedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer2 = new ReceivedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(2M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            var offer3 = new ReceivedOffer(offerId,
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(3M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                SeenDate.Create(DateTimeOffset.UtcNow));
-            _sut.ReceiveOffer(offer1);
-            _sut.ReceiveOffer(offer2);
-            _sut.ReceiveOffer(offer3);
+            Either<Error, ReceivedOffer> offer1 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(1M, "eur")
+                select
+                    new ReceivedOffer(id1, owner, value, DateTimeOffset.UtcNow);
+
+            Either<Error, ReceivedOffer> offer2 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(2M, "eur")
+                select
+                    new ReceivedOffer(id2, owner, value, DateTimeOffset.UtcNow);
+
+            Either<Error, ReceivedOffer> offer3 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(3M, "eur")
+                select
+                    new ReceivedOffer(id3, owner, value, DateTimeOffset.UtcNow);
+
+            Either<Error, Unit> addFirstOfferAction = offer1
+                .Bind(offer1 => _sut.ReceiveOffer(offer1));
+
+            Either<Error, Unit> addSecondOfferAction = offer2
+                .Bind(offer2 => _sut.ReceiveOffer(offer2));
+
+            Either<Error, Unit> addThirdOfferAction = offer3
+                .Bind(offer3 => _sut.ReceiveOffer(offer3));
 
             // act
-            Option<ClosedListing> optionalClosedListing = _sut.AcceptOffer(offerId, DateTimeOffset.Now);
+            Either<Error, ClosedListing> eitherClosedListing = _sut.AcceptOffer(id1, DateTimeOffset.Now);
 
             // assert
-            optionalClosedListing.IfSome(l => l.RejectedOffers[0].Id.Should().Be(offer1.Id));
-            optionalClosedListing.IfSome(l => l.RejectedOffers[1].Id.Should().Be(offer2.Id));
-        }
-
-        [Fact]
-        public void have_a_Leads_property()
-        {
-            _sut.Leads.Should().NotBeNull();
+            eitherClosedListing
+                .Right(l =>
+                {
+                    l.RejectedOffers[0].Id.Should().Be(id2);
+                    l.RejectedOffers[1].Id.Should().Be(id3);
+                })
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
         public void accept_leads()
         {
-            var lead = Lead.Create(Owner.Create(Guid.NewGuid()), DateTimeOffset.Now);
+            // arrange
+            Either<Error, Lead> eitherLead = Lead.Create(Guid.NewGuid(), DateTimeOffset.Now);
 
-            _sut.AddLead(lead);
-
-            _sut.Leads.Count.Should().Be(1);
+            // act & assert
+            eitherLead
+                .Bind(lead => _sut.AddLead(lead))
+                .Right(_ => _sut.Leads.Count.Should().Be(1))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
         public void not_accept_null_leads()
         {
-            Action action = () => _sut.AddLead(null);
+            // act
+            Either<Error, Unit> addNullLeadAction = _sut.AddLead(null);
 
-            action.Should().Throw<ArgumentNullException>();
+            // assert
+            addNullLeadAction
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("invalid lead");
+                    _sut.Leads.Count.Should().Be(0);
+                });
         }
 
         [Fact]
         public void not_accept_leads_from_the_listing_owner()
         {
-            var leadFromListingOwner = Lead.Create(_sut.Owner, DateTimeOffset.Now);
+            // arrange
+            Either<Error, Lead> eitherLeadFromListingOwner = Lead.Create(_sut.Owner.UserId, DateTimeOffset.Now);
 
-            _sut.AddLead(leadFromListingOwner);
+            // act
+            Either<Error, Unit> addLeadAction = eitherLeadFromListingOwner
+                .Bind(lead => _sut.AddLead(lead));
 
-            _sut.Leads.Count.Should().Be(0);
+            // assert
+            addLeadAction
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("cannot accept leads from the listing owner");
+                    _sut.Leads.Count.Should().Be(0);
+                });
         }
 
         [Fact]
         public void not_accept_leads_from_the_same_owner_more_than_once()
         {
             // Arrange
-            var owner = Owner.Create(Guid.NewGuid());
-            var firstLead = Lead.Create(owner, DateTimeOffset.Now.AddDays(-1));
-            var secondLead = Lead.Create(owner, DateTimeOffset.Now);
+            var ownerId = Guid.NewGuid();
+            Either<Error, Lead> eitherFirstLead = Lead.Create(ownerId, DateTimeOffset.Now.AddDays(-1));
+            Either<Error, Lead> eitherSecondLead = Lead.Create(ownerId, DateTimeOffset.Now);
 
-            // Act
-            _sut.AddLead(firstLead);
-            _sut.AddLead(secondLead);
+            // act
+            Either<Error, Unit> addFirstLeadAction = eitherFirstLead
+                .Bind(lead => _sut.AddLead(lead));
+            Either<Error, Unit> addSecondLead = eitherSecondLead
+                .Bind(lead => _sut.AddLead(lead));
 
             // Assert
-            _sut.Leads.Count.Should().Be(1);
-        }
-
-        [Fact]
-        public void have_Favorites_property()
-        {
-            _sut.Favorites.Should().NotBeNull();
+            eitherFirstLead.IsRight.Should().BeTrue(); // first add was sucessfull
+            addSecondLead
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("lead from this user already exists");
+                    _sut.Leads.Count.Should().Be(1);
+                });
         }
 
         [Fact]
         public void be_markable_as_favorite()
         {
-            var favorite = FavoriteMark.Create(Owner.Create(Guid.NewGuid()), DateTimeOffset.UtcNow);
+            // arrange
+            Either<Error, FavoriteMark> eitherFavorite = FavoriteMark.Create(Guid.NewGuid(), DateTimeOffset.UtcNow);
 
-            _sut.MarkAsFavorite(favorite);
+            // act
+            Either<Error, Unit> action = eitherFavorite.Bind(favorite => _sut.MarkAsFavorite(favorite));
 
-            _sut.Favorites.Count.Should().Be(1);
+            //assert
+            action
+                .Right(_ => _sut.Favorites.Count.Should().Be(1))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void throw_exception_when_favorite_is_null()
+        public void not_accept_null_favorites()
         {
-            Action action = () => _sut.MarkAsFavorite(null);
-
-            action.Should().Throw<ArgumentNullException>();
+            _sut
+                .MarkAsFavorite(null)
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("invalid favorite");
+                    _sut.Favorites.Count.Should().Be(0);
+                });
         }
 
         [Fact]
         public void not_be_markable_as_favorite_by_listing_owner()
         {
-            var favoriteByListingOwner = FavoriteMark.Create(_sut.Owner, DateTimeOffset.UtcNow);
-
-            _sut.MarkAsFavorite(favoriteByListingOwner);
-
-            _sut.Favorites.Count.Should().Be(0);
+            FavoriteMark
+                .Create(_sut.Owner.UserId, DateTimeOffset.UtcNow)
+                .Bind(favorite => _sut.MarkAsFavorite(favorite))
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("cannot accept favorites from the listing owner");
+                    _sut.Favorites.Count.Should().Be(0);
+                });
         }
 
         [Fact]
         public void not_be_markable_as_favorite_by_same_owner_more_than_once()
         {
             // Arrange
-            var owner = Owner.Create(Guid.NewGuid());
-            var first = FavoriteMark.Create(owner, DateTimeOffset.UtcNow);
-            var second = FavoriteMark.Create(owner, DateTimeOffset.UtcNow);
+            var ownerId = Guid.NewGuid();
+            Either<Error, FavoriteMark> firstFavorite = FavoriteMark.Create(ownerId, DateTimeOffset.UtcNow);
+            Either<Error, FavoriteMark> secondFavorite = FavoriteMark.Create(ownerId, DateTimeOffset.UtcNow);
 
             // Act
-            _sut.MarkAsFavorite(first);
-            _sut.MarkAsFavorite(second);
+            Either<Error, Unit> addFirst = firstFavorite
+                .Bind(favorite => _sut.MarkAsFavorite(favorite));
+            Either<Error, Unit> addSecond = secondFavorite
+                .Bind(favorite => _sut.MarkAsFavorite(favorite));
 
             // Assert
-            _sut.Favorites.Count.Should().Be(1);
+            addFirst.IsRight.Should().BeTrue();
+            addSecond
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("favorite from this user already exists");
+                    _sut.Favorites.Count.Should().Be(1);
+                });
         }
 
         [Fact]
         public void have_the_option_to_remove_previously_added_favorite_mark()
         {
             // Arrange
-            var favoredBy = Owner.Create(Guid.NewGuid());
-            var favorite = FavoriteMark.Create(favoredBy, DateTimeOffset.UtcNow);
-            _sut.MarkAsFavorite(favorite);
+            var userId = Guid.NewGuid();
+            Either<Error, Owner> favoriteOwner = Owner.Create(userId);
+            Either<Error, FavoriteMark> favoriteMark = FavoriteMark.Create(userId, DateTimeOffset.UtcNow);
+            favoriteMark
+                .Bind(favorite => _sut.MarkAsFavorite(favorite));
 
             // Act
-            _sut.RemoveFavorite(favoredBy);
+            Either<Error, Unit> removeAction = favoriteOwner
+                .Bind(owner => _sut.RemoveFavorite(owner));
 
             // Assert
-            _sut.Favorites.Count.Should().Be(0);
+            removeAction
+                .Right(_ => _sut.Favorites.Count.Should().Be(0))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void not_acceps_invalid_owners_for_favorite_mark_removal()
+        public void not_accept_invalid_owners_for_favorite_mark_removal()
         {
-            Action action = () => _sut.RemoveFavorite(null);
+            Either<Error, Unit> removeAction = _sut.RemoveFavorite(null);
 
-            action.Should().Throw<ArgumentNullException>();
+            removeAction
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("favoredBy");
+                    error.Should().BeOfType<Error.Invalid>();
+                });
+        }
+
+        [Fact]
+        public void not_accept_non_existing_owners_for_favorite_mark_removal()
+        {
+            // Arrange
+            Either<Error, Owner> favoriteOwner = Owner.Create(Guid.NewGuid());
+            Either<Error, FavoriteMark> favoriteMark = FavoriteMark.Create(Guid.NewGuid(), DateTimeOffset.UtcNow);
+            favoriteMark
+                .Bind(favorite => _sut.MarkAsFavorite(favorite));
+
+            // Act
+            Either<Error, Unit> removeAction = favoriteOwner
+                .Bind(owner => _sut.RemoveFavorite(owner));
+
+            // Assert
+            removeAction
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("favoredBy");
+                    error.Should().BeOfType<Error.NotFound>();
+                    _sut.Favorites.Count.Should().Be(1);
+                });
         }
 
         [Fact]
         public void allow_to_mark_received_offers_as_seen()
         {
             // arrange
-            var offerId1 = Guid.NewGuid();
-            var offer1 = new ReceivedOffer(offerId1,
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                Option<SeenDate>.None);
-            var offerId2 = Guid.NewGuid();
-            var offer2 = new ReceivedOffer(offerId2,
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(2M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                Option<SeenDate>.None);
+            var id1 = Guid.NewGuid();
+            Either<Error, ReceivedOffer> offer1 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(1M, "eur")
+                select
+                    new ReceivedOffer(id1, owner, value, DateTimeOffset.UtcNow);
 
-            _sut.ReceiveOffer(offer1);
-            _sut.ReceiveOffer(offer2);
+            var id2 = Guid.NewGuid();
+            Either<Error, ReceivedOffer> offer2 =
+                from owner in Owner.Create(Guid.NewGuid())
+                from value in MonetaryValue.Create(2M, "eur")
+                select
+                   new ReceivedOffer(id2, owner, value, DateTimeOffset.UtcNow);
+
+            Either<Error, SeenDate> seenDate = SeenDate.Create(DateTimeOffset.Now);
+
+            offer1.Bind(offer1 => _sut.ReceiveOffer(offer1));
+            offer2.Bind(offer2 => _sut.ReceiveOffer(offer2));
 
             // act
-            _sut.MarkOfferAsSeen(offerId1, SeenDate.Create(DateTimeOffset.Now));
+            Either<Error, Unit> action = bind(
+                seenDate,
+                (seenDate) => _sut.MarkOfferAsSeen(id1, seenDate));
 
             // assert
-            _sut.Offers.First(o => o == offer1).SeenDate.IsSome.Should().BeTrue();
-            _sut.Offers.First(o => o == offer2).SeenDate.IsSome.Should().BeFalse();
+            action
+                .Right(_ =>
+                {
+                    _sut.Offers.First(o => o.Id == id1).SeenDate.IsSome.Should().BeTrue();  // first offer has been marked as seen
+                    _sut.Offers.First(o => o.Id == id2).SeenDate.IsSome.Should().BeFalse();
+                })
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void only_mark_existing_received_offers_as_seen()
+        public void mark_only_existing_received_offers_as_seen()
         {
             // arrange
-            var offerId1 = Guid.NewGuid();
-            var offer1 = new ReceivedOffer(offerId1,
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(1M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow,
-                Option<SeenDate>.None);
-
-            _sut.ReceiveOffer(offer1);
+            Either<Error, SeenDate> seenDate = SeenDate.Create(DateTimeOffset.Now);
 
             // act
-            _sut.MarkOfferAsSeen(Guid.NewGuid(), SeenDate.Create(DateTimeOffset.Now));
+            Either<Error, Unit> action = bind(
+                seenDate,
+                (seenDate) => _sut.MarkOfferAsSeen(Guid.NewGuid(), seenDate));
 
-            // assert
-            _sut.Offers.First(o => o == offer1).SeenDate.IsSome.Should().BeFalse();
+            // Assert
+            action
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error =>
+                {
+                    error.Message.Should().Be("offerId");
+                    error.Should().BeOfType<Error.NotFound>();
+                });
+        }
+
+
+        public static IEnumerable<object[]> ArgumentsForMarkOfferAsSeen => new List<object[]>
+        {
+            new object[] { default, TestValueObjectFactory.CreateSeenDate(DateTimeOffset.UtcNow) },
+            new object[] { Guid.NewGuid(), null }
+        };
+
+        [Theory]
+        [MemberData(nameof(ArgumentsForMarkOfferAsSeen))]
+        public void reject_to_mark_offer_as_seen_if_arguments_are_not_valid(Guid offerId, SeenDate seenDate)
+        {
+            Either<Error, Unit> action = _sut.MarkOfferAsSeen(offerId, seenDate);
+
+            action
+                .Right(_ => throw InvalidExecutionPath.Exception)
+                .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
     }
 }

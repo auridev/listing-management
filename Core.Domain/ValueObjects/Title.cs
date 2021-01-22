@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Helpers;
+using LanguageExt;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
 
@@ -14,29 +16,37 @@ namespace Core.Domain.ValueObjects
             Value = value;
         }
 
-        public static Title Create(string value)
-        {
-            return TrimmedString
-             .Create(value)
-             .Match(
-                 success => new Title(success),
-                 error => null);
-        }
-        // => new Title((TrimmedString)value);
+        public static Either<Error, Title> Create(string value)
+            =>
+                ConvertToTrimmedString(value)
+                    .Bind(value => CreateTitle(value));
+
+        private static Either<Error, TrimmedString> ConvertToTrimmedString(string value)
+            =>
+                TrimmedString.Create(value);
+
+        private static Either<Error, Title> CreateTitle(Either<Error, TrimmedString> value)
+            =>
+                value.Map(value => new Title(value));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<Title>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<Title>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Title other)
-            => ValueObjectComparer<Title>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<Title>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<Title>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<Title>.Instance.GetHashCode();
 
         public static bool operator ==(Title left, Title right)
-            => ValueObjectComparer<Title>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<Title>.Instance.Equals(left, right);
 
         public static bool operator !=(Title left, Title right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

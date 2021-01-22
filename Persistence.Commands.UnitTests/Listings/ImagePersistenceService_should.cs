@@ -1,5 +1,6 @@
 using Common.ApplicationSettings;
 using Common.FileSystem;
+using Common.Helpers;
 using Core.Domain.ValueObjects;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -20,11 +21,11 @@ namespace Persistence.Commands.Listings.UnitTests
         private static Guid _parentReference = Guid.NewGuid();
         private static ICollection<ImageContent> _imageContents = new List<ImageContent>()
         {
-            ImageContent.Create(FileName.Create("a1.a"), new byte[] { 0x10 }),
-            ImageContent.Create(FileName.Create("b2.b"), new byte[] { 0x20 }),
-            ImageContent.Create(FileName.Create("c3.c"), new byte[] { 0x30 })
+            (ImageContent)ImageContent.Create("a1.a", new byte[] { 0x10 }),
+            (ImageContent)ImageContent.Create("b2.b", new byte[] { 0x20 }),
+            (ImageContent)ImageContent.Create("c3.c", new byte[] { 0x30 })
         };
-        private static DateTag _dateTag = DateTag.Create(DateTimeOffset.UtcNow);
+        private static DateTag _dateTag = (DateTag)DateTag.Create(DateTimeOffset.UtcNow);
 
         public ImagePersistenceService_should()
         {

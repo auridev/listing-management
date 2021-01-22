@@ -2,7 +2,7 @@
 using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
-using System;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -16,7 +16,7 @@ namespace Core.Domain.UnitTests.ValueObjects
 
             eitherCompany
                .Right(company => company.Name.ToString().Should().Be("some name"))
-               .Left(_ => throw new InvalidOperationException());
+               .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]

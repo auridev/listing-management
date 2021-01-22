@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Application.Helpers;
+using System;
 using System.Collections.Generic;
 
 namespace Core.Application.Listings.Queries.GetPublicListings
@@ -12,10 +13,10 @@ namespace Core.Application.Listings.Queries.GetPublicListings
                 throw new ArgumentNullException(nameof(repository));
         }
 
-        public ICollection<PublicListingModel> Execute(Guid userId, GetPublicListingsQueryParams queryParams)
+        public PagedList<PublicListingModel> Execute(Guid userId, GetPublicListingsQueryParams queryParams)
         {
-            if (queryParams == null)
-                return new PublicListingModel[0];
+            if ((queryParams == null) || (userId == default))
+                return PagedList<PublicListingModel>.CreateEmpty();
 
             return _repository.GetPublic(userId, queryParams);
         }

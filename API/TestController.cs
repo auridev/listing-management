@@ -110,11 +110,7 @@ namespace API
         {
             var userId = new Guid("6A95949C-355F-4E1F-BDCF-D4F28F12E9C8");
 
-            var parameters = new GetMyMessageDetailsQueryParams()
-            {
-                MessageId = id
-            };
-            var message = _getMyMessageDetailsQuery.Execute(userId, parameters);
+            var message = _getMyMessageDetailsQuery.Execute(userId, id);
 
             return Ok(message);
         }

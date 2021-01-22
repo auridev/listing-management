@@ -3,6 +3,7 @@ using FluentAssertions;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 using static LanguageExt.Prelude;
 
@@ -13,7 +14,7 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void have_EnsureNonEmpty_method()
         {
-            var result = StringHelpers.EnsureNonEmpty("asd");
+            var result = Functions.EnsureNonEmpty("asd");
 
             result.Should().NotBeNull();
         }
@@ -22,11 +23,11 @@ namespace Common.UnitTests.Helpers
         [MemberData(nameof(InvalidStrings))]
         public void return_Eiher_in_Left_state_if_invalid_argument_has_been_passed_to_EnsureNonEmpty(string argument)
         {
-            Either<Error, string> result = StringHelpers.EnsureNonEmpty(argument);
+            Either<Error, string> result = Functions.EnsureNonEmpty(argument);
 
             result.IsLeft.Should().BeTrue();
             result
-                .Right(_ => throw new InvalidOperationException("shouldn't reach this code"))
+                .Right(_ => throw InvalidExecutionPath.Exception)
                 .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
@@ -44,18 +45,18 @@ namespace Common.UnitTests.Helpers
         [InlineData("..")]
         public void return_Eiher_in_Right_state_if_valid_argument_has_been_passed_to_EnsureNonEmpty(string argument)
         {
-            Either<Error, string> result = StringHelpers.EnsureNonEmpty(argument);
+            Either<Error, string> result = Functions.EnsureNonEmpty(argument);
 
             result.IsRight.Should().BeTrue();
             result
                 .Right(value => value.Should().Be(argument))
-                .Left(_ => throw new InvalidOperationException("shouldn't reach this code"));
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
         public void have_Trim_method()
         {
-            var result = StringHelpers.Trim(Right("asd"));
+            var result = Functions.Trim(Right("asd"));
 
             result.Should().NotBeNull();
         }
@@ -63,7 +64,7 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void return_Either_in_Right_state_if_valid_argument_has_been_passed_to_Trim()
         {
-            Either<Error, string> result = StringHelpers.Trim(Right("asd"));
+            Either<Error, string> result = Functions.Trim(Right("asd"));
 
             result.IsRight.Should().BeTrue();
         }
@@ -71,11 +72,11 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void return_string_without_leading_and_trailing_spaces_from_Trim()
         {
-            Either<Error, string> result = StringHelpers.Trim(Right("  nmk    "));
+            Either<Error, string> result = Functions.Trim(Right("  nmk    "));
 
             result
                 .Right(value => value.Should().Be("nmk"))
-                .Left(_ => throw new InvalidOperationException("shouldn't reach this code"));
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
@@ -83,7 +84,7 @@ namespace Common.UnitTests.Helpers
         {
             Either<Error, string> input = Left<Error, string>(new Error.Invalid("invalid string"));
 
-            Either<Error, string> result = StringHelpers.Trim(input);
+            Either<Error, string> result = Functions.Trim(input);
 
             result.IsLeft.Should().BeTrue();
         }
@@ -91,7 +92,7 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void have_ConvertToUpper_method()
         {
-            var result = StringHelpers.ConvertToUpper(Right("qwerty"));
+            var result = Functions.ConvertToUpper(Right("qwerty"));
 
             result.Should().NotBeNull();
         }
@@ -99,7 +100,7 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void return_Either_in_Right_state_if_valid_argument_has_been_passed_to_ConvertToUpper()
         {
-            Either<Error, string> result = StringHelpers.ConvertToUpper(Right("qwerty"));
+            Either<Error, string> result = Functions.ConvertToUpper(Right("qwerty"));
 
             result.IsRight.Should().BeTrue();
         }
@@ -107,11 +108,11 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void return_string_in_uppercase_from_ConvertToUpper()
         {
-            Either<Error, string> result = StringHelpers.ConvertToUpper(Right("qwerty"));
+            Either<Error, string> result = Functions.ConvertToUpper(Right("qwerty"));
 
             result
                 .Right(value => value.Should().Be("QWERTY"))
-                .Left(_ => throw new InvalidOperationException("shouldn't reach this code"));
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
@@ -119,7 +120,7 @@ namespace Common.UnitTests.Helpers
         {
             Either<Error, string> input = Left<Error, string>(new Error.Invalid("invalid string"));
 
-            Either<Error, string> result = StringHelpers.ConvertToUpper(input);
+            Either<Error, string> result = Functions.ConvertToUpper(input);
 
             result.IsLeft.Should().BeTrue();
         }
@@ -127,7 +128,7 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void have_EnsureRequiredLength_method()
         {
-            var result = StringHelpers.EnsureRequiredLength("asd", 3);
+            var result = Functions.EnsureRequiredLength("asd", 3);
 
             result.Should().NotBeNull();
         }
@@ -135,11 +136,11 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void return_Eiher_in_Left_state_if_invalid_argument_has_been_passed_to_EnsureRequiredLength()
         {
-            Either<Error, string> result = StringHelpers.EnsureRequiredLength(null, 1);
+            Either<Error, string> result = Functions.EnsureRequiredLength(null, 1);
 
             result.IsLeft.Should().BeTrue();
             result
-                .Right(_ => throw new InvalidOperationException("shouldn't reach this code"))
+                .Right(_ => throw InvalidExecutionPath.Exception)
                 .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
@@ -149,7 +150,7 @@ namespace Common.UnitTests.Helpers
         [InlineData("aaa", 10, false)]
         public void return_Eiher_in_Right_state_if_valid_argument_has_been_passed_to_EnsureRequiredLength(string input, int length, bool shouldBeRight)
         {
-            Either<Error, string> result = StringHelpers.EnsureRequiredLength(input, length);
+            Either<Error, string> result = Functions.EnsureRequiredLength(input, length);
 
             result.IsRight.Should().Be(shouldBeRight);
         }
@@ -157,67 +158,45 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void have_CapitalizeAllWords_method()
         {
-            var result = StringHelpers.CapitalizeAllWords("a b c");
+            var result = Functions.CapitalizeAllWords("a b c");
 
             result.Should().NotBeNull();
-        }
-
-        [Fact]
-        public void return_Eiher_in_Left_state_if_invalid_argument_has_been_passed_to_CapitalizeAllWords()
-        {
-            Either<Error, string> result = StringHelpers.CapitalizeAllWords(null);
-
-            result.IsLeft.Should().BeTrue();
-            result
-                .Right(_ => throw new InvalidOperationException("shouldn't reach this code"))
-                .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         [Fact]
         public void return_EiherRight_with_first_letter_of_each_word_capitalised_from_CapitalizeAllWords()
         {
-            Either<Error, string> result = StringHelpers.CapitalizeAllWords("one two");
+            Either<Error, string> result = Functions.CapitalizeAllWords("one two");
 
             result.IsRight.Should().BeTrue();
             result
                 .Right(value => value.Should().Be("One Two"))
-                .Left(_ => throw new InvalidOperationException("shouldn't reach this code"));
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
         public void have_CapitalizeFirstLetter_method()
         {
-            var result = StringHelpers.CapitalizeFirstLetter("qwe");
+            var result = Functions.CapitalizeFirstLetter("qwe");
 
             result.Should().NotBeNull();
         }
 
         [Fact]
-        public void return_Eiher_in_Left_state_if_invalid_argument_has_been_passed_to_CapitalizeFirstLetter()
-        {
-            Either<Error, string> result = StringHelpers.CapitalizeFirstLetter(null);
-
-            result.IsLeft.Should().BeTrue();
-            result
-                .Right(_ => throw new InvalidOperationException("shouldn't reach this code"))
-                .Left(error => error.Should().BeOfType<Error.Invalid>());
-        }
-
-        [Fact]
         public void return_EiherRight_with_only_first_letter_capitalised_from_CapitalizeFirstLetter()
         {
-            Either<Error, string> result = StringHelpers.CapitalizeFirstLetter("first second");
+            Either<Error, string> result = Functions.CapitalizeFirstLetter("first second");
 
             result.IsRight.Should().BeTrue();
             result
                 .Right(value => value.Should().Be("First second"))
-                .Left(_ => throw new InvalidOperationException("shouldn't reach this code"));
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
         public void have_EnsureMinLength_method()
         {
-            var result = StringHelpers.EnsureMinLength("asd", 2);
+            var result = Functions.EnsureMinLength("asd", 2);
 
             result.Should().NotBeNull();
         }
@@ -225,11 +204,11 @@ namespace Common.UnitTests.Helpers
         [Fact]
         public void return_EiherLeft_if_invalid_argument_has_been_passed_to_EnsureMinLength()
         {
-            Either<Error, string> result = StringHelpers.EnsureMinLength(null, 1);
+            Either<Error, string> result = Functions.EnsureMinLength(null, 1);
 
             result.IsLeft.Should().BeTrue();
             result
-                .Right(_ => throw new InvalidOperationException("shouldn't reach this code"))
+                .Right(_ => throw InvalidExecutionPath.Exception)
                 .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
@@ -239,7 +218,7 @@ namespace Common.UnitTests.Helpers
         [InlineData("bb", 3, false)]
         public void return_EiherRight_if_valid_argument_has_been_passed_to_EnsureMinLength(string input, int length, bool shouldBeRight)
         {
-            Either<Error, string> result = StringHelpers.EnsureMinLength(input, length);
+            Either<Error, string> result = Functions.EnsureMinLength(input, length);
 
             result.IsRight.Should().Be(shouldBeRight);
         }

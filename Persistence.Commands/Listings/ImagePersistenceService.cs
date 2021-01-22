@@ -25,7 +25,7 @@ namespace Persistence.Commands.Listings
         {
             if (parentReference == default)
                 throw new ArgumentNullException(nameof(parentReference));
-            if(imageContents == null)
+            if (imageContents == null)
                 throw new ArgumentNullException(nameof(imageContents));
             if (dateTag == null)
                 throw new ArgumentNullException(nameof(dateTag));

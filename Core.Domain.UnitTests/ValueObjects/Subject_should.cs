@@ -1,37 +1,21 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
 using System;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
 {
     public class Subject_should
     {
-        private readonly Subject _sut;
-
-        public Subject_should()
-        {
-            _sut = Subject.Create("my dear friend");
-        }
-
-        [Fact]
-        public void have_Value_property()
-        {
-            _sut.Value.ToString().Should().NotBeNull();
-        }
-
         [Fact]
         public void have_capitalized_first_Value_letter()
         {
-            _sut.Value.ToString().Should().Be("My dear friend");
-        }
-
-        [Fact]
-        public void throw_exception_if_argument_is_not_valid()
-        {
-            Action action = () => Subject.Create(null);
-
-            action.Should().Throw<ArgumentNullException>();
+            Subject
+                .Create("my dear friend")
+                .Right(subject => subject.Value.ToString().Should().Be("My dear friend"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]

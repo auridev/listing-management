@@ -1,13 +1,16 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using static Common.Helpers.Result;
+using static LanguageExt.Prelude;
 
 namespace Core.Domain.Messages
 {
     public sealed class Message : IEquatable<Message>
     {
-        public Guid Id { get;  }
+        public Guid Id { get; }
         public Recipient Recipient { get; }
         public Subject Subject { get; }
         public MessageBody Body { get; }
@@ -38,11 +41,10 @@ namespace Core.Domain.Messages
 
         private Message() { }
 
-        public Message(Guid id, 
-            Recipient recipient, 
-            Subject subject, 
+        public Message(Guid id,
+            Recipient recipient,
+            Subject subject,
             MessageBody messageBody,
-            Option<SeenDate> seenDate,
             DateTimeOffset createdDate)
         {
             if (id == default)
@@ -60,12 +62,17 @@ namespace Core.Domain.Messages
             Recipient = recipient;
             Subject = subject;
             Body = messageBody;
-            SeenDate = seenDate;
+            SeenDate = Option<SeenDate>.None;
             CreatedDate = createdDate;
         }
-        public void HasBeenSeen(SeenDate seenDate)
+        public Either<Error, Unit> HasBeenSeen(SeenDate seenDate)
         {
+            if (seenDate == null)
+                return Invalid<Unit>(nameof(seenDate));
+
             SeenDate = seenDate;
+
+            return Success(unit);
         }
 
         public bool Equals([AllowNull] Message other)

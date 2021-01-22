@@ -1,6 +1,11 @@
-﻿using Core.Domain.ValueObjects;
-using Common.Dates;
+﻿using Common.Dates;
+using Common.Helpers;
+using Core.Domain.Profiles;
+using Core.Domain.ValueObjects;
+using LanguageExt;
 using System;
+using static Common.Helpers.Functions;
+using static LanguageExt.Prelude;
 
 namespace Core.Application.Profiles.Commands.DeactivateProfile
 {
@@ -16,23 +21,63 @@ namespace Core.Application.Profiles.Commands.DeactivateProfile
                 throw new ArgumentNullException(nameof(dateTimeService));
         }
 
-        public void Execute(DeactivateProfileModel model)
+        public Either<Error, Unit> Execute(DeactivateProfileModel model)
         {
-            //// Prerequisties
-            //var reason = TrimmedString.Create(model.Reason);
+            Either<Error, DeactivateProfileModel> eitherModel = EnsureNotNull(model);
+            Either<Error, ActiveProfile> eitherProfile = FindProfile(eitherModel);
+            Either<Error, TrimmedString> eitherReason = CreateReason(eitherModel);
 
-            //var date = _dateTimeService.GetCurrentUtcDateTime();
+            Either<Error, PassiveProfile> eitherPassiveProfile =
+                Deactivate(
+                    eitherProfile,
+                    eitherReason,
+                    _dateTimeService.GetCurrentUtcDateTime());
+            Either<Error, Unit> persistChangesResult =
+                PersistChanges(
+                    eitherProfile,
+                    eitherPassiveProfile);
 
-            //// Command
-            //_repository
-            //     .Find(model.ActiveProfileId)
-            //     .IfSome(active =>
-            //     {
-            //         var passive = active.Deactivate(date, reason);
-            //         _repository.Add(passive);
-            //         _repository.Delete(active);
-            //         _repository.Save();
-            //     });
+            return persistChangesResult;
         }
+
+        private Either<Error, ActiveProfile> FindProfile(Either<Error, DeactivateProfileModel> eitherModel)
+            =>
+                eitherModel
+                    .Map(model => _repository.Find(model.ActiveProfileId))
+                    .Bind(option => option.ToEither<Error>(new Error.NotFound("active profile not found")));
+
+        private Either<Error, TrimmedString> CreateReason(Either<Error, DeactivateProfileModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model => TrimmedString.Create(model.Reason));
+
+
+        private Either<Error, PassiveProfile> Deactivate(Either<Error, ActiveProfile> eitherActiveProfile, Either<Error, TrimmedString> eitherReason, DateTimeOffset deactivationDate)
+            =>
+                (
+                    from activeProfile in eitherActiveProfile
+                    from reason in eitherReason
+                    select
+                        (activeProfile, reason)
+                )
+                .Bind(context =>
+                        context.activeProfile.Deactivate(deactivationDate, context.reason));
+
+        private Either<Error, Unit> PersistChanges(Either<Error, ActiveProfile> eitherActiveProfile, Either<Error, PassiveProfile> eitherPassiveProfile)
+            =>
+                (
+                    from activeProfile in eitherActiveProfile
+                    from passiveProfile in eitherPassiveProfile
+                    select
+                        (activeProfile, passiveProfile)
+                )
+                .Map(context =>
+                {
+                    _repository.Add(context.passiveProfile);
+                    _repository.Delete(context.activeProfile);
+                    _repository.Save();
+
+                    return unit;
+                });
     }
 }

@@ -31,18 +31,23 @@ namespace Core.Domain.ValueObjects
                 input.Map(value => new Address(value));
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<Address>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<Address>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Address other)
-            => ValueObjectComparer<Address>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<Address>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<Address>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<Address>.Instance.GetHashCode();
 
         public static bool operator ==(Address left, Address right)
-            => ValueObjectComparer<Address>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<Address>.Instance.Equals(left, right);
 
         public static bool operator !=(Address left, Address right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

@@ -4,8 +4,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using U2U.ValueObjectComparers;
+using static Common.Helpers.Functions;
 using static Common.Helpers.Result;
-using static Common.Helpers.StringHelpers;
 using static LanguageExt.Prelude;
 
 namespace Core.Domain.ValueObjects
@@ -14,8 +14,7 @@ namespace Core.Domain.ValueObjects
     {
         private static readonly int _minLength = 9;
 
-        private static readonly Regex _phoneValidationRegex 
-            = 
+        private static readonly Regex _phoneValidationRegex =
                 new Regex(@"^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$", RegexOptions.Compiled);
 
         public string Number { get; }
@@ -46,23 +45,23 @@ namespace Core.Domain.ValueObjects
                     : Left(Invalid<string>("invalid phone number"));
 
         public override bool Equals([AllowNull] object obj)
-            => 
+            =>
                 ValueObjectComparer<Phone>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] Phone other)
-            => 
+            =>
                 ValueObjectComparer<Phone>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => 
+            =>
                 ValueObjectComparer<Phone>.Instance.GetHashCode();
 
         public static bool operator ==(Phone left, Phone right)
-            => 
+            =>
                 ValueObjectComparer<Phone>.Instance.Equals(left, right);
 
         public static bool operator !=(Phone left, Phone right)
-            => 
+            =>
                 !(left == right);
     }
 }

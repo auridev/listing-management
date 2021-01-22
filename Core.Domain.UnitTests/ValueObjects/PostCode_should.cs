@@ -1,5 +1,6 @@
 ﻿using Core.Domain.ValueObjects;
 using FluentAssertions;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -9,15 +10,28 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void have_a_Value_property()
         {
-            var postCode = PostCode.Create("A2323");
-            postCode.Value.ToString().Should().Be("A2323");
+            PostCode
+                .Create("A2323")
+                .Right(postCode => postCode.Value.ToString().Should().Be("A2323"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_Values_match()
+        public void be_treated_as_equal_using_generic_Equals_method_if_Values_match()
         {
             var first = PostCode.Create("111-222");
             var second = PostCode.Create("111-222");
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
+        }
+
+        [Fact]
+        public void be_treated_as_equal_using_object_Equals_method_if_Values_match()
+        {
+            var first = (object)PostCode.Create("111-222");
+            var second = (object)PostCode.Create("111-222");
 
             var equals = first.Equals(second);
 

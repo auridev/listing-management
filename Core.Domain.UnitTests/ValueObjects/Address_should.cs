@@ -2,7 +2,7 @@
 using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
-using System;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -17,7 +17,7 @@ namespace Core.Domain.UnitTests.ValueObjects
             eitherAddress.IsRight.Should().BeTrue();
             eitherAddress
                 .Right(address => address.Value.ToString().Should().Be("gariunai"))
-                .Left(_ => throw new InvalidOperationException("shouldn't reach this code"));
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]

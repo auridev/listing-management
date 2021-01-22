@@ -1,15 +1,13 @@
-﻿using Core.Domain.ValueObjects;
-using Core.Domain.Listings;
-using Core.UnitTests.Mocks;
+﻿using Core.Domain.Listings;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Commands.Listings;
 using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
-using Common.Helpers;
 
 namespace Persistence.Commands.Listings.UnitTests
 {
@@ -36,7 +34,7 @@ namespace Persistence.Commands.Listings.UnitTests
                 NewListing newListing = null;
 
                 // Act
-                Action action = () => repository.Add(newListing, new ListingImageReference[] { });
+                Action action = () => repository.Add(newListing, new List<ImageReference> { });
 
                 // Assert
                 action.Should().Throw<ArgumentNullException>();
@@ -52,7 +50,7 @@ namespace Persistence.Commands.Listings.UnitTests
                 var repository = new ListingRepository(context);
 
                 // Act
-                Action action = () => repository.Add(FakesCollection.NewListing_1, null);
+                Action action = () => repository.Add(DummyData.NewListing_1, null);
 
                 // Assert
                 action.Should().Throw<ArgumentNullException>();
@@ -201,11 +199,11 @@ namespace Persistence.Commands.Listings.UnitTests
             {
                 new ActiveListing(
                     new Guid("67fd3c72-a71d-4d46-8a62-635baade03e7"),
-                    Owner.Create(Guid.NewGuid()),
-                    FakesCollection.ListingDetails,
-                    FakesCollection.ContactDetails,
-                    FakesCollection.LocationDetails,
-                    FakesCollection.GeographicLocation,
+                    TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+                    DummyData.ListingDetails,
+                    DummyData.ContactDetails,
+                    DummyData.LocationDetails,
+                    DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow),
                 "67fd3c72-a71d-4d46-8a62-635baade03e7",
@@ -215,11 +213,11 @@ namespace Persistence.Commands.Listings.UnitTests
             {
                 new ActiveListing(
                     new Guid("11111111-1111-1111-1111-111111111111"),
-                    Owner.Create(Guid.NewGuid()),
-                    FakesCollection.ListingDetails,
-                    FakesCollection.ContactDetails,
-                    FakesCollection.LocationDetails,
-                    FakesCollection.GeographicLocation,
+                    TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+                    DummyData.ListingDetails,
+                    DummyData.ContactDetails,
+                    DummyData.LocationDetails,
+                    DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow),
                 "22222222-2222-2222-2222-222222222222",
@@ -259,11 +257,11 @@ namespace Persistence.Commands.Listings.UnitTests
             {
                 new NewListing(
                     new Guid("75ad2698-204c-449e-b04f-a57cccf6c755"),
-                    Owner.Create(Guid.NewGuid()),
-                    FakesCollection.ListingDetails,
-                    FakesCollection.ContactDetails,
-                    FakesCollection.LocationDetails,
-                    FakesCollection.GeographicLocation,
+                    TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+                    DummyData.ListingDetails,
+                    DummyData.ContactDetails,
+                    DummyData.LocationDetails,
+                    DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow),
                 "75ad2698-204c-449e-b04f-a57cccf6c755",
                 true
@@ -272,11 +270,11 @@ namespace Persistence.Commands.Listings.UnitTests
             {
                 new NewListing(
                     new Guid("11111111-1111-1111-1111-111111111111"),
-                    Owner.Create(Guid.NewGuid()),
-                    FakesCollection.ListingDetails,
-                    FakesCollection.ContactDetails,
-                    FakesCollection.LocationDetails,
-                    FakesCollection.GeographicLocation,
+                    TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+                    DummyData.ListingDetails,
+                    DummyData.ContactDetails,
+                    DummyData.LocationDetails,
+                    DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow),
                 "22222222-2222-2222-2222-222222222222",
                 false
@@ -315,14 +313,14 @@ namespace Persistence.Commands.Listings.UnitTests
             {
                 new PassiveListing(
                     new Guid("d63be5b2-a70d-4cd9-b5e9-8cb390152a76"),
-                    Owner.Create(Guid.NewGuid()),
-                    FakesCollection.ListingDetails,
-                    FakesCollection.ContactDetails,
-                    FakesCollection.LocationDetails,
-                    FakesCollection.GeographicLocation,
+                    TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+                    DummyData.ListingDetails,
+                    DummyData.ContactDetails,
+                    DummyData.LocationDetails,
+                    DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
-                    TrimmedString.Create("too passive").ToUnsafeRight()),
+                    TestValueObjectFactory.CreateTrimmedString("too passive")),
                 "d63be5b2-a70d-4cd9-b5e9-8cb390152a76",
                 true
             },
@@ -330,14 +328,14 @@ namespace Persistence.Commands.Listings.UnitTests
             {
                 new PassiveListing(
                     new Guid("11111111-1111-1111-1111-111111111111"),
-                    Owner.Create(Guid.NewGuid()),
-                    FakesCollection.ListingDetails,
-                    FakesCollection.ContactDetails,
-                    FakesCollection.LocationDetails,
-                    FakesCollection.GeographicLocation,
+                    TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+                    DummyData.ListingDetails,
+                    DummyData.ContactDetails,
+                    DummyData.LocationDetails,
+                    DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
-                    TrimmedString.Create("too passive").ToUnsafeRight()),
+                    TestValueObjectFactory.CreateTrimmedString("too passive")),
                 "22222222-2222-2222-2222-222222222222",
                 false
             }
@@ -375,14 +373,14 @@ namespace Persistence.Commands.Listings.UnitTests
             {
                 new SuspiciousListing(
                     new Guid("25fbbb10-ddec-4d48-adbc-4c5f4aed84a4"),
-                    Owner.Create(Guid.NewGuid()),
-                    FakesCollection.ListingDetails,
-                    FakesCollection.ContactDetails,
-                    FakesCollection.LocationDetails,
-                    FakesCollection.GeographicLocation,
+                    TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+                    DummyData.ListingDetails,
+                    DummyData.ContactDetails,
+                    DummyData.LocationDetails,
+                    DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
-                    TrimmedString.Create("qwerty").ToUnsafeRight()),
+                    TestValueObjectFactory.CreateTrimmedString("qwerty")),
                 "25fbbb10-ddec-4d48-adbc-4c5f4aed84a4",
                 true
             },
@@ -390,14 +388,14 @@ namespace Persistence.Commands.Listings.UnitTests
             {
                 new SuspiciousListing(
                     new Guid("11111111-1111-1111-1111-111111111111"),
-                    Owner.Create(Guid.NewGuid()),
-                    FakesCollection.ListingDetails,
-                    FakesCollection.ContactDetails,
-                    FakesCollection.LocationDetails,
-                    FakesCollection.GeographicLocation,
+                    TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+                    DummyData.ListingDetails,
+                    DummyData.ContactDetails,
+                    DummyData.LocationDetails,
+                    DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
-                    TrimmedString.Create("qwerty").ToUnsafeRight()),
+                    TestValueObjectFactory.CreateTrimmedString("qwerty")),
                 "22222222-2222-2222-2222-222222222222",
                 false
             }

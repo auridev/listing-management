@@ -1,9 +1,9 @@
 ﻿using LanguageExt;
 using System;
 
-namespace Common.Helpers
+namespace Persistence.Commands.Helpers
 {
-    public static class EitherExtensions
+    internal static class EitherExtensions
     {
         public static TRight ToUnsafeRight<TLeft, TRight>(this Either<TLeft, TRight> result)
         {

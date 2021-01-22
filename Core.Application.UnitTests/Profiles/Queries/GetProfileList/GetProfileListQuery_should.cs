@@ -39,7 +39,7 @@ namespace BusinessLine.Core.Application.UnitTests.Profiles.Queries.GetProfileLis
         [Fact]
         public void return_ProfileModel_collection()
         {
-            ICollection<ProfileModel> result = _sut.Execute(_queryParams);
+            PagedList<ProfileModel> result = _sut.Execute(_queryParams);
 
             result.Should().NotBeNull();
         }

@@ -2,8 +2,8 @@
 using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
-using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -11,24 +11,34 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class Alpha3Code_should
     {
         [Fact]
-        public void have_a_Value_property()
+        public void not_have_any_leading_or_trailing_whitespaces_in_Value_property()
         {
-            Either<Error, Alpha3Code> eitherCode = Alpha3Code.Create("ASD");
+            Either<Error, Alpha3Code> eitherCode = Alpha3Code.Create("     ABC  ");
+
+            eitherCode
+              .Right(address => address.Value.Should().Be("ABC"))
+              .Left(_ => throw InvalidExecutionPath.Exception);
+        }
+
+        [Fact]
+        public void have_Value_in_capital_letters()
+        {
+            Either<Error, Alpha3Code> eitherCode = Alpha3Code.Create("asd");
 
             eitherCode
               .Right(address => address.Value.Should().Be("ASD"))
-              .Left(_ => throw new InvalidOperationException());
+              .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(Arguments))]
-        public void return_Eiher_in_Left_state_with_proper_error_during_creation_if_argument_is_not_valid(string code)
+        public void return_EiherLeft_during_creation_if_argument_is_not_valid(string code)
         {
             Either<Error, Alpha3Code> eitherCode = Alpha3Code.Create(code);
 
             eitherCode.IsLeft.Should().BeTrue();
             eitherCode
-               .Right(_ => throw new InvalidOperationException())
+               .Right(_ => throw InvalidExecutionPath.Exception)
                .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
@@ -42,26 +52,6 @@ namespace Core.Domain.UnitTests.ValueObjects
             new object[] { "AS" },
             new object[] { "A" }
         };
-
-        [Fact]
-        public void not_have_any_leading_or_trailing_whitespaces_in_Value_property()
-        {
-            Either<Error, Alpha3Code> eitherCode = Alpha3Code.Create("     ABC  ");
-
-            eitherCode
-              .Right(address => address.Value.Should().Be("ABC"))
-              .Left(_ => throw new InvalidOperationException());
-        }
-
-        [Fact]
-        public void have_Value_in_capital_letters()
-        {
-            Either<Error, Alpha3Code> eitherCode = Alpha3Code.Create("asd");
-
-            eitherCode
-              .Right(address => address.Value.Should().Be("ASD"))
-              .Left(_ => throw new InvalidOperationException());
-        }
 
         [Fact]
         public void be_treated_as_equal_using_generic_Equals_method_if_Values_match()

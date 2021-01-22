@@ -1,9 +1,11 @@
 ﻿using System;
+using Common.Helpers;
+using LanguageExt;
 
 namespace Core.Application.Profiles.Commands.CreateProfile
 {
     public interface ICreateProfileCommand
     {
-        void Execute(Guid userid, CreateProfileModel model);
+        Either<Error, Unit> Execute(Guid userid, CreateProfileModel model);
     }
 }

@@ -1,5 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
+using LanguageExt;
 using System;
+using static Common.Helpers.Result;
+using static LanguageExt.Prelude;
 
 namespace Core.Domain.Listings
 {
@@ -30,9 +34,12 @@ namespace Core.Domain.Listings
             Reason = reason;
         }
 
-        public ActiveListing Reactivate(DateTimeOffset expirationDate)
+        public Either<Error, ActiveListing> Reactivate(DateTimeOffset expirationDate)
         {
-            return new ActiveListing(
+            if (expirationDate == default)
+                return Invalid<ActiveListing>(nameof(expirationDate));
+
+            var activeListing = new ActiveListing(
                 Id,
                 Owner,
                 ListingDetails,
@@ -41,6 +48,8 @@ namespace Core.Domain.Listings
                 GeographicLocation,
                 CreatedDate,
                 expirationDate);
+
+            return Success(activeListing);
         }
     }
 }

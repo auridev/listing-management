@@ -2,6 +2,7 @@
 using Core.Domain.Listings;
 using LanguageExt;
 using System;
+using System.Collections.Generic;
 
 namespace Core.Application.Listings.Commands
 {
@@ -12,7 +13,7 @@ namespace Core.Application.Listings.Commands
         Option<PassiveListing> FindPassive(Guid id);
         Option<ActiveListing> FindActive(Guid id);
 
-        void Add(NewListing newListing, ListingImageReference[] references);
+        void Add(NewListing newListing, List<ImageReference> references);
         void Add(ActiveListing activeListing);
         void Add(PassiveListing passiveListing);
         void Add(SuspiciousListing suspiciousListing);

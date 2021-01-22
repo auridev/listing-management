@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Core.Application.Helpers;
+using System;
 using System.Collections.Generic;
 
 namespace Core.Application.Listings.Queries.GetPublicListings
 {
     public interface IGetPublicListingsQuery
     {
-        ICollection<PublicListingModel> Execute(Guid userId, GetPublicListingsQueryParams queryParams);
+        PagedList<PublicListingModel> Execute(Guid userId, GetPublicListingsQueryParams queryParams);
     }
 }

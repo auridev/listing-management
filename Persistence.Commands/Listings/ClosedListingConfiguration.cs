@@ -1,8 +1,8 @@
-﻿using Core.Domain.ValueObjects;
-using Core.Domain.Listings;
+﻿using Core.Domain.Listings;
+using Core.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Common.Helpers;
+using Persistence.Commands.Helpers;
 
 namespace Persistence.Commands.Listings
 {
@@ -25,7 +25,7 @@ namespace Persistence.Commands.Listings
             builder
                 .Property(p => p.Owner)
                 .HasColumnName("owner")
-                .HasConversion(domain => domain.UserId, db => Owner.Create(db))
+                .HasConversion(domain => domain.UserId, db => Owner.Create(db).ToUnsafeRight())
                 .IsRequired(true);
 
             builder.OwnsOne(
@@ -36,12 +36,12 @@ namespace Persistence.Commands.Listings
                         .Property(p => p.Title)
                         .HasColumnName("title")
                         .HasMaxLength(50)
-                        .HasConversion(domain => domain.Value.Value, db => Title.Create(db));
+                        .HasConversion(domain => domain.Value.Value, db => Title.Create(db).ToUnsafeRight());
 
                     listingDetails
                        .Property(p => p.MaterialType)
                        .HasColumnName("material_type_id")
-                       .HasConversion(domain => domain.Id, db => MaterialType.ById(db));
+                       .HasConversion(domain => domain.Id, db => MaterialType.ById(db).ToUnsafeRight());
 
                     listingDetails.OwnsOne(
                         p => p.Weight,
@@ -55,14 +55,14 @@ namespace Persistence.Commands.Listings
                                 .Property(p => p.Unit)
                                 .HasColumnName("weight_unit")
                                 .HasMaxLength(2)
-                                .HasConversion(domain => domain.Symbol, db => MassMeasurementUnit.BySymbol(db));
+                                .HasConversion(domain => domain.Symbol, db => MassMeasurementUnit.BySymbol(db).ToUnsafeRight());
                         });
 
                     listingDetails
                         .Property(p => p.Description)
                         .HasColumnName("description")
                         .HasMaxLength(500)
-                        .HasConversion(domain => domain.Value.Value, db => Description.Create(db));
+                        .HasConversion(domain => domain.Value.Value, db => Description.Create(db).ToUnsafeRight());
                 });
 
 
@@ -122,7 +122,7 @@ namespace Persistence.Commands.Listings
                         .Property(p => p.PostCode)
                         .HasColumnName("post_code")
                         .HasMaxLength(15)
-                        .HasConversion(domain => domain.Value.Value, db => PostCode.Create(db));
+                        .HasConversion(domain => domain.Value.Value, db => PostCode.Create(db).ToUnsafeRight());
 
                      locationDetails
                         .Property(p => p.Address)
@@ -134,7 +134,7 @@ namespace Persistence.Commands.Listings
                        .Property(p => p.___efCoreState)
                        .HasColumnName("state")
                        .HasMaxLength(25)
-                       .HasConversion(domain => domain.Name.Value, db => State.Create(db));
+                       .HasConversion(domain => domain.Name.Value, db => State.Create(db).ToUnsafeRight());
                      locationDetails
                         .Ignore(ld => ld.State);
                  });
@@ -180,7 +180,7 @@ namespace Persistence.Commands.Listings
                      acceptedOffer
                         .Property(p => p.Owner)
                         .HasColumnName("accepted_offer_owner")
-                        .HasConversion(domain => domain.UserId, db => Owner.Create(db))
+                        .HasConversion(domain => domain.UserId, db => Owner.Create(db).ToUnsafeRight())
                         .IsRequired(true);
 
                      acceptedOffer.OwnsOne(
@@ -197,7 +197,7 @@ namespace Persistence.Commands.Listings
                                 .Property(p => p.CurrencyCode)
                                 .HasColumnName("accepted_offer_currency_code")
                                 .HasMaxLength(3)
-                                .HasConversion(domain => domain.Value, db => CurrencyCode.Create(db))
+                                .HasConversion(domain => domain.Value, db => CurrencyCode.Create(db).ToUnsafeRight())
                                 .IsRequired(true);
                         });
 

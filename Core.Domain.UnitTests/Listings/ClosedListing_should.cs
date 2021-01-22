@@ -1,37 +1,35 @@
-﻿using Core.Domain.ValueObjects;
-using Core.Domain.Listings;
+﻿using Core.Domain.Listings;
 using Core.Domain.Offers;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace BusinessLine.Core.Domain.UnitTests.Listings
 {
     public class ClosedListing_should : Listing_should
     {
-        private static readonly AcceptedOffer _acceptedOffer = new AcceptedOffer(Guid.NewGuid(),
-                Owner.Create(Guid.NewGuid()),
-                MonetaryValue.Create(12.5M, CurrencyCode.Create("eur")),
-                DateTimeOffset.UtcNow);
-
         private static readonly List<RejectedOffer> _rejectedOffers = new List<RejectedOffer>();
 
-        private readonly ClosedListing _sut;
+        private static readonly AcceptedOffer _acceptedOffer = new AcceptedOffer(
+            Guid.NewGuid(),
+            TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
+            TestValueObjectFactory.CreateMonetaryValue(12.5M, "eur"),
+            DateTimeOffset.UtcNow);
 
-        public ClosedListing_should()
-        {
-            _sut = new ClosedListing(Guid.NewGuid(),
-               _owner,
-               _listingDetails,
-               _contactDetails,
-               _locationDetails,
-               _geographicLocation,
-               _createdDate,
-               DateTimeOffset.UtcNow.AddDays(-1),
-               _acceptedOffer,
-               _rejectedOffers);
-        }
+        private readonly ClosedListing _sut = new ClosedListing(
+            Guid.NewGuid(),
+            _owner,
+            _listingDetails,
+            _contactDetails,
+            _locationDetails,
+            _geographicLocation,
+            _createdDate,
+            DateTimeOffset.UtcNow.AddDays(-1),
+            _acceptedOffer,
+            _rejectedOffers);
+
 
         [Fact]
         public void have_a_ClosedOn_property()
@@ -50,11 +48,11 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         [MemberData(nameof(InvalidArgumentsForClosedListing))]
         public void thrown_an_exception_during_creation_if_some_arguments_are_not_valid(DateTimeOffset closedOn, AcceptedOffer acceptedOffer, List<RejectedOffer> rejectedOffers)
         {
-            Action createAction = () => new ClosedListing(Guid.NewGuid(), 
-                _owner, 
-                _listingDetails, 
+            Action createAction = () => new ClosedListing(Guid.NewGuid(),
+                _owner,
+                _listingDetails,
                 _contactDetails,
-                _locationDetails, 
+                _locationDetails,
                 _geographicLocation,
                 _createdDate,
                 closedOn,

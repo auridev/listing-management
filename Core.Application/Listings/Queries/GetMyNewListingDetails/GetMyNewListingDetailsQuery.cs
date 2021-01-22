@@ -14,6 +14,9 @@ namespace Core.Application.Listings.Queries.GetMyNewListingDetails
 
         public Option<MyNewListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
+            if ((userId == default) || (listingId == default))
+                return Option<MyNewListingDetailsModel>.None;
+
             return _repository.FindMyNew(userId, listingId);
         }
     }

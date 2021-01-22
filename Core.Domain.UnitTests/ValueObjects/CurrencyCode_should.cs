@@ -1,7 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
-using System;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -9,20 +11,33 @@ namespace Core.Domain.UnitTests.ValueObjects
     public class CurrencyCode_should
     {
         [Fact]
-        public void have_a_Value_property()
+        public void not_have_any_leading_or_trailing_whitespaces_in_Value_property()
         {
-            var code = CurrencyCode.Create("AED");
+            CurrencyCode
+                .Create("     BMD  ")
+                .Right(code => code.Value.Should().Be("BMD"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
+        }
 
-            code.Value.Should().Be("AED");
+        [Fact]
+        public void have_Value_in_capital_letters()
+        {
+            CurrencyCode
+                .Create("bov")
+                .Right(code => code.Value.Should().Be("BOV"))
+                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Theory]
         [MemberData(nameof(Arguments))]
-        public void throw_an_exception_during_creation_if_argument_is_not_valid(string code)
+        public void return_EiherLeft_with_proper_error_during_creation_if_argument_is_not_valid(string code)
         {
-            Action createAction = () => CurrencyCode.Create(code);
+            Either<Error, CurrencyCode> eitherCurrencyCode = CurrencyCode.Create(code);
 
-            createAction.Should().Throw<ArgumentException>();
+            eitherCurrencyCode.IsLeft.Should().BeTrue();
+            eitherCurrencyCode
+               .Right(_ => throw InvalidExecutionPath.Exception)
+               .Left(error => error.Should().BeOfType<Error.Invalid>());
         }
 
         public static IEnumerable<object[]> Arguments => new List<object[]>
@@ -35,20 +50,6 @@ namespace Core.Domain.UnitTests.ValueObjects
             new object[] { "AS" },
             new object[] { "A" }
         };
-
-        [Fact]
-        public void not_have_any_leading_or_trailing_whitespaces_in_Value_property()
-        {
-            var code = CurrencyCode.Create("     BMD  ");
-            code.Value.Should().Be("BMD");
-        }
-
-        [Fact]
-        public void have_Value_in_capital_letters()
-        {
-            var code = CurrencyCode.Create("bov");
-            code.Value.Should().Be("BOV");
-        }
 
         [Fact]
         public void be_treated_as_equal_using_generic_Equals_method_if_Values_match()
@@ -64,8 +65,8 @@ namespace Core.Domain.UnitTests.ValueObjects
         [Fact]
         public void be_treated_as_equal_using_object_Equals_method_if_Values_match()
         {
-            var first = (object) CurrencyCode.Create("  EUR");
-            var second = (object) CurrencyCode.Create("EUR   ");
+            var first = (object)CurrencyCode.Create("  EUR");
+            var second = (object)CurrencyCode.Create("EUR   ");
 
             var equals = first.Equals(second);
 

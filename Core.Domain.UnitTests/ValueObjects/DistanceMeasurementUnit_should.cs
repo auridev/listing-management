@@ -1,6 +1,9 @@
-﻿using Core.Domain.ValueObjects;
+﻿using Common.Helpers;
+using Core.Domain.ValueObjects;
 using FluentAssertions;
+using LanguageExt;
 using System.Collections.Generic;
+using Test.Helpers;
 using Xunit;
 
 namespace Core.Domain.UnitTests.ValueObjects
@@ -26,9 +29,11 @@ namespace Core.Domain.UnitTests.ValueObjects
         [MemberData(nameof(UnitsBySymbols))]
         public void return_expected_unit_by_symbol(string symbol, DistanceMeasurementUnit expectedUnit)
         {
-            DistanceMeasurementUnit unit = DistanceMeasurementUnit.BySymbol(symbol);
+            Either<Error, DistanceMeasurementUnit> eitherUnit = DistanceMeasurementUnit.BySymbol(symbol);
 
-            unit.Should().Be(expectedUnit);
+            eitherUnit
+               .Right(unit => unit.Should().Be(expectedUnit))
+               .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         public static IEnumerable<object[]> UnitsBySymbols => new List<object[]>
@@ -38,10 +43,21 @@ namespace Core.Domain.UnitTests.ValueObjects
         };
 
         [Fact]
-        public void be_treated_as_equal_using_Equals_method_if_predefined_values_match()
+        public void be_treated_as_equal_using_generic_Equals_method_if_predefined_values_match()
         {
             var first = DistanceMeasurementUnit.Kilometer;
             var second = DistanceMeasurementUnit.Kilometer;
+
+            var equals = first.Equals(second);
+
+            equals.Should().BeTrue();
+        }
+
+        [Fact]
+        public void be_treated_as_equal_using_object_Equals_method_if_predefined_values_match()
+        {
+            var first = (object)DistanceMeasurementUnit.Kilometer;
+            var second = (object)DistanceMeasurementUnit.Kilometer;
 
             var equals = first.Equals(second);
 

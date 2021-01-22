@@ -3,8 +3,7 @@ using LanguageExt;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using U2U.ValueObjectComparers;
-using static Common.Helpers.StringHelpers;
-using static LanguageExt.Prelude;
+using static Common.Helpers.Functions;
 
 namespace Core.Domain.ValueObjects
 {
@@ -29,11 +28,13 @@ namespace Core.Domain.ValueObjects
         public static Either<Error, PersonName> Create(string firstName, string lastName)
         {
             Either<Error, TrimmedString> first =
-                    CapitalizeAllWords(firstName)
+                EnsureNonEmpty(firstName)
+                    .Bind(firstName => CapitalizeAllWords(firstName))
                     .Bind(firstName => TrimmedString.Create(firstName));
 
             Either<Error, TrimmedString> last =
-                    CapitalizeAllWords(lastName)
+                EnsureNonEmpty(lastName)
+                    .Bind(lastName => CapitalizeAllWords(lastName))
                     .Bind(lastName => TrimmedString.Create(lastName));
 
             Either<Error, (TrimmedString firstName, TrimmedString lastName)> arguments =
@@ -41,22 +42,29 @@ namespace Core.Domain.ValueObjects
                    from l in last
                    select (f, l);
 
-            return arguments.Map(args => new PersonName(args.firstName, args.lastName));
+            return
+                arguments.Map(
+                    args => new PersonName(args.firstName, args.lastName));
         }
 
         public override bool Equals([AllowNull] object obj)
-            => ValueObjectComparer<PersonName>.Instance.Equals(this, obj);
+            =>
+                ValueObjectComparer<PersonName>.Instance.Equals(this, obj);
 
         public bool Equals([AllowNull] PersonName other)
-            => ValueObjectComparer<PersonName>.Instance.Equals(this, other);
+            =>
+                ValueObjectComparer<PersonName>.Instance.Equals(this, other);
 
         public override int GetHashCode()
-            => ValueObjectComparer<PersonName>.Instance.GetHashCode();
+            =>
+                ValueObjectComparer<PersonName>.Instance.GetHashCode();
 
         public static bool operator ==(PersonName left, PersonName right)
-            => ValueObjectComparer<PersonName>.Instance.Equals(left, right);
+            =>
+                ValueObjectComparer<PersonName>.Instance.Equals(left, right);
 
         public static bool operator !=(PersonName left, PersonName right)
-            => !(left == right);
+            =>
+                !(left == right);
     }
 }

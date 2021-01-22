@@ -15,6 +15,9 @@ namespace Core.Application.Listings.Queries.GetMyExpiredListingDetails
 
         public Option<MyExpiredListingDetailsModel> Execute(Guid userId, Guid listingId)
         {
+            if ((userId == default) || (listingId == default))
+                return Option<MyExpiredListingDetailsModel>.None;
+
             return _repository.FindMyExpired(userId, listingId);
         }
     }

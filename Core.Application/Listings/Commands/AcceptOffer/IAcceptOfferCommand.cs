@@ -1,7 +1,10 @@
-﻿namespace Core.Application.Listings.Commands.AcceptOffer
+﻿using Common.Helpers;
+using LanguageExt;
+
+namespace Core.Application.Listings.Commands.AcceptOffer
 {
     public interface IAcceptOfferCommand
     {
-        void Execute(AcceptOfferModel model);
+        Either<Error, Unit> Execute(AcceptOfferModel model);
     }
 }

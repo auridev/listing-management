@@ -1,8 +1,8 @@
-﻿using Core.Domain.ValueObjects;
-using Core.Domain.Profiles;
+﻿using Core.Domain.Profiles;
+using Core.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Common.Helpers;
+using Persistence.Commands.Helpers;
 
 namespace Persistence.Commands.Profiles
 {
@@ -30,7 +30,7 @@ namespace Persistence.Commands.Profiles
                 .Property(p => p.Email)
                 .HasColumnName("email")
                 .HasMaxLength(50)
-                .HasConversion(domain => domain.Value, db => Email.Create(db))
+                .HasConversion(domain => domain.Value, db => Email.Create(db).ToUnsafeRight())
                 .IsRequired(true);
 
             builder.OwnsOne(
@@ -89,7 +89,7 @@ namespace Persistence.Commands.Profiles
                         .Property(p => p.PostCode)
                         .HasColumnName("post_code")
                         .HasMaxLength(15)
-                        .HasConversion(domain => domain.Value.Value, db => PostCode.Create(db));
+                        .HasConversion(domain => domain.Value.Value, db => PostCode.Create(db).ToUnsafeRight());
 
                      locationDetails
                         .Property(p => p.Address)
@@ -101,7 +101,7 @@ namespace Persistence.Commands.Profiles
                         .Property(p => p.___efCoreState)
                         .HasColumnName("state")
                         .HasMaxLength(25)
-                        .HasConversion(domain => domain.Name.Value, db => State.Create(db));
+                        .HasConversion(domain => domain.Name.Value, db => State.Create(db).ToUnsafeRight());
                      locationDetails
                         .Ignore(ld => ld.State);
                  });
@@ -127,19 +127,19 @@ namespace Persistence.Commands.Profiles
                         .Property(p => p.DistanceUnit)
                         .HasColumnName("distance_unit")
                         .HasMaxLength(2)
-                        .HasConversion(domain => domain.Symbol, db => DistanceMeasurementUnit.BySymbol(db));
+                        .HasConversion(domain => domain.Symbol, db => DistanceMeasurementUnit.BySymbol(db).ToUnsafeRight());
 
                      userPreferences
                         .Property(p => p.MassUnit)
                         .HasColumnName("mass_unit")
                         .HasMaxLength(2)
-                        .HasConversion(domain => domain.Symbol, db => MassMeasurementUnit.BySymbol(db));
+                        .HasConversion(domain => domain.Symbol, db => MassMeasurementUnit.BySymbol(db).ToUnsafeRight());
 
                      userPreferences
                         .Property(p => p.CurrencyCode)
                         .HasColumnName("currency_code")
                         .HasMaxLength(3)
-                        .HasConversion(domain => domain.Value, db => CurrencyCode.Create(db));
+                        .HasConversion(domain => domain.Value, db => CurrencyCode.Create(db).ToUnsafeRight());
                  });
 
             builder

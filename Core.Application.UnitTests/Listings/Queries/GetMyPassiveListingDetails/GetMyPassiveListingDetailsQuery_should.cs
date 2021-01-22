@@ -5,6 +5,7 @@ using LanguageExt;
 using Moq;
 using Moq.AutoMock;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyPassiveListingDetails
@@ -74,6 +75,23 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Queries.GetMyPassiveL
 
             Option<MyPassiveListingDetailsModel> model = _sut.Execute(_userId, _listingId);
 
+            model.IsNone.Should().BeTrue();
+        }
+
+        public static IEnumerable<object[]> InvalidArguments => new List<object[]>
+        {
+            new object[] { Guid.NewGuid(), default },
+            new object[] { default, Guid.NewGuid() }
+        };
+
+        [Theory]
+        [MemberData(nameof(InvalidArguments))]
+        public void reject_none_if_arguments_are_not_valid(Guid userId, Guid listingId)
+        {
+            // act
+            Option<MyPassiveListingDetailsModel> model = _sut.Execute(userId, listingId);
+
+            // assert
             model.IsNone.Should().BeTrue();
         }
     }

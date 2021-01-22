@@ -6,6 +6,8 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Xunit;
+using Common.Helpers;
+using Test.Helpers;
 
 namespace Persistence.Commands.Messages.UnitTests
 {
@@ -14,10 +16,9 @@ namespace Persistence.Commands.Messages.UnitTests
         private readonly DbContextOptions<CommandPersistenceContext> _options;
         private readonly Message _message = new Message(
             new Guid("70bcb72a-166d-4960-9a8a-124b529e22cf"),
-            Recipient.Create(Guid.NewGuid()),
-            Subject.Create("my subject"),
-            MessageBody.Create("message content"),
-            Option<SeenDate>.None,
+            TestValueObjectFactory.CreateRecipient(Guid.NewGuid()),
+            TestValueObjectFactory.CreateSubject("my subject"),
+            TestValueObjectFactory.CreateMessageBody("message content"),
             DateTimeOffset.UtcNow);
 
         public MessageRepository_should()
