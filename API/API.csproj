@@ -5,6 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Listings\**" />
+    <Compile Remove="Messages\**" />
+    <Compile Remove="Profiles\**" />
+    <Content Remove="Listings\**" />
+    <Content Remove="Messages\**" />
+    <Content Remove="Profiles\**" />
+    <EmbeddedResource Remove="Listings\**" />
+    <EmbeddedResource Remove="Messages\**" />
+    <EmbeddedResource Remove="Profiles\**" />
+    <None Remove="Listings\**" />
+    <None Remove="Messages\**" />
+    <None Remove="Profiles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -18,12 +33,6 @@
     <ProjectReference Include="..\Core.Application\Core.Application.csproj" />
     <ProjectReference Include="..\Persistence.Commands\Persistence.Commands.csproj" />
     <ProjectReference Include="..\Persistence.Queries\Persistence.Queries.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Listings\" />
-    <Folder Include="Messages\" />
-    <Folder Include="Profiles\" />
   </ItemGroup>
 
 </Project>
