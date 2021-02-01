@@ -9,10 +9,11 @@ namespace Core.Domain.Listings
 {
     public sealed class SuspiciousListing : Listing
     {
-        public DateTimeOffset MarkedAsSuspiciousAt { get; }
         public TrimmedString Reason { get; }
 
-        private SuspiciousListing() { }
+        private SuspiciousListing()
+        {
+        }
 
         public SuspiciousListing(Guid id,
             Owner owner,
@@ -21,25 +22,19 @@ namespace Core.Domain.Listings
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
             DateTimeOffset createdDate,
-            DateTimeOffset markedAsSuspiciousAt,
             TrimmedString reason)
             : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation, createdDate)
         {
-            if (markedAsSuspiciousAt == default)
-                throw new ArgumentNullException(nameof(markedAsSuspiciousAt));
             if (reason == null)
                 throw new ArgumentNullException(nameof(reason));
 
-            MarkedAsSuspiciousAt = markedAsSuspiciousAt;
             Reason = reason;
         }
 
-        public Either<Error, PassiveListing> Deactivate(TrimmedString reason, DateTimeOffset deactivationDate)
+        public Either<Error, PassiveListing> Deactivate(TrimmedString reason)
         {
             if (reason == null)
                 return Invalid<PassiveListing>(nameof(reason));
-            if (deactivationDate == default)
-                return Invalid<PassiveListing>(nameof(deactivationDate));
 
             var passiveListing = new PassiveListing(Id,
                 Owner,
@@ -48,7 +43,6 @@ namespace Core.Domain.Listings
                 LocationDetails,
                 GeographicLocation,
                 CreatedDate,
-                deactivationDate,
                 reason);
 
             return Success(passiveListing);

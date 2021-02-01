@@ -29,10 +29,10 @@ namespace Core.Application.Listings.Commands.ReceiveOffer
             Either<Error, ActiveListing> activeListing = FindActiveListing(eitherModel);
             Either<Error, Owner> owner = CreateOwner(eitherUserId);
             Either<Error, MonetaryValue> monetaryValue = CreateMonetaryValue(eitherModel);
-            Either<Error, ReceivedOffer> receivedOffer = CreateOffer(owner, monetaryValue);
+            Either<Error, ActiveOffer> activeOffer = CreateOffer(owner, monetaryValue);
 
             Either<Error, Unit> receiveOfferResult =
-                ReceiveOffer(activeListing, receivedOffer);
+                ReceiveOffer(activeListing, activeOffer);
             Either<Error, Unit> persistChangesResult =
                 PersistChanges(receiveOfferResult, activeListing);
 
@@ -55,7 +55,7 @@ namespace Core.Application.Listings.Commands.ReceiveOffer
                eitherModel
                    .Bind(model => MonetaryValue.Create(model.Value, model.CurrencyCode));
 
-        private Either<Error, ReceivedOffer> CreateOffer(Either<Error, Owner> eitherOwner, Either<Error, MonetaryValue> eitherMonetaryValue)
+        private Either<Error, ActiveOffer> CreateOffer(Either<Error, Owner> eitherOwner, Either<Error, MonetaryValue> eitherMonetaryValue)
            =>
                 (
                     from owner in eitherOwner
@@ -66,16 +66,16 @@ namespace Core.Application.Listings.Commands.ReceiveOffer
                     context =>
                         _offerFactory.Create(context.owner, context.monetaryValue));
 
-        private Either<Error, Unit> ReceiveOffer(Either<Error, ActiveListing> eitherActiveListing, Either<Error, ReceivedOffer> eitherReceivedOffer)
+        private Either<Error, Unit> ReceiveOffer(Either<Error, ActiveListing> eitherActiveListing, Either<Error, ActiveOffer> eitherActiveOffer)
             =>
                 (
                     from activeListing in eitherActiveListing
-                    from receivedOffer in eitherReceivedOffer
-                    select (activeListing, receivedOffer)
+                    from activeOffer in eitherActiveOffer
+                    select (activeListing, activeOffer)
                 )
                 .Bind(
                     context =>
-                        context.activeListing.ReceiveOffer(context.receivedOffer));
+                        context.activeListing.ReceiveOffer(context.activeOffer));
 
         private Either<Error, Unit> PersistChanges(Either<Error, Unit> receiveOfferResult, Either<Error, ActiveListing> eitherActiveListing)
             =>

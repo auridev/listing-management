@@ -8,13 +8,13 @@ using Persistence.Commands.Profiles;
 
 namespace Persistence.Commands
 {
-    public static class CommandPersistenceStartup
+    public static class CommandPersistenceServiceRegistration
     {
         public static IServiceCollection AddPersistenceForCommands(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<CommandPersistenceContext>(options =>
                 options.UseSqlServer(
-                    configuration.GetConnectionString("BusinessLine"),
+                    configuration.GetConnectionString("Listings"),
                     b => b.MigrationsAssembly(typeof(CommandPersistenceContext).Assembly.FullName)));
 
             services.AddScoped<IProfileRepository, ProfileRepository>();

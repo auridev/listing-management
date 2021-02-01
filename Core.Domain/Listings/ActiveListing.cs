@@ -10,12 +10,12 @@ using static LanguageExt.Prelude;
 
 namespace Core.Domain.Listings
 {
-    public sealed class ActiveListing : Listing
+    public class ActiveListing : Listing
     {
         public DateTimeOffset ExpirationDate { get; }
 
-        private readonly List<ReceivedOffer> _offers = new List<ReceivedOffer>();
-        public IReadOnlyList<ReceivedOffer> Offers => _offers.ToList();
+        private readonly List<ActiveOffer> _activeOffers = new List<ActiveOffer>();
+        public IReadOnlyList<ActiveOffer> ActiveOffers => _activeOffers.ToList();
 
         private readonly List<Lead> _leads = new List<Lead>();
         public IReadOnlyList<Lead> Leads => _leads.ToList();
@@ -23,7 +23,9 @@ namespace Core.Domain.Listings
         private readonly List<FavoriteMark> _favorites = new List<FavoriteMark>();
         public IReadOnlyList<FavoriteMark> Favorites => _favorites.ToList();
 
-        private ActiveListing() { }
+        private ActiveListing()
+        {
+        }
 
         public ActiveListing(Guid id,
             Owner owner,
@@ -41,12 +43,10 @@ namespace Core.Domain.Listings
             ExpirationDate = expirationDate;
         }
 
-        public Either<Error, PassiveListing> Deactivate(TrimmedString reason, DateTimeOffset deactivationDate)
+        public Either<Error, PassiveListing> Deactivate(TrimmedString reason)
         {
             if (reason == null)
                 return Invalid<PassiveListing>(nameof(reason));
-            if (deactivationDate == default)
-                return Invalid<PassiveListing>(nameof(deactivationDate));
 
             var passiveListing = new PassiveListing(
                 Id,
@@ -56,24 +56,23 @@ namespace Core.Domain.Listings
                 LocationDetails,
                 GeographicLocation,
                 CreatedDate,
-                deactivationDate,
                 reason);
 
             return Success(passiveListing);
         }
 
-        public Either<Error, Unit> ReceiveOffer(ReceivedOffer offer)
+        public Either<Error, Unit> ReceiveOffer(ActiveOffer offer)
         {
             if (offer == null)
                 return Invalid<Unit>("invalid offer");
             if (Owner == offer.Owner)
                 return Invalid<Unit>("cannot accept offers from the listing owner");
 
-            _offers // remove existing offers from the same owner
-                .Find<ReceivedOffer>(o => o.Owner == offer.Owner)
-                .IfSome(o => _offers.Remove(o));
+            _activeOffers // remove existing offers from the same owner
+                .Find<ActiveOffer>(o => o.Owner == offer.Owner)
+                .IfSome(o => _activeOffers.Remove(o));
 
-            _offers.Add(offer);
+            _activeOffers.Add(offer);
 
             return Success(unit);
         }
@@ -85,34 +84,41 @@ namespace Core.Domain.Listings
             if (closedOn == default)
                 return Invalid<ClosedListing>(nameof(closedOn));
 
+            return
+                FindReceivedOfferById(receivedOfferId)
+                    .Map(
+                        receivedOffer =>
+                            new AcceptedOffer(
+                                receivedOffer.Id,
+                                receivedOffer.Owner,
+                                receivedOffer.MonetaryValue,
+                                receivedOffer.CreatedDate))
+                    .Bind<ClosedListing>(
+                        acceptedOffer =>
+                            {
+                                List<ClosedOffer> closedffers = _activeOffers
+                                    .Map(o => new ClosedOffer(o.Id, o.Owner, o.MonetaryValue, o.CreatedDate))
+                                    .ToList();
 
-            // find the matching offer
-            Option<ReceivedOffer> offer = FindReceivedOfferById(receivedOfferId);
-            if (offer.IsNone)
-                return NotFound<ClosedListing>("offer not found");
-
-            // prerequisites
-            AcceptedOffer acceptedOffer = null;
-            List<RejectedOffer> rejectedOffers = new List<RejectedOffer>();
-
-            // find accepted and rejected offers
-            _offers.ForEach(o =>
-            {
-                if (o == offer)
-                    acceptedOffer = new AcceptedOffer(o.Id, o.Owner, o.MonetaryValue, o.CreatedDate);
-                else
-                    rejectedOffers.Add(new RejectedOffer(o.Id, o.Owner, o.MonetaryValue, o.CreatedDate));
-            });
-
-            if (acceptedOffer != null)
-                return Success(new ClosedListing(Id, Owner, ListingDetails, ContactDetails, LocationDetails, GeographicLocation, CreatedDate, closedOn, acceptedOffer, rejectedOffers));
-            else
-                return NotFound<ClosedListing>("offer not found");
+                                return new ClosedListing(
+                                    Id,
+                                    Owner,
+                                    ListingDetails,
+                                    ContactDetails,
+                                    LocationDetails,
+                                    GeographicLocation,
+                                    CreatedDate,
+                                    acceptedOffer,
+                                    closedffers);
+                            });
         }
 
-        private Option<ReceivedOffer> FindReceivedOfferById(Guid receivedOfferId)
+        private Either<Error, ActiveOffer> FindReceivedOfferById(Guid receivedOfferId)
         {
-            return _offers.Find<ReceivedOffer>(o => o.Id == receivedOfferId);
+            return
+                _activeOffers
+                    .Find<ActiveOffer>(o => o.Id == receivedOfferId)
+                    .ToEither<Error>(new Error.NotFound("offer not found"));
         }
 
         public Either<Error, Unit> AddLead(Lead lead)
@@ -175,8 +181,8 @@ namespace Core.Domain.Listings
             if (seenDate == null)
                 return Invalid<Unit>(nameof(seenDate));
 
-            Option<ReceivedOffer> offer = _offers
-                .Find<ReceivedOffer>(o => o.Id == offerId);
+            Option<ActiveOffer> offer = _activeOffers
+                .Find<ActiveOffer>(o => o.Id == offerId);
 
             if (offer.IsNone)
                 return NotFound<Unit>(nameof(offerId));

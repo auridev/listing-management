@@ -50,7 +50,7 @@ namespace Core.Application.Listings.Commands.ActivateNewListing
             =>
                 eitherNewListing
                     .Bind(newListing =>
-                        newListing.Activate(expirationDate));
+                        newListing.MarkAsActive(expirationDate));
 
         private Either<Error, Unit> PersistChanges(Either<Error, NewListing> eitherNewListing, Either<Error, ActiveListing> eitherActiveListing)
             =>

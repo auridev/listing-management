@@ -16,6 +16,7 @@ namespace Core.Domain.ValueObjects
 
         //// this is to overcome current ORM limitations
         public State ___efCoreState { get; private set; }
+
         public Option<State> State
         {
             get

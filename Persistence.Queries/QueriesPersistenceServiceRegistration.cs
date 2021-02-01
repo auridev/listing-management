@@ -10,7 +10,7 @@ using Persistence.Queries.Profiles.Factory;
 
 namespace Persistence.Queries
 {
-    public static class QueriesPersistenceStartup
+    public static class QueriesPersistenceServiceRegistration
     {
         public static IServiceCollection AddPersistenceForQueries(this IServiceCollection services)
         {

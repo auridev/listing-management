@@ -1,5 +1,4 @@
-﻿using Common.Dates;
-using Common.Helpers;
+﻿using Common.Helpers;
 using Core.Application.Listings.Commands;
 using Core.Application.Listings.Commands.MarkNewListingAsSuspicious;
 using Core.Domain.Listings;
@@ -19,7 +18,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkNewListi
         private MarkNewListingAsSuspiciousModel _model;
         private NewListing _newListing;
         private Guid _listingId = Guid.NewGuid();
-        private DateTimeOffset _markedAsSuspiciousAtDate = DateTimeOffset.UtcNow.AddDays(1);
 
         private AutoMocker _mocker;
         private Either<Error, Unit> _executionResult;
@@ -38,11 +36,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkNewListi
                 .GetMock<IListingRepository>()
                 .Setup(r => r.FindNew(It.IsAny<Guid>()))
                 .Returns(Option<NewListing>.Some(_newListing));
-
-            _mocker
-                .GetMock<IDateTimeService>()
-                .Setup(s => s.GetCurrentUtcDateTime())
-                .Returns(_markedAsSuspiciousAtDate);
 
             _sut = _mocker.CreateInstance<MarkNewListingAsSuspiciousCommand>();
         }
@@ -71,15 +64,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkNewListi
             });
         }
 
-        private void Execute_WithFailedMarkAsSuspicious()
-        {
-            _mocker
-                .GetMock<IDateTimeService>()
-                .Setup(s => s.GetCurrentUtcDateTime())
-                .Returns((DateTimeOffset)default);
-
-            _executionResult = _sut.Execute(_model);
-        }
         private void VerifyChangesNotPersisted()
         {
             _mocker
@@ -174,32 +158,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.MarkNewListi
         {
             // act
             Execute_WithFailedReasonCreation();
-
-            // assert
-            VerifyChangesNotPersisted();
-        }
-
-        [Fact]
-        public void return_EitherLeft_with_proper_error_when_MarkAsSuspicious_failed()
-        {
-            // act
-            Execute_WithFailedMarkAsSuspicious();
-
-            // assert
-            _executionResult
-                .Right(_ => throw InvalidExecutionPath.Exception)
-                .Left(error =>
-                {
-                    error.Should().BeOfType<Error.Invalid>();
-                    error.Message.Should().Be("markedAsSuspiciousAt");
-                });
-        }
-
-        [Fact]
-        public void not_persist_changes_when_MarkAsSuspicious_failed()
-        {
-            // act
-            Execute_WithFailedMarkAsSuspicious();
 
             // assert
             VerifyChangesNotPersisted();

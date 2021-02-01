@@ -22,8 +22,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.CreateNewLis
         private CreateNewListingCommand _sut;
         private CreateNewListingModel _model;
         private NewListing _listing;
-        private ListingImageReference _imageReference1;
-        private ListingImageReference _imageReference2;
         private Guid _userId = Guid.NewGuid();
 
         private AutoMocker _mocker;
@@ -69,18 +67,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.CreateNewLis
             var listingId = Guid.NewGuid();
             _listing = DummyData.NewListing_1;
 
-            _imageReference1 = new ListingImageReference(
-                Guid.NewGuid(), 
-                listingId, 
-                TestValueObjectFactory.CreateFileName("photo1.bmp"), 
-                TestValueObjectFactory.CreateFileSize(5L));
-
-            _imageReference2 = new ListingImageReference(
-                Guid.NewGuid(),
-                listingId,
-                TestValueObjectFactory.CreateFileName("photo2.bmp"),
-                TestValueObjectFactory.CreateFileSize(5L));
-
             _mocker
                 .GetMock<INewListingFactory>()
                 .Setup(factory => factory.Create(
@@ -91,15 +77,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.CreateNewLis
                     It.IsAny<GeographicLocation>(),
                     It.IsAny<DateTimeOffset>()))
                 .Returns(_listing);
-
-            _mocker
-                .GetMock<IListingImageReferenceFactory>()
-                .SetupSequence(factory => factory.Create(
-                    It.IsAny<Guid>(),
-                    It.IsAny<FileName>(),
-                    It.IsAny<FileSize>()))
-                .Returns(_imageReference1)
-                .Returns(_imageReference2);
 
             _mocker
                 .GetMock<IDateTimeService>()
@@ -198,46 +175,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.CreateNewLis
         {
             // act
             ExecuteWith_FailedListingCreation();
-
-            // assert
-            VerifyChangesNotPersisted();
-        }
-
-        private void ExecuteWith_FailedImageReferenceCreation()
-        {
-            _mocker
-                .GetMock<IListingImageReferenceFactory>()
-                .SetupSequence(factory => factory.Create(
-                    It.IsAny<Guid>(),
-                    It.IsAny<FileName>(),
-                    It.IsAny<FileSize>()))
-                .Returns(Invalid<ListingImageReference>("image reference creation failed"))
-                .Returns(_imageReference2);
-
-            _executionResult = _sut.Execute(_userId, _model);
-        }
-
-        [Fact]
-        public void return_EitherLeft_with_proper_error_when_any_image_reference_creation_failed()
-        {
-            // act
-            ExecuteWith_FailedImageReferenceCreation();
-
-            // assert
-            _executionResult
-                .Right(_ => throw InvalidExecutionPath.Exception)
-                .Left(error =>
-                {
-                    error.Should().BeOfType<Error.Invalid>();
-                    error.Message.Should().Be("image reference creation failed");
-                });
-        }
-
-        [Fact]
-        public void not_persist_changes_when_any_image_reference_creation_failed()
-        {
-            // act
-            ExecuteWith_FailedImageReferenceCreation();
 
             // assert
             VerifyChangesNotPersisted();

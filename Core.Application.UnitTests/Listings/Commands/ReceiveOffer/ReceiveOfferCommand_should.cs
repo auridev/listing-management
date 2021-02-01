@@ -21,7 +21,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReceiveOffer
         private ReceiveOfferCommand _sut;
         private ReceiveOfferModel _model;
         private ActiveListing _activeListing;
-        private ReceivedOffer _offer;
+        private ActiveOffer _offer;
         private Guid _listingId = Guid.NewGuid();
         private Guid _userId = Guid.NewGuid();
 
@@ -89,7 +89,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReceiveOffer
             _mocker
                 .GetMock<IOfferFactory>()
                 .Setup(f => f.Create(It.IsAny<Owner>(), It.IsAny<MonetaryValue>()))
-                .Returns(Left<Error, ReceivedOffer>(new Error.Invalid("some invalid offer")));
+                .Returns(Left<Error, ActiveOffer>(new Error.Invalid("some invalid offer")));
 
             _executionResult = _sut.Execute(_userId, _model);
         }
@@ -102,7 +102,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReceiveOffer
             var monetaryValue = MonetaryValue.Create(1.0M, "EUR")
                 .Right(value => value)
                 .Left(_ => throw InvalidExecutionPath.Exception);
-            var invalidOffer = new ReceivedOffer(
+            var invalidOffer = new ActiveOffer(
                 Guid.NewGuid(), 
                 listingOwner, 
                 monetaryValue, 
@@ -110,7 +110,7 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReceiveOffer
             _mocker
                .GetMock<IOfferFactory>()
                .Setup(f => f.Create(It.IsAny<Owner>(), It.IsAny<MonetaryValue>()))
-               .Returns(Right<Error, ReceivedOffer>(invalidOffer));
+               .Returns(Right<Error, ActiveOffer>(invalidOffer));
 
             _executionResult = _sut.Execute(_userId, _model);
         }

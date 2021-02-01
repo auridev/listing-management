@@ -32,7 +32,7 @@ namespace Persistence.Queries.Listings
             if (connectionStrings == null)
                 throw new ArgumentNullException(nameof(connectionStrings));
 
-            _connectionString = connectionStrings.Value.BusinessLine;
+            _connectionString = connectionStrings.Value.Listings;
         }
 
         public Option<MyActiveListingDetailsModel> FindMyActive(Guid userId, Guid listingId)

@@ -8,13 +8,14 @@ namespace Core.Domain.Listings
 {
     public sealed class ClosedListing : Listing
     {
-        public DateTimeOffset ClosedOn { get; }
         public AcceptedOffer AcceptedOffer { get; }
 
-        private readonly List<RejectedOffer> _rejectedOffers = new List<RejectedOffer>();
-        public IReadOnlyList<RejectedOffer> RejectedOffers => _rejectedOffers.ToList();
+        private readonly List<ClosedOffer> _closedOffers = new List<ClosedOffer>();
+        public IReadOnlyList<ClosedOffer> ClosedOffers => _closedOffers.ToList();
 
-        private ClosedListing() { }
+        private ClosedListing()
+        {
+        }
 
         public ClosedListing(Guid id,
             Owner owner,
@@ -23,21 +24,17 @@ namespace Core.Domain.Listings
             LocationDetails locationDetails,
             GeographicLocation geographicLocation,
             DateTimeOffset createdDate,
-            DateTimeOffset closedOn,
             AcceptedOffer acceptedOffer,
-            List<RejectedOffer> rejectedOffers)
+            List<ClosedOffer> closedOffers)
             : base(id, owner, listingDetails, contactDetails, locationDetails, geographicLocation, createdDate)
         {
-            if (closedOn == default)
-                throw new ArgumentNullException(nameof(closedOn));
             if (acceptedOffer == null)
                 throw new ArgumentNullException(nameof(acceptedOffer));
-            if (rejectedOffers == null)
-                throw new ArgumentNullException(nameof(rejectedOffers));
+            if (closedOffers == null)
+                throw new ArgumentNullException(nameof(closedOffers));
 
-            ClosedOn = closedOn;
+            _closedOffers = closedOffers;
             AcceptedOffer = acceptedOffer;
-            _rejectedOffers = rejectedOffers;
         }
     }
 }

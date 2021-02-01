@@ -27,7 +27,7 @@ namespace Persistence.Queries.Profiles
             _queryTextFactory = queryTextFactory ??
                 throw new ArgumentNullException(nameof(queryTextFactory));
 
-            _connectionString = connectionStrings.Value.BusinessLine;
+            _connectionString = connectionStrings.Value.Listings;
         }
 
         public Option<ActiveProfileDetailsModel> FindActiveProfile(Guid profileId)

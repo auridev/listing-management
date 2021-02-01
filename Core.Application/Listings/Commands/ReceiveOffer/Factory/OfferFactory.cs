@@ -18,19 +18,19 @@ namespace Core.Application.Listings.Commands.ReceiveOffer.Factory
                 throw new ArgumentNullException(nameof(dateTimeService));
         }
 
-        public Either<Error, ReceivedOffer> Create(Owner owner, MonetaryValue monetaryValue)
+        public Either<Error, ActiveOffer> Create(Owner owner, MonetaryValue monetaryValue)
         {
             if (owner == null)
-                return Invalid<ReceivedOffer>(nameof(owner));
+                return Invalid<ActiveOffer>(nameof(owner));
             if (monetaryValue == null)
-                return Invalid<ReceivedOffer>(nameof(monetaryValue));
+                return Invalid<ActiveOffer>(nameof(monetaryValue));
 
             DateTimeOffset nowInUtc =
                 _dateTimeService.GetCurrentUtcDateTime();
 
-            var receivedOffer = new ReceivedOffer(Guid.NewGuid(), owner, monetaryValue, nowInUtc);
+            var activeOffer = new ActiveOffer(Guid.NewGuid(), owner, monetaryValue, nowInUtc);
 
-            return Success(receivedOffer);
+            return Success(activeOffer);
         }
     }
 }

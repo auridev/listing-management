@@ -1,9 +1,7 @@
-﻿using Core.Domain.ValueObjects;
-using Core.Domain.Messages;
+﻿using Core.Domain.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Common.Helpers;
-using Persistence.Commands.Helpers;
+using Persistence.Commands.Helpers.ValueConverters;
 
 namespace Persistence.Commands.Messages
 {
@@ -26,35 +24,34 @@ namespace Persistence.Commands.Messages
             builder
                 .Property(p => p.Recipient)
                 .HasColumnName("recipient")
-                .HasConversion(domain => domain.UserId, db => Recipient.Create(db).ToUnsafeRight())
-                .IsRequired(true);
+                .HasConversion(new RecipientConverter())
+                .IsRequired();
 
             builder
                 .Property(p => p.Subject)
                 .HasColumnName("subject")
                 .HasMaxLength(200)
-                .HasConversion(domain => domain.Value.Value, db => Subject.Create(db).ToUnsafeRight())
-                .IsRequired(true);
+                .HasConversion(new SubjectConverter())
+                .IsRequired();
 
             builder
                 .Property(p => p.Body)
                 .HasColumnName("body")
                 .HasMaxLength(1000)
-                .HasConversion(domain => domain.Content, db => MessageBody.Create(db).ToUnsafeRight())
-                .IsRequired(true);
+                .HasConversion(new MessageBodyConverter())
+                .IsRequired();
 
             builder
                 .Property(p => p.___efCoreSeenDate)
                 .HasColumnName("seen_date")
-                .HasConversion(domain => domain.Value, db => SeenDate.Create(db).ToUnsafeRight())
-                .IsRequired(false);
+                .HasConversion(new SeenDateConverter());
             builder
                 .Ignore(b => b.SeenDate);
 
             builder
                 .Property(p => p.CreatedDate)
                 .HasColumnName("created_date")
-                .IsRequired(true);
+                .IsRequired();
         }
     }
 }

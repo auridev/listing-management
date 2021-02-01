@@ -8,9 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static Common.Helpers.Result;
-using static LanguageExt.Prelude;
 using static Common.Helpers.Functions;
+using static LanguageExt.Prelude;
 
 namespace Core.Application.Listings.Commands.CreateNewListing
 {
@@ -20,13 +19,11 @@ namespace Core.Application.Listings.Commands.CreateNewListing
         private readonly INewListingFactory _listingFactory;
         private readonly IDateTimeService _dateTimeService;
         private readonly IImagePersistenceService _imageRepository;
-        private readonly IListingImageReferenceFactory _listingImageReferenceFactory;
 
         public CreateNewListingCommand(IListingRepository listingRepository,
             INewListingFactory listingFactory,
             IDateTimeService dateTimeService,
-            IImagePersistenceService imageRepository,
-            IListingImageReferenceFactory listingImageReferenceFactory)
+            IImagePersistenceService imageRepository)
         {
             _listingRepository = listingRepository ??
                 throw new ArgumentNullException(nameof(listingRepository));
@@ -36,8 +33,6 @@ namespace Core.Application.Listings.Commands.CreateNewListing
                 throw new ArgumentNullException(nameof(dateTimeService));
             _imageRepository = imageRepository ??
                 throw new ArgumentNullException(nameof(imageRepository));
-            _listingImageReferenceFactory = listingImageReferenceFactory ??
-                throw new ArgumentNullException(nameof(listingImageReferenceFactory));
         }
 
         private Either<Error, NewListing> CreateListing(
@@ -67,29 +62,93 @@ namespace Core.Application.Listings.Commands.CreateNewListing
                             context.geographicLocation,
                             creationDate));
 
+        private Either<Error, DateTag> CreateDateTag(DateTimeOffset createdDate)
+            =>
+                DateTag.Create(createdDate);
+
+        private Either<Error, Owner> CreateOwner(Either<Error, Guid> eitherUserId)
+            =>
+                eitherUserId
+                    .Bind(userId =>
+                        Owner.Create(userId));
+
+        private Either<Error, ListingDetails> CreateListingDetails(Either<Error, CreateNewListingModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        ListingDetails.Create(
+                            model.Title,
+                            model.MaterialTypeId,
+                            model.Weight,
+                            model.MassUnit,
+                            model.Description));
+
+        private Either<Error, ContactDetails> CreateContactDetails(Either<Error, CreateNewListingModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        ContactDetails.Create(
+                            model.FirstName,
+                            model.LastName,
+                            model.Company,
+                            model.Phone));
+
+        private Either<Error, LocationDetails> CreateLocationDetails(Either<Error, CreateNewListingModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        LocationDetails.Create(
+                           model.CountryCode,
+                           model.State,
+                           model.City,
+                           model.PostCode,
+                           model.Address));
+
+        private Either<Error, GeographicLocation> CreateGeographicLocation(Either<Error, CreateNewListingModel> eitherModel)
+            =>
+                eitherModel
+                    .Bind(model =>
+                        GeographicLocation.Create(
+                          model.Latitude,
+                          model.Longitude));
+
+        private Either<Error, Lst<Either<Error, ImageContext>>> CreateImageContexts(Either<Error, NewListing> eitherListing, Either<Error, CreateNewListingModel> eitherModel)
+            =>
+                (
+                    from listing in eitherListing
+                    from model in eitherModel
+                    select
+                        (listing.Id, model)
+                 )
+                .Map(
+                    combined =>
+                        combined.model.Images
+                            .Map(imageModel => CreateImageContext(combined.Id, imageModel))
+                            .Freeze());
+
+        private Either<Error, ImageContext> CreateImageContext(Guid parentReference, NewImageModel model)
+        {
+            var id = Guid.NewGuid();
+            var fileInfo = new FileInfo(model.Name);
+            var fileName = $"{ Guid.NewGuid()}{fileInfo.Extension }";
+
+            return ImageContext.Create(id, parentReference, fileName, model.Content);
+        }
+
         public Either<Error, Unit> Execute(Guid userId, CreateNewListingModel model)
         {
+            // Prerequistites
+            DateTimeOffset createdDate = _dateTimeService.GetCurrentUtcDateTime();
             Either<Error, Guid> eitherUserId = EnsureNonDefault(userId);
             Either<Error, CreateNewListingModel> eitherModel = EnsureNotNull(model);
+            Either<Error, DateTag> eitherDateTag = CreateDateTag(createdDate);
+            Either<Error, Owner> eitherOwner = CreateOwner(eitherUserId);
+            Either<Error, ListingDetails> eitherListingDetails = CreateListingDetails(eitherModel);
+            Either<Error, ContactDetails> eitherContactDetails = CreateContactDetails(eitherModel);
+            Either<Error, LocationDetails> eitherLocationDetails = CreateLocationDetails(eitherModel);
+            Either<Error, GeographicLocation> eitherGeographicLocation = CreateGeographicLocation(eitherModel);
 
-            // Value objects
-            DateTimeOffset creationDate = _dateTimeService.GetCurrentUtcDateTime();
-            Either<Error, Owner> eitherOwner = Owner.Create(userId);
-            Either<Error, DateTag> eitherDateTag = DateTag.Create(creationDate);
-            Either<Error, ListingDetails> eitherListingDetails =
-                ListingDetails
-                    .Create(model.Title, model.MaterialTypeId, model.Weight, model.MassUnit, model.Description);
-            Either<Error, ContactDetails> eitherContactDetails =
-                ContactDetails
-                    .Create(model.FirstName, model.LastName, model.Company, model.Phone);
-            Either<Error, LocationDetails> eitherLocationDetails =
-                LocationDetails
-                    .Create(model.CountryCode, model.State, model.City, model.PostCode, model.Address);
-            Either<Error, GeographicLocation> eitherGeographicLocation =
-                GeographicLocation
-                    .Create(model.Latitude, model.Longitude);
-
-            // Listing
+            // Listing & images
             Either<Error, NewListing> eitherListing =
                 CreateListing(
                     eitherOwner,
@@ -97,53 +156,38 @@ namespace Core.Application.Listings.Commands.CreateNewListing
                     eitherContactDetails,
                     eitherLocationDetails,
                     eitherGeographicLocation,
-                    creationDate);
+                    createdDate);
+            Either<Error, Lst<Either<Error, ImageContext>>> eitherImageContexts =
+                CreateImageContexts(
+                    eitherListing,
+                    eitherModel);
 
-            Either<Error, (NewListing listing, CreateNewListingModel model)> combined =
-                from l in eitherListing
-                from m in eitherModel
-                select (l, m);
-
-
-            Either<Error, List<Either<Error, ImageContext>>> eitherImageContexts = combined.Map(x =>
-            {
-                return x.model.Images.Select(imageModel =>
-                {
-                    var id = Guid.NewGuid();
-                    var fileInfo = new FileInfo(imageModel.Name);
-                    var fileName = $"{ Guid.NewGuid()}{fileInfo.Extension }";
-
-                    return ImageContext.Create(id, x.listing.Id, fileName, imageModel.Content);
-                })
-                .ToList();
-            });
-
-
-            Either<Error, Unit> aaa =
+            // Pesist
+            Either<Error, Unit> result =
                 (
-                    from l in eitherListing
-                    from ic in eitherImageContexts
-                    select(l, ic)
+                    from listing in eitherListing
+                    from imageContexts in eitherImageContexts
+                    from dateTag in eitherDateTag
+                        select (listing, imageContexts, dateTag)
                 )
                 .Bind<Unit>(context =>
                 {
-                    var imageContexts = context.ic.Freeze();
+                    IEnumerable<ImageContext> contexts = context.imageContexts.Rights();
+                    List<ImageContent> contents = contexts
+                        .Select(c => c.Content)
+                        .ToList();
+                    List<ImageReference> references = contexts
+                        .Select(c => c.Reference)
+                        .ToList();
 
-                    IEnumerable<ImageContext> contexts = imageContexts.Rights();
-                    var contents = contexts.Select(c => c.Content).ToList();
-                    var references = contexts.Select(c => c.Reference).ToList();
-
-
-
-                    _imageRepository.AddAndSave(context.l.Id, contents, (DateTag)eitherDateTag);
-                    _listingRepository.Add(context.l, references);
+                    _imageRepository.AddAndSave(context.listing.Id, contents, context.dateTag);
+                    _listingRepository.Add(context.listing, references);
                     _listingRepository.Save();
-
 
                     return unit;
                 });
 
-            return aaa;
+            return result;
 
         }
     }

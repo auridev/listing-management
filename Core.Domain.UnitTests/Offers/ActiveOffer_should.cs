@@ -9,11 +9,11 @@ using LanguageExt;
 
 namespace BusinessLine.Core.Domain.UnitTests.Offers
 {
-    public class ReceivedOffer_should
+    public class ActiveOffer_should
     {
         private static readonly Owner _owner = TestValueObjectFactory.CreateOwner(Guid.NewGuid());
         private static readonly MonetaryValue _monetaryValue = TestValueObjectFactory.CreateMonetaryValue(2.4M, "UUU");
-        private readonly ReceivedOffer _sut = new ReceivedOffer(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
+        private readonly ActiveOffer _sut = new ActiveOffer(Guid.NewGuid(), _owner, _monetaryValue, DateTimeOffset.UtcNow);
 
         [Fact]
         public void be_markable_as_seen()

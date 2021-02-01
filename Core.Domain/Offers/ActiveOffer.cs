@@ -7,7 +7,7 @@ using static LanguageExt.Prelude;
 
 namespace Core.Domain.Offers
 {
-    public class ReceivedOffer : Offer
+    public class ActiveOffer : Offer
     {
         //// this is to overcome current ORM limitations
         public SeenDate ___efCoreSeenDate { get; private set; }
@@ -31,8 +31,8 @@ namespace Core.Domain.Offers
             }
         }
 
-        private ReceivedOffer() { }
-        public ReceivedOffer(Guid id,
+        private ActiveOffer() { }
+        public ActiveOffer(Guid id,
             Owner owner,
             MonetaryValue monetaryValue,
             DateTimeOffset createdDate)

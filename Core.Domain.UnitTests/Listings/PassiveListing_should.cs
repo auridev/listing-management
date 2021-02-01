@@ -1,10 +1,8 @@
 ﻿using Common.Helpers;
 using Core.Domain.Listings;
-using Core.Domain.ValueObjects;
 using FluentAssertions;
 using LanguageExt;
 using System;
-using System.Collections.Generic;
 using Test.Helpers;
 using Xunit;
 
@@ -20,14 +18,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             _locationDetails,
             _geographicLocation,
             _createdDate,
-            DateTimeOffset.UtcNow.AddDays(-3),
             TestValueObjectFactory.CreateTrimmedString("something bad"));
-
-        [Fact]
-        public void have_an_DeactivationDate_property()
-        {
-            _sut.DeactivationDate.Should().BeCloseTo(DateTimeOffset.UtcNow.AddDays(-3));
-        }
 
         [Fact(Skip = "this should be in command logic")]
         public void thrown_an_exception_during_creation_if_expiration_date_has_passed()
@@ -39,21 +30,13 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _locationDetails,
                 _geographicLocation,
                 _createdDate,
-                DateTimeOffset.UtcNow.AddDays(1),
                 TestValueObjectFactory.CreateTrimmedString("aaaaa"));
 
             createAction.Should().Throw<ArgumentException>();
         }
 
-        public static IEnumerable<object[]> InvalidArgumentsForPassiveListing => new List<object[]>
-        {
-            new object[] { default, TestValueObjectFactory.CreateTrimmedString("aaa") },
-            new object[] { DateTimeOffset.Now, null }
-        };
-
-        [Theory]
-        [MemberData(nameof(InvalidArgumentsForPassiveListing))]
-        public void thrown_an_exception_during_creation_if_some_arguments_are_not_valid(DateTimeOffset closedOn, TrimmedString reason)
+        [Fact]
+        public void thrown_an_exception_during_creation_if_reason_is_null()
         {
             Action createAction = () => new PassiveListing(Guid.NewGuid(),
                 _owner,
@@ -62,8 +45,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _locationDetails,
                 _geographicLocation,
                 _createdDate,
-                closedOn,
-                reason);
+                null);
 
             createAction.Should().Throw<ArgumentNullException>();
         }

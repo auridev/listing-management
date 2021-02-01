@@ -13,14 +13,11 @@ namespace Core.Application.Listings.Commands.DeactivateNewListing
     public sealed class DeactivateNewListingCommand : IDeactivateNewListingCommand
     {
         private readonly IListingRepository _repository;
-        private readonly IDateTimeService _dateTimeService;
 
-        public DeactivateNewListingCommand(IListingRepository repository, IDateTimeService dateTimeService)
+        public DeactivateNewListingCommand(IListingRepository repository)
         {
             _repository = repository ??
                 throw new ArgumentNullException(nameof(repository));
-            _dateTimeService = dateTimeService ??
-                throw new ArgumentNullException(nameof(dateTimeService));
         }
 
         public Either<Error, Unit> Execute(DeactivateNewListingModel model)
@@ -32,8 +29,7 @@ namespace Core.Application.Listings.Commands.DeactivateNewListing
             Either<Error, PassiveListing> passiveListing =
                 Deactivate(
                     newListing,
-                    reason,
-                    _dateTimeService.GetCurrentUtcDateTime());
+                    reason);
             Either<Error, Unit> persistChangesResult =
                 PersistChanges(
                     newListing,
@@ -53,7 +49,7 @@ namespace Core.Application.Listings.Commands.DeactivateNewListing
                 eitherModel
                     .Bind(model => TrimmedString.Create(model.Reason));
 
-        private Either<Error, PassiveListing> Deactivate(Either<Error, NewListing> eitherNewListing, Either<Error, TrimmedString> eitherReason, DateTimeOffset deactivationDate)
+        private Either<Error, PassiveListing> Deactivate(Either<Error, NewListing> eitherNewListing, Either<Error, TrimmedString> eitherReason)
             =>
                 (
                     from reason in eitherReason
@@ -62,9 +58,7 @@ namespace Core.Application.Listings.Commands.DeactivateNewListing
                 )
                 .Bind(
                     context =>
-                        context.newListing.Deactivate(
-                            context.reason,
-                            deactivationDate));
+                        context.newListing.MarkAsPassive(context.reason));
 
         private Either<Error, Unit> PersistChanges(Either<Error, NewListing> eitherNewListing, Either<Error, PassiveListing> eitherPassiveListing)
             =>
