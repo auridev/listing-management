@@ -12,14 +12,11 @@ namespace Core.Application.Listings.Commands.MarkNewListingAsSuspicious
     public sealed class MarkNewListingAsSuspiciousCommand : IMarkNewListingAsSuspiciousCommand
     {
         private readonly IListingRepository _repository;
-        private readonly IDateTimeService _dateTimeService;
 
-        public MarkNewListingAsSuspiciousCommand(IListingRepository repository, IDateTimeService dateTimeService)
+        public MarkNewListingAsSuspiciousCommand(IListingRepository repository)
         {
             _repository = repository ??
                 throw new ArgumentNullException(nameof(repository));
-            _dateTimeService = dateTimeService ??
-                throw new ArgumentNullException(nameof(dateTimeService));
         }
 
         public Either<Error, Unit> Execute(MarkNewListingAsSuspiciousModel model)
@@ -31,8 +28,7 @@ namespace Core.Application.Listings.Commands.MarkNewListingAsSuspicious
             Either<Error, SuspiciousListing> suspiciousListing =
                 MarkAsSuspicious(
                     newListing,
-                    reason,
-                    _dateTimeService.GetCurrentUtcDateTime());
+                    reason);
             Either<Error, Unit> persistChangesResult =
                 PersistChanges(
                     newListing,
@@ -52,7 +48,7 @@ namespace Core.Application.Listings.Commands.MarkNewListingAsSuspicious
                 eitherModel
                     .Bind(model => TrimmedString.Create(model.Reason));
 
-        private Either<Error, SuspiciousListing> MarkAsSuspicious(Either<Error, NewListing> eitherNewListing, Either<Error, TrimmedString> eitherReason, DateTimeOffset markedAtDate)
+        private Either<Error, SuspiciousListing> MarkAsSuspicious(Either<Error, NewListing> eitherNewListing, Either<Error, TrimmedString> eitherReason)
             =>
                 (
                     from newListing in eitherNewListing
@@ -61,7 +57,7 @@ namespace Core.Application.Listings.Commands.MarkNewListingAsSuspicious
                 )
                 .Bind(
                     context =>
-                        context.newListing.MarkAsSuspicious(markedAtDate, context.reason));
+                        context.newListing.MarkAsSuspicious(context.reason));
 
         private Either<Error, Unit> PersistChanges(Either<Error, NewListing> eitherNewListing, Either<Error, SuspiciousListing> eitherSuspiciousListing)
             =>

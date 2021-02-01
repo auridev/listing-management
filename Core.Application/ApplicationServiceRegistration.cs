@@ -31,7 +31,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Application
 {
-    public static class ApplicationStartup
+    public static class ApplicationServiceRegistration
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
@@ -68,7 +68,6 @@ namespace Core.Application
             services.AddScoped<IGetPublicListingDetailsQuery, GetPublicListingDetailsQuery>();
             services.AddScoped<IGetPublicListingsQuery, GetPublicListingsQuery>();
 
-            services.AddScoped<IListingImageReferenceFactory, ListingImageReferenceFactory>();
             services.AddScoped<INewListingFactory, NewListingFactory>();
             services.AddScoped<IOfferFactory, OfferFactory>();
 

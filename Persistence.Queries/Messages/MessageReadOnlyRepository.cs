@@ -21,7 +21,7 @@ namespace Persistence.Queries.Messages
             if (connectionStrings == null)
                 throw new ArgumentNullException(nameof(connectionStrings));
 
-            _connectionString = connectionStrings.Value.BusinessLine;
+            _connectionString = connectionStrings.Value.Listings;
         }
 
         public Option<MyMessageDetailsModel> Find(Guid userId, Guid messageId)

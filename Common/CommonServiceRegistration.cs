@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Common
 {
-    public static class CommonStartup
+    public static class CommonServiceRegistration
     {
         public static IServiceCollection AddCommon(this IServiceCollection services)
         {

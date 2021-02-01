@@ -11,7 +11,7 @@ namespace Common.UnitTests.ApplicationSettings
         {
             var sut = new ConnectionStrings();
 
-            sut.BusinessLine.Should().BeNull();
+            sut.Listings.Should().BeNull();
         }
     }
 }

@@ -1,41 +1,40 @@
-﻿using Core.Domain.Listings;
-using Core.Domain.ValueObjects;
+﻿using Core.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Persistence.Commands.Helpers;
+using Persistence.Commands.Helpers.ValueConverters;
 
 namespace Persistence.Commands.Listings
 {
-    public class ListingImageReferenceConfiguration : IEntityTypeConfiguration<ListingImageReference>
+    public class ImageReferenceConfiguration : IEntityTypeConfiguration<ImageReference>
     {
-        public void Configure(EntityTypeBuilder<ListingImageReference> builder)
+        public void Configure(EntityTypeBuilder<ImageReference> builder)
         {
             builder
-                .ToTable("listing_image_references")
+                .ToTable("image_references")
                 .HasKey(p => p.Id);
 
             builder
                 .Property(p => p.Id)
                 .HasColumnName("id")
-                .IsRequired(true);
+                .IsRequired();
 
             builder
                 .Property(p => p.ParentReference)
                 .HasColumnName("parent_reference")
-                .IsRequired(true);
+                .IsRequired();
 
             builder
                 .Property(p => p.FileName)
                 .HasColumnName("file_name")
                 .HasMaxLength(100)
-                .HasConversion(domain => domain.Value, db => FileName.Create(db).ToUnsafeRight())
-                .IsRequired(true);
+                .HasConversion(new FileNameConverter())
+                .IsRequired();
 
             builder
                 .Property(p => p.FileSize)
                 .HasColumnName("file_size")
-                .HasConversion(domain => domain.Bytes, db => FileSize.Create(db).ToUnsafeRight())
-                .IsRequired(true);
+                .HasConversion(new FileSizeConverter())
+                .IsRequired();
         }
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 
-namespace Persistence.Commands.Helpers
+namespace Persistence.Commands.Helpers.Seed
 {
     public static class DatabaseSeeder
     {

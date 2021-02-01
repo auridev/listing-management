@@ -2,8 +2,7 @@
 {
     public class ConnectionStrings
     {
-
-        public string BusinessLine { get; set; }
+        public string Listings { get; set; }
         public ConnectionStrings()
         {
 

@@ -1,19 +1,14 @@
 ﻿using Core.Domain.Offers;
-using Core.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Persistence.Commands.Helpers;
+using Persistence.Commands.Helpers.ValueConverters;
 
 namespace Persistence.Commands.Offers
 {
-    public class RejectedOfferConfiguration : IEntityTypeConfiguration<RejectedOffer>
+    public class OfferConfiguration<T> : IEntityTypeConfiguration<T> where T : Offer
     {
-        public void Configure(EntityTypeBuilder<RejectedOffer> builder)
+        public virtual void Configure(EntityTypeBuilder<T> builder)
         {
-            builder
-                .ToTable("rejected_offers")
-                .HasKey(p => p.Id);
-
             builder
                 .Property(p => p.Id)
                 .HasColumnName("id");
@@ -21,9 +16,8 @@ namespace Persistence.Commands.Offers
             builder
                 .Property(p => p.Owner)
                 .HasColumnName("owner")
-                .HasConversion(domain => domain.UserId, db => Owner.Create(db).ToUnsafeRight())
-                .IsRequired(true);
-
+                .HasConversion(new OwnerConverter())
+                .IsRequired();
 
             builder.OwnsOne(
                 p => p.MonetaryValue,
@@ -33,20 +27,24 @@ namespace Persistence.Commands.Offers
                         .Property(p => p.Value)
                         .HasColumnName("monetary_value")
                         .HasColumnType("money")
-                        .IsRequired(true);
+                        .IsRequired();
 
                     monetaryValue
                         .Property(p => p.CurrencyCode)
                         .HasColumnName("currency_code")
                         .HasMaxLength(3)
-                        .HasConversion(domain => domain.Value, db => CurrencyCode.Create(db).ToUnsafeRight())
-                        .IsRequired(true);
+                        .HasConversion(new CurrencyCodeConverter())
+                        .IsRequired();
                 });
+
+            builder
+                .Navigation(p => p.MonetaryValue)
+                .IsRequired();
 
             builder
                 .Property(p => p.CreatedDate)
                 .HasColumnName("created_date")
-                .IsRequired(true);
+                .IsRequired();
         }
     }
 }

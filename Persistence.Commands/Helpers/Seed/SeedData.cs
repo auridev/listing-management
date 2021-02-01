@@ -5,7 +5,7 @@ using Core.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 
-namespace Persistence.Commands.Helpers
+namespace Persistence.Commands.Helpers.Seed
 {
     public static class SeedData
     {
@@ -258,7 +258,6 @@ namespace Persistence.Commands.Helpers
                 Personas.Peter.LocationDetails,
                 Personas.Peter.GeographicLocation,
                 DateTimeOffset.UtcNow.AddDays(-20),
-                new DateTimeOffset(2020, 4, 23, 0, 0, 0, TimeSpan.FromHours(0)),
                 TrimmedString.Create("Violates business rules. We don't allow junk to be posted in listings").ToUnsafeRight()),
 
             new PassiveListing(
@@ -269,7 +268,6 @@ namespace Persistence.Commands.Helpers
                 Personas.Peter.LocationDetails,
                 Personas.Peter.GeographicLocation,
                 DateTimeOffset.UtcNow.AddDays(-21),
-                new DateTimeOffset(2020, 7, 2, 0, 0, 0, TimeSpan.FromHours(0)),
                 TrimmedString.Create("Violates business rules. User complaints received").ToUnsafeRight()),
 
             new PassiveListing(
@@ -280,7 +278,6 @@ namespace Persistence.Commands.Helpers
                 Personas.Alice.LocationDetails,
                 Personas.Alice.GeographicLocation,
                 DateTimeOffset.UtcNow.AddDays(-22),
-                new DateTimeOffset(2020, 11, 1, 0, 0, 0, TimeSpan.FromHours(0)),
                 TrimmedString.Create("Violates business rules. Can't sell this shit online").ToUnsafeRight())
         };
     }

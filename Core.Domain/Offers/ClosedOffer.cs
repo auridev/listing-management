@@ -3,10 +3,10 @@ using System;
 
 namespace Core.Domain.Offers
 {
-    public class RejectedOffer : Offer
+    public class ClosedOffer : Offer
     {
-        private RejectedOffer() { }
-        public RejectedOffer(Guid id,
+        private ClosedOffer() { }
+        public ClosedOffer(Guid id,
             Owner owner,
             MonetaryValue monetaryValue,
             DateTimeOffset createdDate)

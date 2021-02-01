@@ -32,8 +32,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "system under test");
+                _createdDate);
         }
 
         [Fact]
@@ -73,15 +72,15 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         }
 
         [Fact]
-        public void have_a_DaysUntilExpiration_constant()
+        public void have_CreatedDate_property()
         {
-            Listing.DaysUntilExpiration.Should().Be(90);
+            _sut.CreatedDate.Should().BeCloseTo(_createdDate);
         }
 
         [Fact]
-        public void have_a_CreatedDate_property()
+        public void have_a_DaysUntilExpiration_constant()
         {
-            _sut.CreatedDate.Should().BeCloseTo(_createdDate);
+            Listing.DaysUntilExpiration.Should().Be(90);
         }
 
         public static IEnumerable<object[]> InvalidArgumentsForBaseListing => new List<object[]>
@@ -92,7 +91,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             new object[] { Guid.NewGuid(), _owner, _listingDetails, null, _locationDetails, _geographicLocation, _createdDate },
             new object[] { Guid.NewGuid(), _owner, _listingDetails, _contactDetails, null, _geographicLocation, _createdDate },
             new object[] { Guid.NewGuid(), _owner, _listingDetails, _contactDetails, _locationDetails, null, _createdDate },
-            new object[] { Guid.NewGuid(), _owner, _listingDetails, _contactDetails, _locationDetails, _geographicLocation, default }
+            new object[] { Guid.NewGuid(), _owner, _listingDetails, _contactDetails, _locationDetails, _geographicLocation, null }
+
         };
 
         [Theory]
@@ -111,8 +111,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 contactDetails,
                 locationDetails,
                 geographicLocation,
-                createdDate,
-                "aaa");
+                createdDate);
 
             createAction.Should().Throw<ArgumentNullException>();
         }
@@ -128,16 +127,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "first");
+                _createdDate);
             var second = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "second");
+                _createdDate);
 
             // act
             var equals = first.Equals(second);
@@ -157,16 +154,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "first");
+                _createdDate);
             var second = (object)new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "second");
+                _createdDate);
 
             // act
             var equals = first.Equals(second);
@@ -186,16 +181,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "first");
+                _createdDate);
             var second = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "second");
+                _createdDate);
 
             // act
             var equals = (first == second);
@@ -214,16 +207,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "first");
+                _createdDate);
             var second = new ListingTestFake(Guid.NewGuid(),
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "second");
+               _createdDate);
 
             // act
             var nonEquals = (first != second);
@@ -243,16 +234,14 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "aaaaaaaaaa");
+                _createdDate);
             var second = new ListingTestFake(id,
                 _owner,
                 _listingDetails,
                 _contactDetails,
                 _locationDetails,
                 _geographicLocation,
-                _createdDate,
-                "bbbbbbbbbbb");
+                _createdDate);
 
             // act
             var equals = (first == second);

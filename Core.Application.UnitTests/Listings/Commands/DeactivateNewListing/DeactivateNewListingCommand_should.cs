@@ -39,11 +39,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.DeactivateNe
                 .Setup(r => r.FindNew(It.IsAny<Guid>()))
                 .Returns(Option<NewListing>.Some(_newListing));
 
-            _mocker
-                .GetMock<IDateTimeService>()
-                .Setup(s => s.GetCurrentUtcDateTime())
-                .Returns(_deactivationDate);
-
             _sut = _mocker.CreateInstance<DeactivateNewListingCommand>();
         }
 
@@ -69,16 +64,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.DeactivateNe
                 ListingId = _listingId,
                 Reason = string.Empty
             });
-        }
-
-        private void Execute_WithFailedDeactivate()
-        {
-            _mocker
-                .GetMock<IDateTimeService>()
-                .Setup(s => s.GetCurrentUtcDateTime())
-                .Returns((DateTimeOffset)default);
-
-            _executionResult = _sut.Execute(_model);
         }
 
         private void VerifyChangesNotPersisted()
@@ -175,32 +160,6 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.DeactivateNe
         {
             // act
             Execute_WithFailedDeacticationReasonCreation();
-
-            // assert
-            VerifyChangesNotPersisted();
-        }
-
-        [Fact]
-        public void return_EitherLeft_with_proper_error_when_deactivation_failed()
-        {
-            // act
-            Execute_WithFailedDeactivate();
-
-            // assert
-            _executionResult
-                .Right(_ => throw InvalidExecutionPath.Exception)
-                .Left(error =>
-                {
-                    error.Should().BeOfType<Error.Invalid>();
-                    error.Message.Should().Be("deactivationDate");
-                });
-        }
-
-        [Fact]
-        public void not_persist_changes_when_deactivation_failed()
-        {
-            // act
-            Execute_WithFailedDeactivate();
 
             // assert
             VerifyChangesNotPersisted();

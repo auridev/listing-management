@@ -17,6 +17,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
     {
         private readonly ActiveListing _sut;
 
+        protected static readonly DateTimeOffset _expirationDate = DateTimeOffset.UtcNow.AddDays(90);
+
         public ActiveListing_should()
         {
             _sut = new ActiveListing(Guid.NewGuid(),
@@ -26,13 +28,13 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 _locationDetails,
                 _geographicLocation,
                 _createdDate,
-                DateTimeOffset.UtcNow.AddDays(90));
+                _expirationDate);
         }
 
         [Fact]
         public void have_an_ExpirationDate_property()
         {
-            _sut.ExpirationDate.Should().BeCloseTo(DateTimeOffset.UtcNow.AddDays(90));
+            _sut.ExpirationDate.Should().BeCloseTo(_expirationDate);
         }
 
         [Fact(Skip = "this should be in command logic")]
@@ -51,7 +53,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         }
 
         [Fact]
-        public void thrown_an_exception_during_creation_if_some_arguments_are_not_valid()
+        public void thrown_an_exception_during_ActiveListing_creation_if_some_arguments_are_not_valid()
         {
             Action createAction = () => new ActiveListing(Guid.NewGuid(),
                 _owner,
@@ -74,28 +76,20 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
 
             // act
             eitherReason
-                .Bind(reason => _sut.Deactivate(reason, deactivationDate))
+                .Bind(reason => _sut.Deactivate(reason))
                 .Right(passiveListing =>
                 {
                     // assert
                     passiveListing.Should().NotBeNull();
-                    passiveListing.DeactivationDate.Should().BeCloseTo(DateTimeOffset.UtcNow);
                     passiveListing.Reason.Value.Should().Be("wrong number");
                 })
                 .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
-        public static IEnumerable<object[]> ArgumentsForDeactivate => new List<object[]>
+        [Fact]
+        public void reject_to_deactivate_if_reason_is_null_arguments_are_not_valid()
         {
-            new object[] { TestValueObjectFactory.CreateTrimmedString("labas"), default },
-            new object[] { null, DateTimeOffset.UtcNow }
-        };
-
-        [Theory]
-        [MemberData(nameof(ArgumentsForDeactivate))]
-        public void reject_to_deactivate_if_arguments_are_not_valid(TrimmedString reason, DateTimeOffset date)
-        {
-            Either<Error, PassiveListing> action = _sut.Deactivate(reason, date);
+            Either<Error, PassiveListing> action = _sut.Deactivate(null);
 
             action
                 .Right(_ => throw InvalidExecutionPath.Exception)
@@ -115,12 +109,12 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
 
             // act
             Either<Error, Unit> action = combined
-                .Map(combined => new ReceivedOffer(offerId, combined.owner, combined.monetaryValue, createdDate))
+                .Map(combined => new ActiveOffer(offerId, combined.owner, combined.monetaryValue, createdDate))
                 .Bind(offer => _sut.ReceiveOffer(offer));
 
             // assert
             action
-                .Right(_ => _sut.Offers.Count.Should().Be(1))
+                .Right(_ => _sut.ActiveOffers.Count.Should().Be(1))
                 .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
@@ -161,7 +155,7 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                         _createdDate,
                         DateTimeOffset.UtcNow.AddDays(24));
 
-                    var offer = new ReceivedOffer(Guid.NewGuid(), combined.owner, combined.monetaryValue, createdDate);
+                    var offer = new ActiveOffer(Guid.NewGuid(), combined.owner, combined.monetaryValue, createdDate);
 
                     return listing.ReceiveOffer(offer);
                 });
@@ -178,23 +172,23 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             // arrange
             Guid offerOwnerId = Guid.NewGuid();
 
-            Either<Error, ReceivedOffer> dummyOffer =
+            Either<Error, ActiveOffer> dummyOffer =
                 from owner in Owner.Create(Guid.NewGuid())
                 from value in MonetaryValue.Create(1M, "eur")
                 select
-                    new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow); // just an offer from some owner to increase the count
+                    new ActiveOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow); // just an offer from some owner to increase the count
 
-            Either<Error, ReceivedOffer> offer1 =
+            Either<Error, ActiveOffer> offer1 =
                 from owner in Owner.Create(offerOwnerId) // same owner
                 from value in MonetaryValue.Create(6M, "eur")
                 select
-                    new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
+                    new ActiveOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
 
-            Either<Error, ReceivedOffer> offer2 =
+            Either<Error, ActiveOffer> offer2 =
                 from owner in Owner.Create(offerOwnerId) // same owner
                 from value in MonetaryValue.Create(3M, "eur")
                 select
-                   new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
+                   new ActiveOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
 
             // act
             Either<Error, Unit> addDummyOfferAction = dummyOffer
@@ -207,9 +201,9 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
                 .Bind(offer2 => _sut.ReceiveOffer(offer2));
 
             // assert
-            _sut.Offers.Count.Should().Be(2); // two offers in total
-            _sut.Offers.Where(o => o.Owner.UserId == offerOwnerId).Count().Should().Be(1); // only 1 offer by the owner who submitted two offer
-            _sut.Offers.Where(o => o.Owner.UserId == offerOwnerId).First().MonetaryValue.Value.Should().Be(3M); // last offer overides the previous one
+            _sut.ActiveOffers.Count.Should().Be(2); // two offers in total
+            _sut.ActiveOffers.Where(o => o.Owner.UserId == offerOwnerId).Count().Should().Be(1); // only 1 offer by the owner who submitted two offer
+            _sut.ActiveOffers.Where(o => o.Owner.UserId == offerOwnerId).First().MonetaryValue.Value.Should().Be(3M); // last offer overides the previous one
         }
 
         [Fact]
@@ -217,16 +211,16 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         {
             // arrange
             var offerId = Guid.NewGuid();
-            Either<Error, ReceivedOffer> offer1 =
+            Either<Error, ActiveOffer> offer1 =
                 from owner in Owner.Create(Guid.NewGuid())
                 from value in MonetaryValue.Create(1M, "eur")
                 select
-                    new ReceivedOffer(offerId, owner, value, DateTimeOffset.UtcNow);
-            Either<Error, ReceivedOffer> offer2 =
+                    new ActiveOffer(offerId, owner, value, DateTimeOffset.UtcNow);
+            Either<Error, ActiveOffer> offer2 =
                 from owner in Owner.Create(Guid.NewGuid())
                 from value in MonetaryValue.Create(2M, "eur")
                 select
-                   new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
+                   new ActiveOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
 
             Either<Error, Unit> addFirstOfferAction = offer1
                 .Bind(offer1 => _sut.ReceiveOffer(offer1));
@@ -263,17 +257,17 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         public void not_accept_non_existing_offers()
         {
             // arrange
-            Either<Error, ReceivedOffer> offer1 =
+            Either<Error, ActiveOffer> offer1 =
                 from owner in Owner.Create(Guid.NewGuid())
                 from value in MonetaryValue.Create(1M, "eur")
                 select
-                    new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
+                    new ActiveOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
 
-            Either<Error, ReceivedOffer> offer2 =
+            Either<Error, ActiveOffer> offer2 =
                 from owner in Owner.Create(Guid.NewGuid())
                 from value in MonetaryValue.Create(2M, "eur")
                 select
-                   new ReceivedOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
+                   new ActiveOffer(Guid.NewGuid(), owner, value, DateTimeOffset.UtcNow);
 
             Either<Error, Unit> addFirstOfferAction = offer1
                 .Bind(offer1 => _sut.ReceiveOffer(offer1));
@@ -288,54 +282,6 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             eitherClosedListing
                 .Right(_ => throw InvalidExecutionPath.Exception)
                 .Left(error => error.Message.Should().Be("offer not found"));
-        }
-
-        [Fact]
-        public void mark_other_offers_as_rejected()
-        {
-            // arrange
-            var id1 = Guid.NewGuid();
-            var id2 = Guid.NewGuid();
-            var id3 = Guid.NewGuid();
-
-            Either<Error, ReceivedOffer> offer1 =
-                from owner in Owner.Create(Guid.NewGuid())
-                from value in MonetaryValue.Create(1M, "eur")
-                select
-                    new ReceivedOffer(id1, owner, value, DateTimeOffset.UtcNow);
-
-            Either<Error, ReceivedOffer> offer2 =
-                from owner in Owner.Create(Guid.NewGuid())
-                from value in MonetaryValue.Create(2M, "eur")
-                select
-                    new ReceivedOffer(id2, owner, value, DateTimeOffset.UtcNow);
-
-            Either<Error, ReceivedOffer> offer3 =
-                from owner in Owner.Create(Guid.NewGuid())
-                from value in MonetaryValue.Create(3M, "eur")
-                select
-                    new ReceivedOffer(id3, owner, value, DateTimeOffset.UtcNow);
-
-            Either<Error, Unit> addFirstOfferAction = offer1
-                .Bind(offer1 => _sut.ReceiveOffer(offer1));
-
-            Either<Error, Unit> addSecondOfferAction = offer2
-                .Bind(offer2 => _sut.ReceiveOffer(offer2));
-
-            Either<Error, Unit> addThirdOfferAction = offer3
-                .Bind(offer3 => _sut.ReceiveOffer(offer3));
-
-            // act
-            Either<Error, ClosedListing> eitherClosedListing = _sut.AcceptOffer(id1, DateTimeOffset.Now);
-
-            // assert
-            eitherClosedListing
-                .Right(l =>
-                {
-                    l.RejectedOffers[0].Id.Should().Be(id2);
-                    l.RejectedOffers[1].Id.Should().Be(id3);
-                })
-                .Left(_ => throw InvalidExecutionPath.Exception);
         }
 
         [Fact]
@@ -542,18 +488,18 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
         {
             // arrange
             var id1 = Guid.NewGuid();
-            Either<Error, ReceivedOffer> offer1 =
+            Either<Error, ActiveOffer> offer1 =
                 from owner in Owner.Create(Guid.NewGuid())
                 from value in MonetaryValue.Create(1M, "eur")
                 select
-                    new ReceivedOffer(id1, owner, value, DateTimeOffset.UtcNow);
+                    new ActiveOffer(id1, owner, value, DateTimeOffset.UtcNow);
 
             var id2 = Guid.NewGuid();
-            Either<Error, ReceivedOffer> offer2 =
+            Either<Error, ActiveOffer> offer2 =
                 from owner in Owner.Create(Guid.NewGuid())
                 from value in MonetaryValue.Create(2M, "eur")
                 select
-                   new ReceivedOffer(id2, owner, value, DateTimeOffset.UtcNow);
+                   new ActiveOffer(id2, owner, value, DateTimeOffset.UtcNow);
 
             Either<Error, SeenDate> seenDate = SeenDate.Create(DateTimeOffset.Now);
 
@@ -569,8 +515,8 @@ namespace BusinessLine.Core.Domain.UnitTests.Listings
             action
                 .Right(_ =>
                 {
-                    _sut.Offers.First(o => o.Id == id1).SeenDate.IsSome.Should().BeTrue();  // first offer has been marked as seen
-                    _sut.Offers.First(o => o.Id == id2).SeenDate.IsSome.Should().BeFalse();
+                    _sut.ActiveOffers.First(o => o.Id == id1).SeenDate.IsSome.Should().BeTrue();  // first offer has been marked as seen
+                    _sut.ActiveOffers.First(o => o.Id == id2).SeenDate.IsSome.Should().BeFalse();
                 })
                 .Left(_ => throw InvalidExecutionPath.Exception);
         }

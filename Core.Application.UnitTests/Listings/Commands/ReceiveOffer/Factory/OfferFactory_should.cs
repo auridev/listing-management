@@ -33,13 +33,13 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReceiveOffer
         }
 
         [Fact]
-        public void return_EitherRight_with_ReceivedOffer_on_success()
+        public void return_EitherRight_with_ActiveOffer_on_success()
         {
             // act
-            Either<Error, ReceivedOffer> eitherReceivedOffer = _sut.Create(_owner, _monetaryValue);
+            Either<Error, ActiveOffer> eitherActiveOffer = _sut.Create(_owner, _monetaryValue);
 
             //assert
-            eitherReceivedOffer
+            eitherActiveOffer
                 .Right(offer => offer.Should().NotBeNull())
                 .Left(_ => throw InvalidExecutionPath.Exception);
         }
@@ -55,10 +55,10 @@ namespace BusinessLine.Core.Application.UnitTests.Listings.Commands.ReceiveOffer
         public void return_EitherLeft_with_proper_error_when_arguments_are_invalid(Owner owner, MonetaryValue monetaryValue, string errorMessage)
         {
             // act
-            Either<Error, ReceivedOffer> eitherReceivedOffer = _sut.Create(owner, monetaryValue);
+            Either<Error, ActiveOffer> eitherActiveOffer = _sut.Create(owner, monetaryValue);
 
             //assert
-            eitherReceivedOffer
+            eitherActiveOffer
                 .Right(_ => throw InvalidExecutionPath.Exception)
                 .Left(error =>
                 {

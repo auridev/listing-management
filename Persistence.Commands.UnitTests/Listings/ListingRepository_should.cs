@@ -145,7 +145,7 @@ namespace Persistence.Commands.Listings.UnitTests
         [Fact]
         public void throw_exception_during_active_when_active_listing_is_null()
         {
-            using (var context = new CommandPersistenceContext(_options))
+            using (var context = new CommandPersistenceContext(_options)) 
             {
                 // Arrange
                 var repository = new ListingRepository(context);
@@ -319,7 +319,6 @@ namespace Persistence.Commands.Listings.UnitTests
                     DummyData.LocationDetails,
                     DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow,
-                    DateTimeOffset.UtcNow,
                     TestValueObjectFactory.CreateTrimmedString("too passive")),
                 "d63be5b2-a70d-4cd9-b5e9-8cb390152a76",
                 true
@@ -333,7 +332,6 @@ namespace Persistence.Commands.Listings.UnitTests
                     DummyData.ContactDetails,
                     DummyData.LocationDetails,
                     DummyData.GeographicLocation,
-                    DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
                     TestValueObjectFactory.CreateTrimmedString("too passive")),
                 "22222222-2222-2222-2222-222222222222",
@@ -379,7 +377,6 @@ namespace Persistence.Commands.Listings.UnitTests
                     DummyData.LocationDetails,
                     DummyData.GeographicLocation,
                     DateTimeOffset.UtcNow,
-                    DateTimeOffset.UtcNow,
                     TestValueObjectFactory.CreateTrimmedString("qwerty")),
                 "25fbbb10-ddec-4d48-adbc-4c5f4aed84a4",
                 true
@@ -393,7 +390,6 @@ namespace Persistence.Commands.Listings.UnitTests
                     DummyData.ContactDetails,
                     DummyData.LocationDetails,
                     DummyData.GeographicLocation,
-                    DateTimeOffset.UtcNow,
                     DateTimeOffset.UtcNow,
                     TestValueObjectFactory.CreateTrimmedString("qwerty")),
                 "22222222-2222-2222-2222-222222222222",

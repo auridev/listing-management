@@ -1,10 +1,8 @@
-﻿using Common.Helpers;
-using Core.Domain.Listings;
+﻿using Core.Domain.Listings;
 using Core.Domain.Messages;
 using Core.Domain.Offers;
 using Core.Domain.Profiles;
 using Core.Domain.ValueObjects;
-using LanguageExt;
 using System;
 
 namespace Test.Helpers
@@ -46,7 +44,6 @@ namespace Test.Helpers
             LocationDetails,
             GeographicLocation,
             DateTimeOffset.UtcNow,
-            DateTimeOffset.UtcNow,
             TestValueObjectFactory.CreateTrimmedString("qwerty"));
 
         public static PassiveListing PassiveListing_1 => new PassiveListing(
@@ -56,7 +53,6 @@ namespace Test.Helpers
             ContactDetails,
             LocationDetails,
             GeographicLocation,
-            DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow,
             TestValueObjectFactory.CreateTrimmedString("too passive"));
 
@@ -70,19 +66,19 @@ namespace Test.Helpers
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow);
 
-        public static ReceivedOffer Offer_1 = new ReceivedOffer(
+        public static ActiveOffer Offer_1 = new ActiveOffer(
             Guid.Parse("29dcb8ec-2c90-4cfc-8c11-fc5c49d9a43b"),
             TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
             TestValueObjectFactory.CreateMonetaryValue(12.5M, "ASD"),
             DateTimeOffset.UtcNow);
 
-        public static ReceivedOffer Offer_2 = new ReceivedOffer(
+        public static ActiveOffer Offer_2 = new ActiveOffer(
             Guid.Parse("2e565fb4-3a62-48ff-b040-bd30397521ce"),
             TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
             TestValueObjectFactory.CreateMonetaryValue(87.2M, "ASD"),
             DateTimeOffset.UtcNow);
 
-        public static ReceivedOffer Offer_3 = new ReceivedOffer(
+        public static ActiveOffer Offer_3 = new ActiveOffer(
             Guid.Parse("2bfd4922-a20a-4b6a-8ea5-a0450bb5c6eb"),
             TestValueObjectFactory.CreateOwner(Guid.NewGuid()),
             TestValueObjectFactory.CreateMonetaryValue(3M, "ASD"),
